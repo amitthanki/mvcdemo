@@ -1,0 +1,565 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.Utility
+@model ENRLReconSystem.DO.QueueSummary
+@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    int searchRangeInDays = ConstantTexts.DefaultSearchRangeInDays;
+    if (!CacheUtility.GetMasterConfigurationByName(ConstantTexts.GetSearchRangeInDays).IsNullOrEmpty())
+    {
+        searchRangeInDays = CacheUtility.GetMasterConfigurationByName(ConstantTexts.GetSearchRangeInDays).ToInt32();
+    }
+}
+
+<style>
+    #tblMostRecentRecords tbody tr td {
+        white-space: nowrap;
+    }
+
+    .MostRecent-basket-panel {
+        padding: 0px;
+    }
+   [class="20003"] {
+        color: green;
+    }
+
+    [class="20002"] {
+        color: orangered;
+    }
+
+    [class="20001"] {
+        color: blue;
+    }
+</style>
+<section class="container main-body-wrpr">
+    @*alerts Scetion*@
+    <div class="alert-resource-ctr clearfix">
+        @if (Model.ShowAlerts)
+        {
+            <div class="col-md-6 col-sm-6 panel-group" id="alert-box">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" href="#collapseOne"><img src="~/Images/alerts-icon.png" /> <span>Alerts</span></a>
+                        </h4>
+                    </div>
+
+
+                    <div id="collapseOne" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <table class="table table-bordered" id="tblAlerts">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Title</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.lstDOADM_AlertDetails)
+                                    {
+                                        <tr>
+                                            <td style="text-align:center"><label class="ersAlertCriticality-@item.AlertCriticalityValue"></label></td>
+                                            <td><a href="#" alertID="@item.ADM_AlertDetailsId" class="ersAlert">@item.AlertTitle</a></td>
+                                            <td>@item.AlertDescription</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        }
+        @if (Model.ShowResources)
+        {
+            <div class="col-md-6 col-sm-6 panel-group" id="resource-box">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" href="#collapseTwo"><img src="~/Images/resource-icon.png" /> <span>Resources</span></a>
+                        </h4>
+                    </div>
+                    <div id="collapseTwo" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <table class="table table-bordered" id="tblResources">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        foreach (var item in Model.lstDOADM_ResourceDetails)
+                                        {
+                                            <tr>
+                                                <td><a href="@item.ResourceLinkLocation" target="_blank">@item.ResourceName</a></td>
+                                                <td>@item.ResourceDescription</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                                        }
+    </div>
+    @*Summary Section*@
+
+    @if (Model.ShowOSTQueueSummary || Model.ShowEligQueueSummary || Model.ShowRPRQueueSummary)
+    {
+        <div class="wdgt-wrapper recon-summary-wdgt">
+            <div class="panel-group">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" href="#recon-wdgt-wrapper"><img src="~/Images/list-icon.png" /> <span>Recon Queue Summary</span></a>
+                        </h4>
+                    </div>
+                    <div id="recon-wdgt-wrapper" class="panel-collapse collapse in">
+                        <div class="panel-body recon-summary-panel">
+                            <div class="wdgt-body clearfix">
+                                @*filter form*@
+                                <form id="frmFilterQueueSummaryHome">
+                                    @Html.ValidationSummary()
+                                    <div class="form-group date-group col-md-3">
+                                        <label for="inputEmail">From Date</label>
+                                        @Html.DateTimeFor(m => m.StartDate, false, new CustomValidation().Required("From Date is required").AddCssClass("form-control").validationAttributes)
+                                    </div>
+                                    <div class="form-group date-group col-md-3">
+                                        <label for="inputPassword">To Date</label>
+                                        @Html.DateTimeFor(m => m.EndDate, false, new CustomValidation().Required("To Date is required").AddCssClass("form-control").validationAttributes)
+                                    </div>
+                                    <div class="form-group form-btn col-md-3" style="float:right">
+                                        <button type="button" id="btnFilter" class="btn btn-primary"><img src='@Url.Content("/images/view-icon.png")' /><span>View</span></button>
+                                        <button type="button" id="btnLogin" class="btn btn-primary" onclick="fnAccessReport($('#StartDate_DPart').val(), $('#EndDate_DPart').val());"><img src='@Url.Content("/images/reports-icon.png")' /><span>Report</span></button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="wdgt-body clearfix" id="divQueueSummaryResult">
+                                @Html.Partial("_QueueSummary", Model)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    @*Pending Work Basket Section*@
+    <div class="wdgt-wrapper pending-basket">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#pending-basket-wdgt"><img src="~/Images/list-icon.png" /><span> Pending Work Basket</span></a>
+                    </h4>
+                </div>
+                <div id="pending-basket-wdgt" class="panel-collapse collapse in">
+                    <div class="panel-body pending-basket-panel">
+                        <div class="wdgt-body clearfix" id="divPendingWorkItemsResult">
+                            @*@Html.Partial("_GetPendingWorkItem", Model.lstDOGEN_Queue)*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Most Recent Work Basket Section*@
+    <div class="wdgt-wrapper MostRecent-basket">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#MostRecent-basket-wdgt"><img src="~/Images/list-icon.png" /><span> Most Recent Cases</span></a>
+                    </h4>
+                </div>
+                <div id="MostRecent-basket-wdgt" class="panel-collapse collapse in">
+                    <div class="panel-body MostRecent-basket-panel">
+                        <div class="wdgt-body clearfix" id="divMostRecentCases">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*refresh Button*@
+    <div class="btn-group clearfix">
+        <button type="button" id="btnRefresh" class="btn btn-primary"><img src='@Url.Content("/images/reset-icon.png")' /><span>Refresh</span></button>
+    </div>
+</section>
+<div id="myModalView" class="modal fade">
+    <div class="modal-dialog" id="divDialog">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <div class="clearfix" id="divMyModalView">
+
+            </div>
+
+        </div>
+    </div>
+</div>
+@section scripts{
+ <script>
+      var urlForLock = '@Url.Action("GetLockedRecordOrLockRecord", "RecordsLocked")';
+     //validate and create date time picker fields
+     if ('@Model.StartDate' != null && '@Model.StartDate' != '') {
+         //fnSetDateToField('@Model.StartDate','StartDate');
+       $('#StartDate_DPart').val(getDateTimeInMMDDYYYY('@Model.StartDate'));
+     }
+
+     if ('@Model.EndDate' != null && '@Model.EndDate' != '') {
+         //fnSetDateToField('@Model.EndDate','EndDate');
+           $('#EndDate_DPart').val(getDateTimeInMMDDYYYY('@Model.EndDate'));
+     }
+
+     var origForm = $("#frmFilterQueueSummaryHome").serialize();//to validate change in dates
+
+     var urlFilterQueueSummary = '@Url.Action("FilterQueueSummary", "Home")'
+         , urlFilterPendedRecords = '@Url.Action("FilterPendedRecords", "Home")'
+         , ReportsUrl = '@Url.Action("GetHomeReportURL", "Home")'
+         , urlGetMostRecentRecord = '@Url.Action("GetMostRecentRecord", "Home")'
+         , urlGetPendRecords = '@Url.Action("GetPendRecords", "Home")'
+         , urlCheckUserPermission = '@Url.Action("CheckUserPermission", "Common")'
+         , urlViewRecord = '@Url.Action("ViewRecord", "Common")'
+         , urlReadAlert = '@Url.Action("ReadAlert", "Alerts")';
+
+     function fnViewRecord(Id, catId,WorkQueue) {
+         $.ajax({
+             type: 'POST',
+             url: urlCheckUserPermission + '/' + enums.PermissionType.CanView + '/' + catId,
+             data: { DiscCat: catId, WorkQueue: WorkQueue },
+             success: function (response) {
+                 if (response == true) {
+                     $.ajax({
+                         type: 'POST',
+                         url: urlViewRecord + '/' + Id + '/' + catId,
+                         success: function (response) {
+                             $("#divMyModalView").empty().html($("#divMyModalView").empty().html(response).find('section'));
+                             $('#divMyModalView').find(':input').attr('disabled', true);
+                             $('#divMyModalView').find(':button').attr('disabled', true);
+                             $("#myModalView").modal('show');
+                             $('#divMyModalView').find("#tblPWAttachments .deletePWAttachmentIco").remove();
+                             $('#divMyModalView').find("#tblRefferencedCases .deleteViewIcon").remove();
+                             $('#divMyModalView').find("#tblPWAttachments .downloadAttachment").href = "";
+                             $(".dispMsg").unbind("click");
+                         },
+                         error: function (result) {
+                             MainLayout.fnAlertMessege("Error!", result.responseText);
+                         }
+                     });
+                 } else { MainLayout.fnAlertMessege("Alert!", "You don't have sufficient permission to perform View operation for " + MainLayout.getEnumKey(enums.DiscripancyCategory, catId)); }
+             },
+             error: function (result) {
+                 MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+             }
+         });
+
+     };
+
+     // function to get date in DDMMYYYY format
+     function fnGetDateInDDMMYYYY(getDate) {
+         var date = getDate;
+         var dateArray = date.split("/");
+         var newDate = dateArray[1] + '/' + dateArray[0] + '/' + dateArray[2];
+         return newDate;
+     }
+
+     // function to access history report
+     function fnAccessReport(startDate, endDate) {
+         var urlToNavigate = ReportsUrl;
+         $.ajax({
+             url: urlToNavigate,
+             type: "POST",
+             success: function (data) {
+                 if (data != "") {
+                     var Data = data.Data;
+                     startDate = getDateTimeInMMDDYYYY(startDate);// fnGetDateInDDMMYYYY(startDate);
+                     endDate = getDateTimeInMMDDYYYY(endDate);// fnGetDateInDDMMYYYY(endDate);                
+                     window.open(Data + "&FromDate=" + startDate + "&ToDate=" + endDate + "&BusinessSegmentLkup=" + @Model.BusinessSegment);
+
+                 }
+             },
+             error: function (x) {
+                 MainLayout.fnAlertMessege("Error!", "An error occoured.");
+             }
+         });
+     }
+
+     function fnHomePageLoad() {
+         try {
+             fnLoadMostRecentRecords();
+             fnGetPendingRecords();
+         } catch (e) {
+
+         }
+     };
+
+     function fnLoadMostRecentRecords() {
+         try {
+             $.ajax({
+                 data: {},
+                 url: urlGetMostRecentRecord,
+                 type: "POST",
+                 success: function (data) {
+                     if (data != "") {
+                         $("#divMostRecentCases").empty().html(data);
+                         MainLayout.fnInitialiseDataTableforMostRecentCases($('#tblMostRecentRecords'));
+                     }
+                     else if (data == "") {
+                         $("#divMostRecentCases").empty();
+                     }
+                     else {
+                         MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                     }
+                 },
+                 error: function (x) {
+                     MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                 }
+             });
+
+         } catch (e) {
+
+         }
+     };
+
+     function fnGetPendingRecords() {
+         try {
+             $.ajax({
+                 data: {},
+                 url: urlGetPendRecords,
+                 type: "POST",
+                 success: function (data) {
+                     if (data != "") {
+                         $("#divPendingWorkItemsResult").empty().html(data);
+                         MainLayout.fnInitialiseDataTable($('#tblPendedRecords'));
+                     }
+                     else if (data == "") {
+                         $("#divPendingWorkItemsResult").empty();
+                     }
+                     else {
+                         MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                     }
+                 },
+                 error: function (x) {
+                     MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                 }
+             });
+
+         } catch (e) {
+
+         }
+     };
+
+     //custom validations on dates
+     function validateCustom() {
+         var StartDate = new Date($('#StartDate_DPart').val());
+         var EndDate = new Date($('#EndDate_DPart').val());
+
+         var today = new Date();
+         var errorList = "";
+         var isValid = true;
+         today.setHours(0, 0, 0, 0);
+
+         if (EndDate > today) {
+             $('#EndDate_DPart').removeClass("valid").addClass("input-validation-error");
+             errorList = errorList + '<li>To Date cannot be future Date.</li>';
+             isValid = false;
+         } else {
+             if (StartDate > EndDate) {
+                 $('#StartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                 errorList = errorList + '<li>From Date must be less than To Date.</li>';
+                 isValid = false;
+             } else {
+                 var diff = daysBetween(EndDate, StartDate);
+                 if (diff > @searchRangeInDays) {
+                     $('#StartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                     $('#EndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                     errorList = errorList + '<li>From Date and To Date range cannot be greater than '+ @searchRangeInDays +' days</li>';
+                     isValid = false;
+                 }
+             }
+         }
+         if (StartDate > today) {
+             $('#StartDate_DPart').removeClass("valid").addClass("input-validation-error");
+             errorList = errorList + '<li>From Date cannot be future Date.</li>';
+             isValid = false;
+         }
+
+         if (!isValid) {
+             if ($('.validation-summary-errors').length != 0) {
+                 //if validion errors div is present add errors to list
+                 $('.validation-summary-errors ul').append(errorList);
+             } else {
+                 //if validion errors div is not present update validation-summary-valid div and add errors to list
+                 $('.validation-summary-valid').addClass('validation-summary-errors').removeClass('validation-summary-valid');
+                 $('.validation-summary-errors ul').append(errorList);
+             }
+         }
+         return isValid;
+     };
+
+     //function to ajax submit search form
+     $('#btnFilter,#btnRefresh').click(function () {
+         try {
+             fnHomePageLoad();
+             fnLoadQueueSummary();
+         } catch (e) {
+         }
+     });
+
+     fnLoadQueueSummary = function () {
+         try {
+             $('.validation-summary-errors ul').empty();// clear the error messages
+             $(':input').removeClass("input-validation-error").addClass("valid");// remove border
+             origForm = $("#frmFilterQueueSummaryHome").serialize();
+             var dtpStartDate;
+             var dtpEndDate;
+             var date = getFieldUTCTime('StartDate');
+             if (date != null && date != '') {
+                 dtpStartDate = getDateTimeInMMDDYYYYHHMM(date);
+             } else {
+                 dtpStartDate = null;
+             }
+             date = getFieldUTCTime('EndDate');
+             if (date != null && date != '') {
+                 dtpEndDate = getDateTimeInMMDDYYYYHHMM(date);
+             } else {
+                 dtpEndDate = null;
+             }
+             var formValid = $("#frmFilterQueueSummaryHome").valid(); //validate form
+             var isCustomValid = validateCustom();// custom Validations
+             if (!formValid || !isCustomValid) {
+                 return
+             } else {
+                 //ajax for queue summary
+                 $.ajax({
+                     data: {
+                         "dtpStartDate": dtpStartDate,
+                         "dtpEndDate": dtpEndDate,
+                     },
+                     url: urlFilterQueueSummary,
+                     type: "POST",
+                     success: function (data) {
+                         if (data != "") {
+                             MainLayout.fnSetLocalStorage($("#frmFilterQueueSummaryHome").serialize(),1234590);
+                             $("#divQueueSummaryResult").empty().html(data);
+                         }
+                     },
+                     error: function (x) {
+                         MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                     }
+                 });
+             }
+
+         } catch (e) {
+             throw e;
+         }
+     };
+
+
+
+     $('.ersAlert').click(function () {
+         var alertId = $(this).attr('alertID');
+         try {
+             $.ajax({
+                 url: urlReadAlert + "?AlertId=" + alertId,
+                 type: "GET",
+                 success: function (data) {
+                     if (data != "") {
+                         $("#divMyModalUserAccess").empty().html(data);
+                         $("#myModalUserAccess").modal('show');
+                     }
+                     else {
+                         MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                     }
+                 },
+                 error: function (x) {
+                     MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                 }
+             });
+         } catch (e) {
+
+         }
+     });
+     fnLockAndEdit = function (Id, qId, catId, WorkQueue) {
+         try {
+                      //Need to find user has edit permission
+         var url = '@Url.Action("CheckUserPermission", "Common")/' + enums.PermissionType.CanModify + '/' + catId;
+         var categoryDesc;
+         var urlToNavigate;
+         switch (catId) {
+             case enums.DiscripancyCategory.OOA:
+                 urlToNavigate = '@Url.Action("OOAProcessWork", "OST")?queueId=' + qId + '&pageName=Home';
+                 categoryDesc = 'OOA';
+                 break;
+             case enums.DiscripancyCategory.SCC:
+                 urlToNavigate = '@Url.Action("SCCProcessWork", "OST")?queueId=' + qId + '&pageName=Home';
+                 categoryDesc = "SCC";
+                 break;
+             case enums.DiscripancyCategory.TRR:
+                 urlToNavigate = '@Url.Action("TRRProcessWork", "OST")?queueId=' + qId + '&pageName=Home';
+                 categoryDesc = "TRR";
+                 break;
+             case enums.DiscripancyCategory.Eligibility:
+                 urlToNavigate = '@Url.Action("EligibilityProcessWork", "Eligibility")?queueId=' + qId + '&pageName=Home';
+                 categoryDesc = "Eligibility";
+                 break;
+             case enums.DiscripancyCategory.DOB:
+                 urlToNavigate = '@Url.Action("DOBProcessWork", "Eligibility")?queueId=' + qId + '&pageName=Home';
+                 categoryDesc = "DOB";
+                 break;
+             case enums.DiscripancyCategory.Gender:
+                 urlToNavigate = '@Url.Action("GenderProcessWork", "Eligibility")?queueId=' + qId + '&pageName=Home';
+                 categoryDesc = "Gender";
+                 break;
+             case enums.DiscripancyCategory.RPR:
+                 urlToNavigate = '@Url.Action("RPRProcessWork", "RPR")?queueId=' + qId + '&pageName=Home';
+                 categoryDesc = "RPR";
+                 break;
+         }
+         $.ajax({
+             data: { DiscCat: catId, WorkQueue: WorkQueue },
+             url: url,
+             type: "POST",
+             success: function (data) {
+                 if (data == true) {
+                     if (catId != undefined && catId > 0) {
+                         if (urlToNavigate != undefined) {
+                             fnLockRecord(urlForLock, Id, enums.ScreenType.Queue, urlToNavigate);
+                         }
+                     }
+                 }
+                 else if (data == false) {
+                     MainLayout.fnAlertMessege("Alert!", "You don't have sufficient permission to perform Edit operation for " + categoryDesc)
+                 }
+             },
+             error: function (x) {
+                 alert("An error occoured");
+             }
+         });
+
+         } catch (e) {
+
+         }
+     };
+
+     ///load the storage page
+     if (MainLayout.fnIsLocalStorageExists(1234590)) {
+         $("#frmFilterQueueSummaryHome").deserialize(MainLayout.fnGetLocalStorage(1234590));
+         fnLoadQueueSummary();
+     };
+
+     fnHomePageLoad();//load asynchronously
+</script>
+}
+

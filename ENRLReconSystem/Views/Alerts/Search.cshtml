@@ -1,0 +1,127 @@
+﻿@model IEnumerable<ENRLReconSystem.DO.DOADM_AlertDetails>
+@{
+    ViewBag.Title = "Alerts";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="container main-body-wrpr">
+    @*Search Form Section*@
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src='@Url.Content("/images/search-icon.png")' /><h4>Search Alerts</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <div class="form-group col-md-3">
+                @Html.Label("Title")
+                @Html.TextBox("Title", "", new { @id = "txtTitle", @class = "form-control", @onkeypress = "fnAvoidSpecialChar(event);" })
+            </div>
+            <div class="form-group col-md-3">
+                @Html.Label("Description")
+                @Html.TextBox("Description", "", new { @id = "txtDescription", @class = "form-control", @onkeypress = "fnAvoidSpecialChar(event);" })
+            </div>
+            <div class="form-group col-md-3">
+                @Html.Label("Is Active")
+                <input type="checkbox" name="IsActive" value="true" checked="checked" id="cbxIsActive" class="form-control"><br>
+            </div>
+            <div class="btn-group clearfix">
+                <button type="button" id="btnSearch" class="btn btn-primary"><img src='@Url.Content("/images/search-icon.png")' /><span>Search</span></button>
+                <button type="button" id="btnReset" class="btn btn-primary"><img src='@Url.Content("/images/reset-icon.png")' /><span>Reset</span></button>
+                <button type="button" id="btnCancel" class="btn btn-primary"><img src='@Url.Content("/images/cancle-icon.png")' /><span>Cancel</span></button>
+                <button type="button" id="btnAdd" class="btn btn-primary"><img src='@Url.Content("/images/add-icon.png")' /><span>Add New</span></button>
+            </div>
+        </div>
+    </div>
+
+    @*Search Result Section*@
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src='@Url.Content("/images/list-icon.png")' /><h4>Search Results</h4>
+        </div>
+        <div class="wdgt-body clearfix" id="divSearchResult" >
+            @Html.Partial("_SearchResults", Model)
+        </div>
+    </div>
+</section>
+@section scripts{
+<script>
+    var urlGetAlerts = '@Url.Action("Search", "Alerts")';
+    var addAlertUrl = '@Url.Action("Add", "Alerts")';
+    var cancelUrl = '@Url.Action("Home","Home")';
+    var lockUrl = '@Url.Action("GetLockedRecordOrLockRecord", "RecordsLocked")';
+    var ReportsUrl = '@Url.Action("GetAlertsReportURL", "Alerts")';
+    var winHistoryReport;
+    $("#btnSearch").focus();//set focus on search button on page load
+
+    //function to ajax submit search form
+    $('#btnSearch').click(function () {
+        $.ajax({
+            data: {
+                "strTitle": $("#txtTitle").val().trim(),
+                "strDescription": $("#txtDescription").val().trim(),
+                "bolIsActive": ($("#cbxIsActive").is(":checked") ? true : false)
+            },
+            url: urlGetAlerts,
+            type: "POST",
+            success: function (data) {
+                if (data != "") {
+                    $("#divSearchResult").empty().html(data);
+                    //intialize datatable
+                    MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+                }
+            },
+            error: function (x) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured.");
+            }
+        });
+    });
+
+    //function on Add button click to navigate to add alerts page
+    $('#btnAdd').click(function () {
+        window.location.href = addAlertUrl;
+    });
+
+    //function on Cancel button click to navigate to Homepage
+    $('#btnCancel').click(function () {
+        window.location.href = cancelUrl;
+    });
+
+    //function on Reset button click to clear all the fields
+    $('#btnReset').click(function () {
+        $('#txtTitle').val('');
+        $('#txtDescription').val('');
+        $('#cbxIsActive').prop('checked', true);
+    });
+
+    //function to lock record when user is starts editing any record
+    fnLockAndEdit = function (id, isActive) {
+        var urlForLock = lockUrl;
+        var urlToNavigate = addAlertUrl + "?AlertId=" + id + "&isActive=" + isActive;
+        fnLockRecord(urlForLock, id, enums.ScreenType.Alerts, urlToNavigate);
+    };
+
+    // function to access history report
+    fnAccessReport = function (id) {
+       // debugger
+        var urlToNavigate = ReportsUrl;
+        $.ajax({
+            url: urlToNavigate,
+            type: "POST",
+            success: function (data) {
+                debugger
+                if (data != "") {                
+                    var Data = data.Data;
+                    var reportUrl = Data + "&AlertDetailsId=" + id;
+                    var strWindowFeatures = "location=yes,height=580,width=1000,scrollbars=no,resizable=yes,toolbar=no,status=no,menu=no, directories=no,titlebar=no,location=no,addressbar=no,top=100,left=100";
+                    winHistoryReport = MainLayout.fnMyOpenWindow(reportUrl, "_blank", strWindowFeatures, winHistoryReport);                                   
+                }
+            },
+            error: function (x) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured.");
+            }
+        });
+    }
+
+    //intialize datatable
+    MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+</script>
+}

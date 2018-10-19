@@ -1,0 +1,388 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@using ENRLReconSystem.Utility
+@model UIBulkUploadSearch
+@{
+    ViewBag.Title = "BulkUpload";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/images/search-icon.png"><h4>Bulk Upload</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            @using (Html.BeginForm("", "", FormMethod.Post, new { @id = "frmBulkUploadSearch" , @enctype = "multipart/form-data" }))
+            {
+                @Html.ValidationSummary(false)
+                @Html.Hidden("hdnTemplateID")
+                <div class="form-group col-md-3">
+                    <label>Bulk Import ID</label>
+                    @Html.TextBoxFor(xx => xx.BulkImportID, new { @class = "form-control allowOnlyNumeric" })
+                </div>
+                <div class="form-group date-group col-md-3">
+                    <label>Start Date</label>
+                    @Html.DateTimeFor(xx =>xx.StartDate, false, new CustomValidation().CustomAttributes("id", "dtStartDate").validationAttributes)
+                    @Html.HiddenFor(m => m.StartDate)
+                </div>
+                <div class="form-group date-group col-md-3">
+                    <label>End Date</label>
+                    @Html.DateTimeFor(xx => xx.EndDate, false, new CustomValidation().CustomAttributes("id", "dtEndDate").validationAttributes)
+                    @Html.HiddenFor(m => m.EndDate)
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Work basket</label>
+                    @Html.DropDownListFor(m => m.WorkbasketLkup, new SelectList(Model.lstWorkbasket, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").CustomAttributes("disabled", "disabled").CustomAttributes("id", "ddlWorkbasket").validationAttributes)
+                    @Html.HiddenFor(m => m.WorkbasketLkup,new { @id= "hdnWorkbasketLkup" })
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Discrepancy Category</label>
+                    @Html.DropDownListFor(m => m.DiscrepancyCategoryLkup, new SelectList(Model.lstDiscCategary, "CMN_LookupMasterChildRef", "LookupMasterChildValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "ddlDiscrepancycategary").validationAttributes)
+                </div>
+                if (Model.WorkbasketLkup != WorkBasket.RPR.ToInt64())
+                {
+                <div class="form-group col-md-3">
+                    <label>Sample Template</label>
+                    <a  id="lnkDownLoadTemplate" style="display:block;"></a>
+
+                </div>
+                }
+                <div class="btn-group clearfix">
+                    <button class="btn btn-primary" id="btnSearch" type="button"><img src="~/images/search-icon.png"><span>Search</span></button>
+                    <button class="btn btn-primary" id="btnReset" type="button"><img src="~/images/reset-icon.png"><span>Reset</span></button>
+                    <button class="btn btn-primary" id="btnCancel" type="button"><img src="~/images/cancle-icon.png"><span>Cancel</span></button>
+                    @if (Model.WorkbasketLkup != WorkBasket.RPR.ToInt64())
+                    {
+                    <button class="btn btn-primary" id="btnUpload" type="button"><img src="~/images/upload-icon.png"><span>Upload</span></button>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/images/list-icon.png"><h4>Bulk Import Search Results</h4>
+        </div>
+        <div class="wdgt-body clearfix" id="divBulkUploadSearchResult">
+            @Html.Partial("_SearchResult",Model.lstDOGEN_BulkImport)
+        </div>
+    </div>
+</section>
+
+@*PopUp*@
+
+<div id="myModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content" id="divBulkImportTemplate">
+
+        </div>
+    </div>
+</div>
+
+@*PopUp End*@
+
+@section scripts{
+    <script type="text/javascript">
+    ////Variables////
+        var urlUpload = '@Url.Action("Upload", "BulkUpload")',
+            urlUploadExcelFile = '@Url.Action("UploadExcelFile", "BulkUpload")',
+            urlSearchResult = '@Url.Action("GetSearchResult", "BulkUpload")',
+            urlDownloadTemplate='@Url.Action("DownloadTemplate", "BulkUpload")';
+        var $myForm = $("#frmBulkUploadSearch"),
+            origForm = $myForm.serialize();
+
+         var lstExcelTemplate = @Html.Raw(Json.Encode(Model.lstDOGEN_BulkImportExcelTemplateMaster));
+
+    ////Events////
+         $("#btnCancel").on("click", function () {
+             try {
+                 fnCancel();
+             } catch (e) {
+
+             }
+         });
+        $("#lnkDownLoadTemplate").on("click",function(){
+            try {
+                window.location.href = urlDownloadTemplate + '?templateMasterId=' + $("#hdnTemplateID").val();
+               }
+            catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+             }
+        });
+
+        $("#ddlDiscrepancycategary").on("change", function () {
+            try {
+                var discVal = $(this).val();
+                MainLayout.fnResetValidationSummary();
+                $("#lnkDownLoadTemplate").html("");
+                if (discVal != "" && discVal != 'undefined' && discVal != 0) {
+                    var template = fnGetTemplateByCategoryID(parseInt(discVal));
+                    $("#hdnTemplateID").val(template["GEN_BulkImportExcelTemplateMasterId"]);
+                    $("#lnkDownLoadTemplate").html('<img src="/Images/get-queue-img.png">' + template["ExcelTemplateDescription"]);
+                }
+            } catch (e) {
+
+            }
+         });
+
+        $("#btnReset").on("click", function () {
+            try {
+                MainLayout.fnResetValidationSummary();
+                $myForm.deserialize(origForm);
+                $("#lnkDownLoadTemplate").html("");
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+            }
+        });
+
+        $("#btnSearch").on("click", function () {
+            try {
+                fnSearchResult();
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+            }
+        });
+
+        $("#btnUpload").on("click", function () {
+            try {
+                if (fnValidateUpload()) {
+                    fnOpenBulkImportTemplate();
+                }
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+            }
+        });
+
+        $(document).on("click", "#btnUploadXLFile", function () {
+            try {
+                if (fnCheckFile($("#fileBrowse"))) {
+                    $.ajax({
+                        url: urlUploadExcelFile,
+                        type: "POST",
+                        data: function () {
+                            var data = new FormData();
+                            data.append("workbasketId", $("#hdnWorkbasketLkup").val());
+                            data.append("discripanctCatgoryLkup", $("#ddlDiscrepancycategary").val());
+                            data.append("excelTemplateId", $("#hdnTemplateID").val());
+                            data.append("file", $("#fileBrowse").get(0).files[0]);
+                            return data;
+                        }(),
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            if (data.ID > 0) {
+                                MainLayout.fnAlertMessege("Alert!", data.Message);
+                            }
+                            else {
+                                MainLayout.fnAlertMessege("Success", data.Message, function () {
+                                       location.reload();
+                                });
+                            }
+
+                        },
+                        error: function (jqXHR, textStatus, errorMessage) {
+                            MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+                        }
+                    });
+                }
+            }
+            catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+
+    ////Methods////
+        fnSearchResult = function () {
+            try {
+                fnGetDateIntoHdnFields();
+                var $form = $("#frmBulkUploadSearch"),
+                    frmData = $form.serialize();
+                if (fnValidateSearch($form)) {
+                    $.ajax({
+                        data: frmData,
+                        url: urlSearchResult,
+                        type: "POST",
+                        success: function (data) {
+                            if (data != "") {
+                                $("#divBulkUploadSearchResult").empty().html(data);
+                                MainLayout.fnInitialiseDataTable($("#tblBulkUploadResult"));
+                            }
+                            else {
+                                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                            }
+                        },
+                        error: function (x) {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                        }
+                    });
+                }
+            } catch (e) {
+
+            }
+        };
+
+        fnGetTemplateByCategoryID = function (catID) {
+            try {
+                var template = [];
+                $.each(lstExcelTemplate, function (i, val) {
+                    if (parseInt(val["DiscrepancyCategoryLkup"]) == catID) {
+                        template = val;
+                        return;
+                    }
+                });
+                return template;
+            }
+            catch (e) {
+            }
+        };
+
+        fnOpenBulkImportTemplate = function () {
+            try {
+                $.ajax({
+                    data: { "templateID": $("#hdnTemplateID").val() },
+                    url: urlUpload,
+                    type: "POST",
+                    success: function (data) {
+                        if (data != "") {
+                            $("#divBulkImportTemplate").empty().html(data);
+                            $("#myModal").modal('show');
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+                    },
+                    error: function (x) {
+                        MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                    }
+                });
+
+            } catch (e) {
+
+            }
+        };
+
+        fnCancel = function () {
+            try {
+                window.location.href = '@Url.Action("Home", "Home")';
+            } catch (e) {
+
+            }
+        };
+
+        fnCheckFile = function (sender) {
+            try {
+                var $summary = $("#frmUpload").find("[data-valmsg-summary=true]"),
+                    $ul = $summary.find("ul").empty();
+                var validExts = new Array(".csv");
+                var fileExt = sender.val();
+                fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+                if (validExts.indexOf(fileExt) < 0) {
+                    $('#fileBrowse').removeClass("valid").addClass("input-validation-error");
+                    $("<li />").html("Invalid file selected.").prependTo($ul);
+                    $summary.removeClass("validation-summary-valid").addClass("validation-summary-errors");
+                    return false;
+                }
+                else if (sender.prop("files")[0].size > 5242880) {
+                    $('#fileBrowse').removeClass("valid").addClass("input-validation-error");
+                    $("<li />").html("File size is greater than 5MB.").prependTo($ul);
+                    $summary.removeClass("validation-summary-valid").addClass("validation-summary-errors");
+                    return false;
+                }
+                else return true;
+            }
+            catch (e) {
+                throw e;
+            }
+        };
+
+        fnValidateUpload = function () {
+            try {
+                var $summary = $myForm.find("[data-valmsg-summary=true]"),
+                    $ul = $summary.find("ul").empty();
+
+                if ($("#ddlDiscrepancycategary").val() == "") {
+                    $("#ddlDiscrepancycategary").removeClass("valid").addClass("input-validation-error");
+                    $("<li />").html("Please select Discrepancy categary.").prependTo($ul);
+                    $summary.removeClass("validation-summary-valid").addClass("validation-summary-errors");
+                    return false;
+                }
+                else return true;
+            }
+            catch (e) {
+                return false;
+            }
+        };
+        //function to set model date time values from date time picker
+        fnGetDateIntoHdnFields = function () {
+            var date = $('#StartDate_DPart').val();
+            if (date != null && date != '') {
+                $('#StartDate').val(getDateTimeInMMDDYYYY(date));
+            }
+            var date = $('#EndDate_DPart').val();
+            if (date != null && date != '') {
+                $('#EndDate').val(getDateTimeInMMDDYYYY(date));
+            }
+        };
+        fnValidateSearch = function ($form) {
+            try {
+               MainLayout.fnResetValidationSummary();
+                var errorList = []
+                    , $summary = $form.find("[data-valmsg-summary=true]")
+                    , $ul = $summary.find("ul").empty();
+
+                var StartDate = new Date($('#StartDate_DPart').val());
+                var EndDate = new Date($('#EndDate_DPart').val());
+                var today = new Date();
+                today.setHours(0, 0, 0, 0)
+
+                if ($('#StartDate_DPart').val() != "" || $('#EndDate_DPart').val() != "")
+                {
+                    if ($('#StartDate_DPart').val() == "")
+                    {
+                        $('#StartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        $("<li />").html("Please select Start Date.").prependTo($ul);
+                        $summary.removeClass("validation-summary-valid").addClass("validation-summary-errors");
+                        return false;
+                    }
+                    if ($('#EndDate_DPart').val() == "") {
+                        $('#EndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        $("<li />").html("Please select End Date.").prependTo($ul);
+                        $summary.removeClass("validation-summary-valid").addClass("validation-summary-errors");
+                        return false;
+                    }
+                    if (EndDate < StartDate) {
+                        $('#StartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        $("<li />").html("Start date can't be greater than end date.").prependTo($ul);
+                        $summary.removeClass("validation-summary-valid").addClass("validation-summary-errors");
+                        return false;
+                    }
+
+                }
+                return true;
+
+            } catch (e) {
+
+            }
+        };
+        ///
+        $(document).on("keypress", function (e) {
+            try {
+                if (e.which == 13 && !$(e.target).is("textarea") && $("#btnSearch").is(":visible") && $("#btnSearch").length > 0) {
+                    fnSearchResult();
+                }
+
+            } catch (e) {
+
+            }
+        });////
+
+        MainLayout.fnInitialiseDataTable($("#tblBulkUploadResult"));
+    </script>
+}
+
+
+
+

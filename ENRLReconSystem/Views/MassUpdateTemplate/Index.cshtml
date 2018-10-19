@@ -1,0 +1,947 @@
+﻿@using ENRLReconSystem.DO
+@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@model UIMassUpdateByTemplates
+@{
+    ViewBag.Title = "Mass Update By Template";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    #tblSearchResult tbody tr td {
+        white-space: nowrap;
+    }
+</style>
+
+<section class="container main-body-wrpr">
+
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/images/template-icon.png"><h4>Mass Update By Template</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            @using (Html.BeginForm("", "", FormMethod.Post, new { @id = "frmMassUpdateTemplate", @enctype = "multipart/form-data" }))
+            {
+                @Html.ValidationSummary(false)
+                @Html.HiddenFor(m => m.WorkBasketLkup, new { @id = "hdnWorkbasketLkup" })
+
+                <div class="form-group col-md-3">
+                    <label>Discrepancy Category</label>
+                    @Html.DropDownListFor(m => m.DiscrepancyCategoryLkup, new SelectList(Model.lstDiscCategary, "CMN_LookupMasterChildRef", "LookupMasterChildValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "ddlDiscrepancycategary").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Queue</label>
+                    @Html.DropDownListFor(m => m.Queue, new SelectList(Model.lstQueue, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").Required("Queue is required").CustomAttributes("onMouseWheel", "return false;").CustomAttributes("id", "ddlQueue").validationAttributes)
+                </div>
+
+                <div class="form-group date-group col-md-3">
+                    <label>Start Date</label>
+                    @Html.DateTimeFor(xx => xx.StartDate, false, new CustomValidation().CustomAttributes("id", "dtStartDate").validationAttributes)
+                    @Html.HiddenFor(m => m.StartDate)
+                </div>
+                <div class="form-group date-group col-md-3">
+                    <label>End Date</label>
+                    @Html.DateTimeFor(xx => xx.EndDate, false, new CustomValidation().CustomAttributes("id", "dtEndDate").validationAttributes)
+                    @Html.HiddenFor(m => m.EndDate)
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Sample Template</label>
+                    <a id="lnkDownLoadTemplate" style="display:block;"></a>
+                </div>
+                <div class="btn-group clearfix">
+                    <button class="btn btn-primary" id="btnSearch" type="button"><img src="~/images/search-icon.png"><span>Search</span></button>
+                    <button class="btn btn-primary" id="btnResetMassUpdateTemplate" type="button"><img src="~/images/reset-icon.png"><span>Reset</span></button>
+                    <button class="btn btn-primary" id="btnCancelMassUpdateTemplate" type="button"><img src="~/images/cancle-icon.png"><span>Cancel</span></button>
+                    <button class="btn btn-primary" id="btnUpload" type="button"><img src="~/images/upload-icon.png"><span>Upload</span></button>
+                </div>
+
+            }
+        </div>
+    </div>
+
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/Images/list-icon.png" /><h4>Mass Updates Templates Result</h4>
+        </div>
+        <div class="wdgt-body clearfix" id="divSearchResults">
+                @Html.Partial("_MassUpdateTemplateResult", Model.lstDOGEN_BulkImport)
+        </div>
+    </div>
+
+</section>
+
+
+
+@*PopUp*@
+
+<div id="myModalMassUpdate" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content" id="divMassUpdateTemplate">
+
+        </div>
+    </div>
+</div>
+
+@*PopUp End*@
+
+
+@section scripts{
+    <script type="text/javascript">
+        ///////Variables////////
+        var urlLoadQueue = '@Url.Action("LoadQueue", "MassUpdateTemplate")'
+            ,urlLoadUploadMassUpdatePopup = '@Url.Action("LoadUploadMassUpdatePopup", "MassUpdateTemplate")'
+            ,urlUploadExcelFile = '@Url.Action("UploadExcelFile", "MassUpdateTemplate")'
+            ,urlDownloadTemplate = '@Url.Action("DownloadTemplate", "MassUpdateTemplate")'
+            , urlGetOSTActionsByActionID = '@Url.Action("GetActionsByActionID", "OST")'
+            , urlGetEligibilityActionsByActionID = '@Url.Action("GetActionsByActionID", "Eligibility")'
+            , urlGetRPRActionsByActionID = '@Url.Action("GetActionsFormByActionID", "RPR")'
+            , urlOSTActionUpdate = '@Url.Action("OSTActionUpdate", "MassUpdateTemplate")'             //OST Action Bulk Update
+            , urlEligibilityActionUpdate = '@Url.Action("EligibilityActionUpdate", "MassUpdateTemplate")'     //Eligibility Action Bulk Update
+            , urlRPRActionUpdate = '@Url.Action("RPRActionUpdate", "MassUpdateTemplate")'   //RPR Action Bulk Update
+            , urlGetSearchResult = '@Url.Action("GetSearchResult", "MassUpdateTemplate")'
+            , urlDownloadFile = '@Url.Action("DownloadFile", "MassUpdateTemplate")'
+            , strWindowFeatures = "location=yes,height=580,width=1000,scrollbars=no,resizable=yes,toolbar=no,status=no,menu=no, directories=no,titlebar=no,location=no,addressbar=no,top=100,left=100"
+            , ReportsUrl = '@Url.Action("GetCommonReportURL", "Common")'
+            , massUpdateTemplateReportReport=null;
+
+        var $myForm = $("#frmMassUpdateTemplate"),
+            origForm = $myForm.serialize();
+        var objMassUpdateTemplate = @Html.Raw(Json.Encode(Model.objDOGEN_BulkImportExcelTemplateMaster));
+        var frmActionUpload;
+
+
+
+
+    ///////Events///////
+
+        ///Search for Templates////
+        $("#btnSearch").on("click", function () {
+            try {
+                fnSearchResult();
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+            }
+        });
+
+        $("#btnResetMassUpdateTemplate").on("click", function () {
+            try {
+                MainLayout.fnResetValidationSummary();
+                $myForm.deserialize(origForm);
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+            }
+        });
+
+        $("#btnCancelMassUpdateTemplate").on("click", function () {
+            try {
+                fnCancel();
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+            }
+        });
+
+
+        /// load Queue On disc category change event
+        $("#ddlDiscrepancycategary").on("change", function (event) {
+            try {
+                var categoryID = $(this).val();
+                $("#ddlQueue").empty().append($("<option></option>").val("").html(enums.DropdownDefaultValue));
+                if (categoryID != "" && categoryID != "0") {
+                    discCatId = categoryID;
+                    fnLoadQueue(categoryID);
+                }
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+
+
+        $("#lnkDownLoadTemplate").on("click", function () {
+            try {
+                window.location.href = urlDownloadTemplate + '?templateMasterId=' + 7;
+            }
+            catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+            }
+        });
+
+
+        ///Show pop up to load the file and show the excel basic information
+        $("#btnUpload").on("click", function () {
+            try {
+                if (fnValidateUpload()) {
+                    fnOpenBulkImportTemplate();
+                }
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+            }
+        });
+
+        ///On Action Change load the Partial View///////////
+        $(document).on("change", "#ddlActions", function (event) {
+            try {
+                MainLayout.fnResetValidationSummary();
+                $("#divMassUpdateActions").empty();
+                var actionID = $(this).val();
+                var discCatId = $('#ddlDiscrepancycategary').val();
+                var dataArray, url;
+                if (actionID != "") {
+                    var workbasketId = '@Model.WorkBasketLkup';
+                    switch (workbasketId) {
+                        case enums.WorkBasket.OST:
+                            dataArray = { "actionID": actionID, "discipancyCategory": discCatId, "source": "MassUpdate" };
+                            url = urlGetOSTActionsByActionID;
+                            break;
+                        case enums.WorkBasket.Eligibility:
+                            dataArray = { "actionID": actionID, "DisCategory": discCatId };
+                            url = urlGetEligibilityActionsByActionID;
+                            break;
+                        case enums.WorkBasket.RPR:
+                            dataArray = { "actionID": actionID };
+                            url = urlGetRPRActionsByActionID;
+                            break;
+                    }
+                    ///Call Actions based on ActionID///
+                    fnLoadActions(dataArray, url);
+                }
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+        //Update Action/////
+        $(document).on("click", "#btnUpdateActions", function () {
+            try {
+                var url;
+                var workbasketId = $("#hdnWorkbasketLkup").val();
+                switch (workbasketId) {
+                    case enums.WorkBasket.OST:
+                        url = urlOSTActionUpdate;
+                        break;
+                    case enums.WorkBasket.Eligibility:
+                        url = urlEligibilityActionUpdate;
+                        break;
+                    case enums.WorkBasket.RPR:
+                        url = urlRPRActionUpdate;
+                        break;
+                }
+
+                fnUpdateFileAndActios(url);
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+
+        ///Reset Search//////
+        $(document).on("click", "#btnActionReset", function () {
+            try {              
+                MainLayout.fnResetValidationSummary();            
+                if (frmActionUpload != null || frmActionUpload != 'undefined') {
+                    $("#frmSaveMassUpdateTemplateActions").deserialize(frmActionUpload);
+                    $('#fileBrowse').val("");
+                }
+                else
+                {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured please reload the page!");
+                }
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+
+        $(document).on("click", ".clsBulkImportFile", function () {
+            try {
+                var bid = $(this).attr("bid");
+                if (bid != null || bid != 'undefined') {
+                    window.location.href = urlDownloadFile + '?genBulkImportId=' + bid;
+                }
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+
+        });
+
+
+        // function to access history report
+        fnAccessReport = function (id) {
+            // debugger
+            var urlToNavigate = ReportsUrl;
+            $.ajax({
+                url: urlToNavigate,
+                data: {"reportId": 33},
+                type: "POST",
+                success: function (data) {
+                    if (data != "") {
+                        var Data = data.Data;
+                        var reportUrl = Data + "&GEN_BulkImportId=" + id;
+                        massUpdateTemplateReportReport = MainLayout.fnMyOpenWindow(reportUrl, "_blank", strWindowFeatures, massUpdateTemplateReportReport);
+                    }
+                },
+                error: function (x) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                }
+            });
+        }
+
+
+        ///////////////////////////////////OST Actions/////////////////////////////////////
+
+        $(document).on("change", "#divMassUpdateActions #ddlResolution", function () {
+            try {
+                $("#divInArea,#divMemberResponseOOATerm,#divNoResponseFTTerm").hide();
+                $("#txtReasonCloseCase").val("");
+                var resolutionID = parseInt($(this).val());
+
+                switch (resolutionID) {
+                    case enums.OSTResolutionLkup.IA:
+                        $("#divInArea").show();
+                        break;
+                    case enums.OSTResolutionLkup.MemberResponseOOATerm:
+                        $("#divMemberResponseOOATerm").show();
+                        break;
+                    case enums.OSTResolutionLkup.FalseDiscrepancy:
+                        $("#txtReasonCloseCase").val("Previous IA");
+                        break;
+                    case enums.OSTResolutionLkup.NoResponseFTTerm:
+                        $("#divNoResponseFTTerm").show();
+                        break;
+                    default:
+                        $("#divInArea,#divMemberResponseOOATerm,#divNoResponseFTTerm").hide();
+                        break;
+                }
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+
+        $(document).on("click", "#divMassUpdateActions #chkResidentialDocumentationRequired", function () {
+            try {
+                if ($(this).is(':checked')) {
+                    $("#divMassUpdateActions #chkCountryAttestationRequired").prop('checked', false);
+                }
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+
+        $(document).on("click", "#divMassUpdateActions #chkCountryAttestationRequired", function () {
+            try {
+                if ($(this).is(':checked')) {
+                    $("#divMassUpdateActions #chkResidentialDocumentationRequired").prop('checked', false);
+                }
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+
+        ///////////////SCC RPR Actions/////////
+        //enabale and Disable CTM number depending upon CTM Member check box
+        $(document).on("change", "#divMassUpdateActions #cbxCTMMember", function () {
+            var value = $('#divMassUpdateActions #cbxCTMMember').prop("checked")
+            if (value) {
+                $('#divMassUpdateActions #txtCTMNumber').removeAttr("disabled")
+            } else {
+                $('#divMassUpdateActions #txtCTMNumber').val("");
+                $('#divMassUpdateActions #txtCTMNumber').removeClass("input-validation-error").addClass("valid")
+                $('#divMassUpdateActions #txtCTMNumber').attr("disabled", "disabled")
+            }
+        });
+
+        //enabale and Disable Employer Id depending upon EGHP Member check box
+        $(document).on("change", "#divMassUpdateActions #cbxEGHPMember", function () {
+            var value = $('#divMassUpdateActions #cbxEGHPMember').prop("checked")
+            if (value) {
+                $('#divMassUpdateActions #txtEmployerId').removeAttr("disabled")
+            } else {
+                $('#divMassUpdateActions #txtEmployerId').val("");
+                $('#divMassUpdateActions #txtEmployerId').removeClass("input-validation-error").addClass("valid")
+                $('#divMassUpdateActions #txtEmployerId').attr("disabled", "disabled")
+            }
+        });
+
+        //Reason for Request extra field control for Other option
+        $(document).on("change", "#divMassUpdateActions #ddlTaskPerformedLkup", function () {
+            var value = $('#divMassUpdateActions #ddlTaskPerformedLkup').val();
+            if (value == 15015) {
+                $('#divMassUpdateActions #divOtherTaskType').removeAttr("hidden")
+                $('#divMassUpdateActions #divOtherTaskType :input').removeAttr("disabled");
+            } else {
+                $('#divMassUpdateActions #divOtherTaskType :input').val("")
+                $('#divMassUpdateActions #divOtherTaskType :input').removeClass("input-validation-error").addClass("valid")
+                $('#divMassUpdateActions #divOtherTaskType').attr("hidden", "hidden")
+                $('#divMassUpdateActions #divOtherTaskType :input').attr("disabled", "disabled")
+            }
+        });
+
+        //Action Requested extra field control for Other option
+        $(document).on("change", "#divMassUpdateActions #ddlActionRequestedLkup", function () {
+            var value = $('#divMassUpdateActions #ddlActionRequestedLkup').val();
+            if (value == 14008) {
+                $('#divMassUpdateActions #divOtherAction').removeAttr("hidden")
+                $('#divMassUpdateActions #divOtherAction :input').removeAttr("disabled");
+            } else {
+                $('#divMassUpdateActions #divOtherAction :input').val("")
+                $('#divMassUpdateActions #divOtherAction :input').removeClass("input-validation-error").addClass("valid")
+                $('#divMassUpdateActions #divOtherAction').attr("hidden", "hidden")
+                $('#divMassUpdateActions #divOtherAction :input').attr("disabled", "disabled")
+            }
+        });
+        ///RPR Cases///
+        $(document).on('change', '#frmSaveMassUpdateTemplateActions #AdjustedCreateDate_DPart', function () {
+            var date = $('#frmSaveMassUpdateTemplateActions #AdjustedCreateDate_DPart').val();
+            if (date != null && date != '') {
+                $('#frmSaveMassUpdateTemplateActions #ddlAdjustedCreateDateReasonLkup').removeAttr("disabled");
+            } else {
+                $('#frmSaveMassUpdateTemplateActions #ddlAdjustedCreateDateReasonLkup').val("");
+                $('#frmSaveMassUpdateTemplateActions #ddlAdjustedCreateDateReasonLkup').attr("disabled", "disabled");
+                $('#frmSaveMassUpdateTemplateActions #txtOtherAdjustedCreateDateReason').val("");
+                $('#frmSaveMassUpdateTemplateActions #divOtherAdjustedCreateDateReason').attr("hidden", "hidden");
+                $('#frmSaveMassUpdateTemplateActions #txtOtherAdjustedCreateDateReason').attr("disabled", "disabled");
+            }
+        });
+
+        $(document).on('change', '#frmSaveMassUpdateTemplateActions #ActualSubmissionDate_DPart', function () {
+            var date = $('#frmSaveMassUpdateTemplateActions #ActualSubmissionDate_DPart').val();
+            if (date != null && date != '') {
+                $('#frmSaveMassUpdateTemplateActions #txtReasonSubmissionRejected').val("");
+                $('#frmSaveMassUpdateTemplateActions #txtReasonSubmissionRejected').attr("disabled", "disabled");
+            } else {
+                $('#frmSaveMassUpdateTemplateActions #txtReasonSubmissionRejected').removeAttr("disabled");
+            }
+        });
+
+        $(document).on('change', '#frmSaveMassUpdateTemplateActions #txtReasonSubmissionRejected', function () {
+            var val = $('#frmSaveMassUpdateTemplateActions #txtReasonSubmissionRejected').val();
+            if (val != '') {
+                $('#frmSaveMassUpdateTemplateActions #ActualSubmissionDate_DPart').val("");
+                $('#frmSaveMassUpdateTemplateActions #ActualSubmissionDate_DPart').attr("disabled", "disabled");
+                $('#frmSaveMassUpdateTemplateActions #ActualSubmissionDate_CurrentDate').attr("disabled", "disabled");
+
+            } else {
+                $('#frmSaveMassUpdateTemplateActions #ActualSubmissionDate_DPart').removeAttr("disabled");
+                $('#frmSaveMassUpdateTemplateActions #ActualSubmissionDate_CurrentDate').removeAttr("disabled");
+            }
+        });
+
+        $(document).on('change', '#frmSaveMassUpdateTemplateActions #ddlAdjustedCreateDateReasonLkup', function () {
+            var val = $('#frmSaveMassUpdateTemplateActions #ddlAdjustedCreateDateReasonLkup').val();
+            if (val == 32006) {//value for other
+                $('#frmSaveMassUpdateTemplateActions #divOtherAdjustedCreateDateReason').removeAttr("hidden");
+                $('#frmSaveMassUpdateTemplateActions #txtOtherAdjustedCreateDateReason').removeAttr("disabled");
+            } else {
+                $('#frmSaveMassUpdateTemplateActions #txtOtherAdjustedCreateDateReason').val("");
+                $('#frmSaveMassUpdateTemplateActions #frmSaveMassUpdateTemplateActions #divOtherAdjustedCreateDateReason').attr("hidden", "hidden");
+                $('#frmSaveMassUpdateTemplateActions #txtOtherAdjustedCreateDateReason').attr("disabled", "disabled");
+            }
+        });
+
+        $(document).on('change', '#frmSaveMassUpdateTemplateActions #ddlFDRStatusLkup', function () {
+            var val = $('#frmSaveMassUpdateTemplateActions #ddlFDRStatusLkup').val();
+            if (val == 26005) {//value for other
+                $('#frmSaveMassUpdateTemplateActions #divOtherFDRStatus').removeAttr("hidden");
+                $('#frmSaveMassUpdateTemplateActions #txtOtherFDRStatus').removeAttr("disabled");
+                $('#frmSaveMassUpdateTemplateActions #ddlFDRRejectionTypeLkup').val("");
+                $('#frmSaveMassUpdateTemplateActions #ddlFDRRejectionTypeLkup').attr("disabled", "disabled");
+            } else if (val == 26002) {//value for Rejected
+                $('#frmSaveMassUpdateTemplateActions #txtOtherFDRStatus').val("");
+                $('#frmSaveMassUpdateTemplateActions #divOtherFDRStatus').attr("hidden", "hidden");
+                $('#frmSaveMassUpdateTemplateActions #txtOtherFDRStatus').attr("disabled", "disabled");
+                $('#frmSaveMassUpdateTemplateActions #ddlFDRRejectionTypeLkup').removeAttr("disabled");
+            } else {
+                $('#frmSaveMassUpdateTemplateActions #txtOtherFDRStatus').val("");
+                $('#frmSaveMassUpdateTemplateActions #divOtherFDRStatus').attr("hidden", "hidden");
+                $('#frmSaveMassUpdateTemplateActions #txtOtherFDRStatus').attr("disabled", "disabled");
+                $('#frmSaveMassUpdateTemplateActions #ddlFDRRejectionTypeLkup').val("");
+                $('#frmSaveMassUpdateTemplateActions #ddlFDRRejectionTypeLkup').attr("disabled", "disabled");
+            }
+        });
+
+
+        // Root Cause extra field control for other option
+        $(document).on("change", "#ddlRootCause", function () {
+            var value = $('#ddlRootCause').val();
+            if (value == 24038) {//24038 value for Root Cause - other
+                $('#divOtherRootCause').removeAttr("hidden")
+                $('#divOtherRootCause :input').removeAttr("disabled");
+            } else {
+                $('#divOtherRootCause :input').val("")
+                $('#divOtherRootCause :input').removeClass("input-validation-error").addClass("valid")
+                $('#divOtherRootCause').attr("hidden", "hidden")
+                $('#divOtherRootCause :input').attr("disabled", "disabled")
+            }
+        });
+        /////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+    //////Methods///////
+
+
+        fnUpdateFileAndActios = function (url) {
+            try {
+                fnAssignDateToModel();
+                var $form = $("#frmSaveMassUpdateTemplateActions"),
+                    frmData = $form.serialize();
+                if (fnValidateSaveActions($form)) {
+
+                    $.ajax({
+                        url: urlUploadExcelFile,
+                        type: "POST",
+                        data: function () {
+                            var data = new FormData();
+                            data.append("file", $("#fileBrowse").get(0).files[0]);
+                            data.append("discripanctCatgoryLkup", $("#ddlDiscrepancycategary").val());
+                            data.append("mostRecentQueueLkup", $("#ddlQueue").val());
+                            return data;
+                        }(),
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            if (data.ID > 0) {
+                                MainLayout.fnAlertMessege("Alert!", data.Message);
+                            }
+                            else {
+
+                                if (data.GENBulkImportID != null && data.GENBulkImportID != 0 && data.GENBulkImportID != 'undefined')
+                                {
+                                   $("#hdnGENBulkImportRef").val(data.GENBulkImportID);
+                                   $("#hdnQueueLkup").val($("#ddlQueue").val());
+                                   $("#hdnddlDiscrepancycategary").val($("#ddlDiscrepancycategary").val());
+                                   fnUpdateAction(url);
+                                }
+
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorMessage) {
+                            MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+                        }
+                    });
+
+
+
+
+                }
+            }
+            catch (e) {
+                throw e;
+            }
+        };
+
+        fnUpdateAction = function (url) {
+            try {
+                var $form = $("#frmSaveMassUpdateTemplateActions"),
+                    frmData = $form.serialize();
+                $.ajax({
+                    data: frmData,
+                    url: url,
+                    type: "POST",
+                    success: function (data) {
+                        if (data.ID > 0) {
+                            MainLayout.fnAlertMessege("Error!", data.Message);
+                        }
+                        else {
+                            $("#myModalMassUpdate").modal('hide');
+                            MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                                fnSearchResult();
+                            });
+                        }
+                    },
+                    error: function (x) {
+                        MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                    }
+                });
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        };
+
+        /////////////////
+        fnSearchResult = function () {
+            try {
+                fnGetDateIntoHdnFields();
+                var $form = $("#frmMassUpdateTemplate"),
+                    frmData = $form.serialize();
+                if (fnValidateSearch($form)) {
+                    $.ajax({
+                        data: frmData,
+                        url: urlGetSearchResult,
+                        type: "POST",
+                        success: function (data) {
+                            if (data != "") {
+                                $("#divSearchResults").empty().html(data);
+                                MainLayout.fnInitialiseDataTable($("#tblMassUpdateTemplateResult"));
+                            }
+                            else {
+                                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                            }
+                        },
+                        error: function (x) {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                        }
+                    });
+                }
+            } catch (e) {
+
+            }
+        };
+
+
+        fnLoadActions = function (dataArray, url) {
+            try {
+                $.ajax({
+                    data: dataArray,
+                    url: url,
+                    type: "POST",
+                    success: function (data) {
+                        if (data != "") {
+                            $("#divMassUpdateActions").empty().html(data);
+                            $("#divInArea,#divMemberResponseOOATerm,#divNoResponseFTTerm").hide();
+                            MainLayout.fnLoadDateTimePicker();
+                            frmActionUpload = $("#frmSaveMassUpdateTemplateActions").serialize();
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                        }
+                    },
+                    error: function (x) {
+                        $("#divMassUpdateActionsActions").empty();
+                        MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                    }
+                });
+
+            } catch (e) {
+                throw e;
+            }
+        };
+
+
+        fnLoadQueue = function (categoryID) {
+            try {
+                $.ajax({
+                    url: urlLoadQueue,
+                    data: JSON.stringify({ "categoryID": categoryID }),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        if (data != null && data != "") {
+                            $.each(data, function (i, val) {
+                                $("#ddlQueue").append($("<option></option>").val(val.CMN_LookupMasterChildRef).html(val.LookupMasterChildValue));
+                            });
+
+                        }
+                    },
+                    error: function (x) {
+                        MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                    },
+                });
+
+            } catch (e) {
+                throw ex;
+            }
+        };
+        //Load the popup
+        fnOpenBulkImportTemplate = function () {
+            try {
+
+                var MostRecentQueueLkup = $("#ddlQueue").val();
+                $.ajax({
+                    data: { "lQueueLkup": MostRecentQueueLkup},
+                    url: urlLoadUploadMassUpdatePopup,
+                    type: "POST",
+                    success: function (data) {
+                        if (data != "") {
+                            $("#divMassUpdateTemplate").empty().html(data);
+                            $("#myModalMassUpdate").modal('show');
+
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+                    },
+                    error: function (x) {
+                        MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                    }
+                });
+
+            } catch (e) {
+
+            }
+        };
+        ///validate the
+        fnValidateUpload = function () {
+            try {
+                var $summary = $myForm.find("[data-valmsg-summary=true]"),
+                    $ul = $summary.find("ul").empty();
+
+                if ($("#ddlDiscrepancycategary").val() == "") {
+                    $("#ddlDiscrepancycategary").removeClass("valid").addClass("input-validation-error");
+                    $("<li />").html("Please select Discrepancy categary.").prependTo($ul);
+                    $summary.removeClass("validation-summary-valid").addClass("validation-summary-errors");
+                    return false;
+                }
+                if ($("#ddlQueue").val() == "")
+                {
+                    $("#ddlQueue").removeClass("valid").addClass("input-validation-error");
+                    $("<li />").html("Please select Queue.").prependTo($ul);
+                    $summary.removeClass("validation-summary-valid").addClass("validation-summary-errors");
+                    return false;
+                }
+
+                return true;
+            }
+            catch (e) {
+                return false;
+            }
+        };
+
+        //function to set model date time values from date time picker
+        fnGetDateIntoHdnFields = function () {
+            var date = $('#StartDate_DPart').val();
+            if (date != null && date != '') {
+                $('#StartDate').val(getDateTimeInMMDDYYYY(date));
+            }
+            var date = $('#EndDate_DPart').val();
+            if (date != null && date != '') {
+                $('#EndDate').val(getDateTimeInMMDDYYYY(date));
+            }
+        };
+        ///while updating action
+        fnValidateSaveActions = function ($form) {
+            try {
+                $form.removeData('validator');
+                $form.removeData('unobtrusiveValidation');
+                $.validator.unobtrusive.parse($form);
+                var errorList = []
+                    , $summary = $form.find("[data-valmsg-summary=true]")
+                    , $ul = $summary.find("ul");
+                ////////////Validate File//////
+                var ctrlFile = $('#fileBrowse');
+                var validExts = new Array(".xlsx");
+                var fileExt = ctrlFile.val();
+                fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+                if (ctrlFile.val() == "") {
+                    ctrlFile.removeClass("valid").addClass("input-validation-error");
+                    $("<li />").html("Please Select A file.").prependTo($ul);
+                    $summary.removeClass("validation-summary-valid").addClass("validation-summary-errors");
+                    return false;
+                }
+                else if (validExts.indexOf(fileExt) < 0) {
+                    ctrlFile.removeClass("valid").addClass("input-validation-error");
+                    $("<li />").html("Invalid file selected.").prependTo($ul);
+                    $summary.removeClass("validation-summary-valid").addClass("validation-summary-errors");
+                    return false;
+                }
+                else if (ctrlFile.prop("files")[0].size > 5242880) {
+                    ctrlFile.removeClass("valid").addClass("input-validation-error");
+                    $("<li />").html("File size is greater than 5MB.").prependTo($ul);
+                    $summary.removeClass("validation-summary-valid").addClass("validation-summary-errors");
+                    return false;
+                }
+                ////////////End file Validation//////
+                if ($form.valid()) {
+                    ////custom validation///
+                    if ($("#chkResidentialDocumentationRequired").length > 0 && $("#chkCountryAttestationRequired").length > 0 && !($("#chkResidentialDocumentationRequired").is(":checked")) && !($("#chkCountryAttestationRequired").is(":checked"))) {
+                        $('#chkResidentialDocumentationRequired,#chkCountryAttestationRequired').removeClass("valid").addClass("input-validation-error");
+                        errorList.push("Residential Documentation or County Attestation is required.");
+                    }
+
+                    ////
+                    if (errorList.length == 0) {
+                        return true;
+                    }
+                    $ul.empty();
+                    // Add all errors to the list
+                    $.each(errorList, function (index, message) {
+                        $("<li />").html(message).appendTo($ul);
+                    });
+                    // Add the appropriate class to the summary div
+                    $summary.removeClass("validation-summary-valid")
+                        .addClass("validation-summary-errors");
+                    return false;
+                }
+                return false; // Block the submit
+
+
+            } catch (ex) {
+                throw ex;
+            }
+        };
+        /////////////
+        fnValidateSearch = function ($form) {
+            try {
+                MainLayout.fnResetValidationSummary();
+                var errorList = []
+                    , $summary = $form.find("[data-valmsg-summary=true]")
+                    , $ul = $summary.find("ul").empty();
+
+                var StartDate = new Date($('#StartDate_DPart').val());
+                var EndDate = new Date($('#EndDate_DPart').val());
+                var today = new Date();
+                today.setHours(0, 0, 0, 0)
+
+                if ($('#StartDate_DPart').val() != "" || $('#EndDate_DPart').val() != "") {
+                    if ($('#StartDate_DPart').val() == "") {
+                        $('#StartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        $("<li />").html("Please select Start Date.").prependTo($ul);
+                        $summary.removeClass("validation-summary-valid").addClass("validation-summary-errors");
+                        return false;
+                    }
+                    if ($('#EndDate_DPart').val() == "") {
+                        $('#EndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        $("<li />").html("Please select End Date.").prependTo($ul);
+                        $summary.removeClass("validation-summary-valid").addClass("validation-summary-errors");
+                        return false;
+                    }
+                    if (EndDate < StartDate) {
+                        $('#StartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        $("<li />").html("Start date can't be greater than end date.").prependTo($ul);
+                        $summary.removeClass("validation-summary-valid").addClass("validation-summary-errors");
+                        return false;
+                    }
+
+                }
+                return true;
+
+            } catch (e) {
+
+            }
+        };
+
+        ///Load All Date Time Hidden Field Before Submit///
+        fnAssignDateToModel = function () {
+            try {
+                var date = ($("#FirstLetterMailDate_DPart").length > 0) ? $("#FirstLetterMailDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#FirstLetterMailDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#InitialAddressVerificationDate_DPart").length > 0) ? $("#InitialAddressVerificationDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#InitialAddressVerificationDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#MemberResponseVerificationDate_DPart").length > 0) ? $("#MemberResponseVerificationDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#MemberResponseVerificationDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#MemberVerifiedState_DPart").length > 0) ? $("#MemberVerifiedState_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#MemberVerifiedState').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#FirstLetterMailDate_DPart").length > 0) ? $("#FirstLetterMailDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#hdnFirstLetterMailDateNoResponce').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#SecondLetterMailDate_DPart").length > 0) ? $("#SecondLetterMailDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#SecondLetterMailDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#EffectiveDate_DPart").length > 0) ? $("#EffectiveDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#EffectiveDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#EndDate_DPart").length > 0) ? $("#EndDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#EndDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#SCCLetterMailDate_DPart").length > 0) ? $("#SCCLetterMailDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#SCCLetterMailDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#FirstLetterMailDateNoResponseTerm_DPart").length > 0) ? $("#FirstLetterMailDateNoResponseTerm_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#hdnFirstLetterMailDateNoResponce').val(getDateTimeInMMDDYYYY(date));
+                }
+
+                date = ($("#ApplicationDate_DPart").length > 0) ? $("#ApplicationDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#ApplicationDate').val(getDateTimeInMMDDYYYY(date));
+                }
+
+                date = ($("#DateofBirth_DPart").length > 0) ? $("#DateofBirth_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#DateofBirth').val(getDateTimeInMMDDYYYY(date));
+                }
+
+                date = ($("#RPRRequestedEffectiveDate_DPart").length > 0) ? $("#RPRRequestedEffectiveDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#RPRRequestedEffectiveDate').val(getDateTimeInMMDDYYYY(date));
+                }
+
+                date = ($("#SCCRPRRequstedSubmissionDate_DPart").length > 0) ? $("#SCCRPRRequstedSubmissionDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#SCCRPRRequstedSubmissionDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                ////////////RPR Dates////////////////////////
+                date = $('#AdjustedCreateDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#AdjustedCreateDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#EffectiveDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#EffectiveDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#RPCSubmissionDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#RPCSubmissionDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#EndDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#EndDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#ApplicationDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#ApplicationDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#CMSAccountManagerSubmissionDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#CMSAccountManagerSubmissionDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#FDRReceivedDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#FDRReceivedDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#ActualSubmissionDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#ActualSubmissionDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#ResubmissionDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#ResubmissionDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#PotentialSubmissionDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#PotentialSubmissionDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                ////////////RPR Dates END////////////////////////
+            } catch (ex) {
+                throw ex;
+            }
+        };
+        //On cancel
+        fnCancel = function () {
+            try {
+                window.location.href = '@Url.Action("Home", "Home")';
+            } catch (e) {
+
+            }
+        };
+        //Load the Template
+        if (objMassUpdateTemplate != 'undefined' || objMassUpdateTemplate != null || objMassUpdateTemplate["ExcelTemplateDescription"] != 'undefined') {
+            $("#lnkDownLoadTemplate").html('<img src="/Images/get-queue-img.png">' + objMassUpdateTemplate["ExcelTemplateDescription"]);
+        }
+        else
+        {
+            MainLayout.fnAlertMessege("Error!", "An error occoured while loading the page please contact administrator.");
+        }
+        MainLayout.fnInitialiseDataTable($("#tblMassUpdateTemplateResult"));
+    </script>
+}
+

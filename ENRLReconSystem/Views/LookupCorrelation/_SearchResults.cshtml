@@ -1,0 +1,53 @@
+﻿@using ENRLReconSystem.DO
+@using ENRLReconSystem.Utility
+@model List<DOCMN_LookupTypeCorrelations>
+
+<div class="table-responsive">
+    <table id="tblSearchResult" class="table table-bordered" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th class="actions">Actions</th>
+                <th>Correlation Group Name</th>
+                <th>Parent Lookup Type</th>
+                <th>Child Lookup Type</th>
+                <th>Is Active</th>
+                <th>Created By</th>
+                <th>Created On</th>
+                <th>Last Updated By</th>
+                <th>Last Updated On</th>
+                <th>Locked By</th>
+                <th>Locked On</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class='@((item.LockedByRef>0)?"alert-danger" : "")'>
+                    <td align="center">
+                        @if (item.CMN_LookupTypeCorrelationsId > 999)
+                        {
+                            <a  onclick="fnLockAndEdit(@item.CMN_LookupTypeCorrelationsId);"  title="Edit Correlation Type"><img src="~/images/edit-img.png" alt="Edit" /></a>
+                        }
+                        else
+                        {
+                            <a class="inAccessible" title="Edit Correlation Type"><img src="~/images/disable-edit-img.png" alt="Edit" /></a>
+                        }
+                        <a onclick="fnViewOrLockEdit(@item.CMN_LookupTypeCorrelationsId);" title="View Correlation Master"><img alt="CM" src="~/images/view-img.png"></a>
+                        <a onclick="fnAccessReport(@item.CMN_LookupTypeCorrelationsId);" title="History Lookup Correlation"><img alt="Edit" src="~/images/history-img.png"></a>
+                    </td>
+                    <td>@item.CorrelationDescription</td>
+                    <td>@item.CMN_LookupTypeParentValue</td>
+                    <td>@item.CMN_LookupTypeChildValue</td>
+                    <td align="center">@(item.IsActive ? "Yes" : "No")</td>
+                    <td>@item.CreatedByName</td>
+                    <td>@item.UTCCreatedOn.ToDateTime().ToString("MM/dd/yyyy hh:mm tt")</td>
+                    <td>@item.LastUpdatedByName</td>
+                    <td>@item.UTCLastUpdatedOn.ToDateTime().ToString("MM/dd/yyyy hh:mm tt")</td>
+                    <td>@item.LockedByName</td>
+                    <td>@item.UTCLockedOn</td>
+                </tr>
+            }
+         
+        </tbody>
+    </table>
+</div>

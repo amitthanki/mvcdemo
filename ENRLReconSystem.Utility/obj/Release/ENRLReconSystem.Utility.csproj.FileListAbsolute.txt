@@ -1,0 +1,6 @@
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.Utility\bin\Release\ENRLReconSystem.Utility.dll
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.Utility\bin\Release\ENRLReconSystem.Utility.pdb
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.Utility\bin\Release\Newtonsoft.Json.dll
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.Utility\bin\Release\Newtonsoft.Json.xml
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.Utility\obj\Release\ENRLReconSystem.Utility.dll
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.Utility\obj\Release\ENRLReconSystem.Utility.pdb

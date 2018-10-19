@@ -1,0 +1,167 @@
+﻿@using ENRLReconSystem.DO
+@model List<DOCMN_LookupType>
+@{
+    ViewBag.Title = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*-------code Lookup Search----------*@
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src='@Url.Content("~/images/search-icon.png")' /><h4>Search Lookup Type</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <form>
+                <div class="form-group col-md-3">
+                    <label for="txtDescription">Description</label>
+                    @Html.TextBox("txtDescription", "", new { @id = "txtDescription", @class = "form-control", @maxlength = "75" })
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Is Active</label>
+                    @Html.CheckBox("chkIsActive", true, new { @id = "chkIsActive", @class = "form-control" })
+                </div>
+                <div class="btn-group clearfix">
+                    <button type="button" id="btnSearch" title="Search" class="btn btn-primary"><img src='@Url.Content("~/images/search-icon.png")' /><span>Search</span></button>
+                    <button type="button" id="btnReset" title="Reset" class="btn btn-primary"><img src='@Url.Content("~/images/reset-icon.png")' /><span>Reset</span></button>
+                    <button type="button" id="btnCancel" title="Cancel" class="btn btn-primary"><img src='@Url.Content("~/images/cancle-icon.png")' /><span>Cancel</span></button>
+                    <button type="button" id="btnAdd" title="Add" class="btn btn-primary"><img src='@Url.Content("~/images/add-icon.png")' /><span>Add</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src='@Url.Content("~/images/list-icon.png")' /><h4>Search Results</h4>
+        </div>
+        <div class="wdgt-body clearfix" id="divSearchResult">
+            @Html.Partial("_SearchResults", Model)
+        </div>
+    </div>
+</section>
+
+
+
+@section scripts{
+    <script type="text/javascript">
+     //Variables//
+
+        var urlGetLookupType = '@Url.Action("GetSearchResult", "Lookups")';
+        var ReportsUrl = '@Url.Action("GetLookupsReportURL", "Lookups")';
+        var winHistoryReport;
+        MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+
+
+
+
+
+     //Events//
+
+        $("#btnSearch").on("click", function () {
+            try {
+                fnLoadLookupSearchResult();
+            } catch (e) {
+
+            }
+
+        });
+
+        $("#btnCancel").on("click",function() {
+          try {
+                window.location.href = '@Url.Action("Home","Home")';
+            } catch (e) {
+
+            }
+        });
+        $("#btnReset").on("click", function () {
+            $("#txtDescription").val("");
+            $("#chkIsActive").prop('checked', true);
+
+        });
+
+        $("#btnAdd").on("click", function () {
+            try {
+                window.location.href = '@Url.Action("Add", "Lookups",new { lookupTypeId = 0, flag = 1 })';
+            } catch (e) {
+
+            }
+        });
+
+     //Methods//
+
+        fnLoadLookupSearchResult = function () {
+            try {
+                $.ajax({
+                    data: { "strDescription": $("#txtDescription").val().trim(), "isActive": ($("#chkIsActive").is(":checked")?true:false) },
+                    url: urlGetLookupType,
+                    type: "POST",
+                    success: function (data) {
+                        if (data != "") {
+                            $("#divSearchResult").empty().html(data);
+                            MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+                        }
+                        else {
+                            alert("An error occoured contact administrator!");
+                        }
+                    },
+                    error: function (x) {
+                        alert("An error occoured contact administrator!");
+                    }
+                });
+
+
+            } catch (e) {
+
+            }
+        };
+
+
+        //Lock Logic//
+        fnLockAndEdit = function (id) {
+            //debugger;
+            var urlForLock = '@Url.Action("GetLockedRecordOrLockRecord", "RecordsLocked")';
+            var urlToNavigate = '@Url.Action("Add", "Lookups")' + "?lookupTypeId=" + id +"&flag=" + 1;
+            fnLockRecord(urlForLock, id, enums.ScreenType.LookupType, urlToNavigate);
+
+        };
+
+        fnViewOrLockEdit = function (id) {
+            //debugger;
+            if (id < 1000) {
+                window.location.href = '@Url.Action("Add", "Lookups")' + "?lookupTypeId=" + id + "&flag=" + 0;
+            }
+            else {
+                var urlForLock = '@Url.Action("GetLockedRecordOrLockRecord", "RecordsLocked")';
+                var urlToNavigate = '@Url.Action("Add", "Lookups")' + "?lookupTypeId=" + id + "&flag=" + 0;
+                fnLockRecord(urlForLock, id, enums.ScreenType.LookupType, urlToNavigate);
+            }
+        };
+
+        // function to access history report
+        fnAccessReport = function (id) {
+            // debugger
+            var urlToNavigate = ReportsUrl;
+            $.ajax({
+                url: urlToNavigate,
+                type: "POST",
+                success: function (data) {
+                    if (data != "") {
+                        var Data = data.Data;
+                        var reportUrl = Data + "&LookupTypeRef=" + id;
+
+                        var strWindowFeatures = "location=yes,height=580,width=1000,scrollbars=no,resizable=yes,toolbar=no,status=no,menu=no, directories=no,titlebar=no,location=no,addressbar=no,top=100,left=100";
+                        winHistoryReport = MainLayout.fnMyOpenWindow(reportUrl, "_blank", strWindowFeatures, winHistoryReport);
+                        
+
+                    }
+                },
+                error: function (x) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                }
+            });
+        }
+
+    </script>
+
+}

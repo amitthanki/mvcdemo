@@ -1,0 +1,85 @@
+﻿@using ENRLReconSystem.Helpers
+@model ENRLReconSystem.DO.DOADM_UserPreference
+
+<style>
+   .widthcol {
+        margin-left:15%; 
+    }
+</style>
+<section class="container main-body-wrpr">
+@using (Html.BeginForm("UserPreference", "UserAdminstration", FormMethod.Post, new { @id = "frmAddLookupMaster" }))
+{
+        <div class="wdgt-wrapper">
+
+            @Html.AntiForgeryToken()
+            <div class="wdgt-hdr">
+                <img src="~/images/search-icon.png" /><h4>Lookup Type</h4>
+            </div>
+            <div class="wdgt-body clearfix">
+                <div style="color:red;">
+                    @Html.ValidationSummary()
+                </div>
+                <div class="form-group widthcol col-md-3">
+                    <label for="txtDescription" class="required">Business Segment</label>
+                    @Html.DropDownListFor(x => x.BusinessSegmentLkup, new List<SelectListItem> { new SelectListItem { Text = "--Select--", Value = "--Select--" } })              </div>
+                <div class="form-group col-md-3">
+                    <label for="txtDescription" class="required">Role</label>
+                    @Html.DropDownListFor(x => x.RoleLkup, new List<SelectListItem> { new SelectListItem { Text = "--Select--", Value = "--Select--" } })
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="txtDescription" class="required">Work Basket</label>
+                    @Html.DropDownListFor(x => x.WorkBasketLkup, new List<SelectListItem> { new SelectListItem { Text = "--Select--", Value = "--Select--" } })
+                </div>
+                <div class="form-group widthcol col-md-3 ">
+                    <label for="txtDescription" class="required">Alert</label>
+                    @Html.CheckBox("C1")
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="txtDescription" class="required">Resources</label>
+                    @Html.CheckBox("C1")
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="txtDescription" class="required">OST Summary</label>
+                    @Html.CheckBox("C1")
+                </div>
+                <div class="form-group widthcol col-md-3 ">
+                    <label for="txtDescription" class="required">Eligibility Discrepancy Summary</label>
+                    @Html.CheckBox("C1")
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="txtDescription" class="required">RPR Summary</label>
+                    @Html.CheckBox("C1")
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="txtDescription" class="required">Time Zone</label>
+                    @Html.DropDownListFor(x => x.TimezoneLkup, new List<SelectListItem> { new SelectListItem { Text = "--Select--", Value = "--Select--" } })
+                </div>
+
+                <div class="btn-group clearfix">
+                    <button type="button" id="btnCancel" class="btn btn-primary" data-dismiss="modal"><img src="~/images/cancle-icon.png" /><span>Cancel</span></button>
+                    <button type="submit" id="btnSave" class="btn btn-primary"><img src="~/images/save-icon.png" /><span>Save</span></button>
+                    
+                </div>
+
+            </div>
+            
+        </div>
+        
+}
+
+
+</section>
+
+
+@*PopUp*@
+
+<div id="myModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content" id="divAddLookUpMaster">
+
+        </div>
+    </div>
+</div>
+
+
+

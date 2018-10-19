@@ -1,0 +1,12 @@
+﻿@{
+    ViewBag.Title = "Unauthorized";
+    Layout = "~/Views/Error/_Layout.cshtml";
+}
+<h2>
+    Unauthenticated
+</h2>
+<div>
+    Your username is not part of ERS user data base. Please contact your admin. Once added, please
+    @Html.ActionLink("click here", "Login", "Login") to login.
+</div>
+<div style="text-align:center"><label style="color: #f0f0f0; background-color: #f0f0f0; ">@ViewBag.ErrorMessage</label></div>

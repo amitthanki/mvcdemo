@@ -1,0 +1,44 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@using ENRLReconSystem.Utility
+@model DOGEN_BulkImportExcelTemplateMaster
+
+@using (Html.BeginForm("Upload", "BulkImportTemplate", FormMethod.Post, new { @id = "frmUpload" }))
+{
+
+    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">×</button>
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/images/upload-icon.png"><h4>File Upload</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            @Html.ValidationSummary(false)
+            <div class="clearfix">
+               @using (Html.BeginForm("SaveLookupType", "Lookups", FormMethod.Post, new { @id = "frmUpload" }))
+               {
+                    <div class="form-group col-md-3">
+                        <label for="inputEmail">Sheet Name</label>
+                        @Html.TextBoxFor(xx => xx.SheetName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputEmail">Start Row</label>
+                        @Html.TextBoxFor(xx => xx.StartRow, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputEmail">Start Column</label>
+                        @Html.TextBoxFor(xx => xx.StartColumn, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label for="inputEmail">File (Max Size:5MB)</label>
+                        <input class="form-control" id="fileBrowse" type="file" accept=".csv">
+                    </div>
+               }
+            </div>
+            <div class="btn-group clearfix">
+                <button class="btn btn-primary" id="btnUploadXLFile" type="button"><img src="~/images/upload-icon.png"><span>Upload</span></button>
+            </div>
+        </div>
+       
+    </div>
+ 
+}

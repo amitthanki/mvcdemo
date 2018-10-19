@@ -1,0 +1,42 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.DO
+@model List<DOGEN_QueueWorkFlowCorrelation>
+
+@{ 
+    int counter = 1;
+}
+
+<div class="table-responsive">
+    <table class="table table-bordered" id="tblOSTWorkFlowLog">
+        <thead>
+            <tr>
+                <th>Sl. No.</th>
+                <th>Previous Queue</th>
+                <th>Previous Action</th>
+                <th>Previous Status</th>
+                <th>Current Queue</th>
+                <th>Current Action</th>
+                <th>Current Status</th>
+                <th>Created By</th>
+                <th>Created On</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var item in Model)
+            {
+            <tr>
+                <td>@counter</td>
+                <td>@item.PreviousWorkQueues</td>
+                <td>@item.PreviousAction</td>
+                <td>@item.PreviousStatus</td>
+                <td>@item.CurrentWorkQueues</td>
+                <td>@item.CurrentAction</td>
+                <td>@item.CurrentStatus</td>
+                <td>@item.CreatedBy</td>
+                <td>@item.UTCCreatedOn.ToDateTime().ToString("MM/dd/yyyy hh:mm tt")</td>
+            </tr>
+                  counter= counter + 1;
+            }
+        </tbody>
+    </table>
+</div>

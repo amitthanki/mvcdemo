@@ -1,0 +1,313 @@
+﻿@using ENRLReconSystem.Helpers @*for custom validation*@
+@model ENRLReconSystem.DO.DOADM_AlertDetails
+@{
+    ViewBag.Title = Model.ADM_AlertDetailsId == 0 ? "Add Alert" : "Edit Alert";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src='@Url.Content("/images/alerts-icon.png")' /><h4>Alert</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <form id="frmAddAlert">
+                @Html.HiddenFor(m => m.CreatedByRef)
+                @Html.HiddenFor(m => m.UTCCreatedOn)
+                @Html.HiddenFor(m => m.AlertEffectiveDate)
+                @Html.HiddenFor(m => m.AlertPublishedDate)
+                @Html.HiddenFor(m => m.AlertInactivationDate)
+                @Html.HiddenFor(m => m.ADM_AlertDetailsId, new { @id = "hdnADM_AlertDetailsId" })
+                @Html.ValidationSummary()
+                <div class="wdgt-body clearfix">
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.AlertTitle, "Title", new { @class = "required" })
+                        @Html.TextBoxFor(m => m.AlertTitle, new CustomValidation().Required("Title is required").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenSlashColonAtSignAmpersandSpaceandDot, "Title").StringMaxLength(250, "Title").AddCssClass("form-control").CustomAttributes("id", "txtTitle").CustomAttributes((Model.ADM_AlertDetailsId > 0)? "readonly":"",(Model.ADM_AlertDetailsId>0)?"true":"").validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.AlertDescription, "Description", new { @class = "required" })
+                        @Html.TextBoxFor(m => m.AlertDescription, new CustomValidation().Required("Description is required").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenSlashColonAtSignAmpersandSpaceandDot, "Description").StringMaxLength(5000, "Description").AddCssClass("form-control").CustomAttributes("id", "txtAlertDescription").validationAttributes)
+                    </div>
+                    <div class="form-group date-group col-md-3">
+                        @Html.LabelFor(m => m.AlertPublishedDate, "Published Date", new { @class = "required" })
+                        @Html.DateTimeFor(m => m.AlertPublishedDate,true, new CustomValidation().Required("Published Date is required").validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.AlertPublishedDateTimeZone, "Time Zone", new { @class = "required" })
+                        @Html.DropDownList("Published Date Time Zone",new SelectList(Model.lstTimeZone, "CMN_LookupMasterId", "LookupValue"), "<---Select--->", new CustomValidation().Required("Time Zone for Published Date is Required.").AddCssClass("form-control").CustomAttributes("id", "AlertPublishedDate_ZPart").validationAttributes)
+                    </div>
+                    <div class="form-group date-group col-md-3">
+                        @Html.LabelFor(m => m.AlertEffectiveDate, "Effective Date")
+                        @Html.DateTimeFor(m => m.AlertEffectiveDate, true, new CustomValidation().validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.AlertEffectiveDateTimeZone, "Time Zone")
+                        @Html.DropDownList("Effective Date Time Zone",new SelectList(Model.lstTimeZone, "CMN_LookupMasterId", "LookupValue"), "<---Select--->", new { @id = "AlertEffectiveDate_ZPart", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.AlertCriticalityLkup, "Criticality", new { @class = "required" })
+                        @Html.DropDownListFor(m => m.AlertCriticalityLkup, new SelectList(Model.lstAlertCriticalityLkup, "CMN_LookupMasterId", "LookupValue"), "<---Select--->", new CustomValidation().Required("Alert Criticality is required").AddCssClass("form-control").CustomAttributes("id", "ddlAlertCriticalityLkup").validationAttributes)
+                    </div>
+                    <div class="form-group date-group col-md-3">
+                        @Html.LabelFor(m => m.AlertInactivationDate, "Inactivation Date")
+                        @Html.DateTimeFor(m => m.AlertInactivationDate, true, new CustomValidation().validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.AlertInactivationDateTimeZone, "Time Zone")
+                        @Html.DropDownList("Inactivation Date Time Zone",new SelectList(Model.lstTimeZone, "CMN_LookupMasterId", "LookupValue"), "<---Select--->", new { @id = "AlertInactivationDate_ZPart", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.IsActive, "Is Active")
+                        @Html.CheckBoxFor(m => m.IsActive, (Model.ADM_AlertDetailsId > 0) ? new { @class = "form-control" } : new { @checked = "checked", @class = "form-control" } as object)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.SendAlertToLkup, "Send Alert To", new { @class = "required" })
+                        @Html.DropDownListFor(m => m.SendAlertToLkup, new SelectList(Model.lstSendAlertToLkup, "CMN_LookupMasterId", "LookupValue"), "<---Select--->", new CustomValidation().Required("Send Alert To is required").AddCssClass("form-control").CustomAttributes("id", "ddllstSendAlertToLkup").validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        <span hidden="hidden" id="divDepartment">
+                            @Html.LabelFor(m => m.CMN_DepartmentRef, "Department", new { @class = "required" })
+                            @Html.DropDownListFor(m => m.CMN_DepartmentRef, new SelectList(Model.lstCMN_Department, "CMN_DepartmentId", "ERSDepartmentName"), "<---Select--->", new { @id = "ddlCMN_DepartmentRef", @class = "form-control" })
+                        </span>
+                        <span hidden="hidden" id="divUser">
+                            @Html.LabelFor(m => m.ADM_UserMasterRef, "Email", new { @class = "required" })
+                            @Html.DropDownListFor(m => m.ADM_UserMasterRef, new SelectList(Model.lstUsers, "ADM_UserMasterId", "Email"), "<---Select--->", new { @id = "ddlADM_UserMasterRef", @class = "form-control" })
+                        </span>
+                    </div>
+                </div>
+                <div class="btn-group clearfix">
+                    @*on click of cancel button fnCancel() will be called to unlock record*@
+                    <button type="button" id="btnSubmit" class="btn btn-primary"><img src="~/Images/save-icon.png" /><span>Save</span></button>
+                    <button type="button" id="btnReset" class="btn btn-primary"><img src="~/Images/reset-icon.png" /><span>Reset</span></button>
+                    <button type="button" id="btnCancel" class="btn btn-primary" onclick="fnCancel();" ><img src="~/Images/cancle-icon.png" /><span>Cancel</span></button>
+                </div>
+             </form>
+        </div>
+    </div>
+</section>
+
+@section scripts{
+<script>
+    var submitUrl = '@Url.Action("Add", "Alerts")';
+    var saveSuccessUrl = '@Url.Action("Search", "Alerts")';
+    var cancelUrl = '@Url.Action("Search", "Alerts")';
+    var unlockUrl = '@Url.Action("UnlockRecord", "RecordsLocked")';
+    var recordId = '@Model.ADM_AlertDetailsId';
+
+    //validate and create date time picker fields
+    if ('@Model.AlertEffectiveDate' != null && '@Model.AlertEffectiveDate' != '') {
+       // fnSetDateToField('@Model.AlertEffectiveDate','AlertEffectiveDate');
+          var utcDate = new Date('@Model.AlertEffectiveDate');
+            var result = getLocalTime(utcDate, UserPreferrenceTimeZone);
+            $('#AlertEffectiveDate_DPart').val(getDateTimeInMMDDYYYY(result.time));
+            $('#AlertEffectiveDate_TPart').val(getDateTimeInHHMM(result.time));
+            $('#AlertEffectiveDate_ZPart').val(result.timeZoneLkup);
+    }
+
+    if ('@Model.AlertInactivationDate' != null && '@Model.AlertInactivationDate' != '') {
+       // fnSetDateToField('@Model.AlertInactivationDate','AlertInactivationDate');
+          var utcDate = new Date('@Model.AlertInactivationDate');
+            var result = getLocalTime(utcDate, UserPreferrenceTimeZone);
+            $('#AlertInactivationDate_DPart').val(getDateTimeInMMDDYYYY(result.time));
+            $('#AlertInactivationDate_TPart').val(getDateTimeInHHMM(result.time));
+            $('#AlertInactivationDate_ZPart').val(result.timeZoneLkup);
+    }
+    if ('@Model.AlertPublishedDate' != null && '@Model.AlertPublishedDate' != '') {
+        //fnSetDateToField('@Model.AlertPublishedDate','AlertPublishedDate');
+          var utcDate = new Date('@Model.AlertPublishedDate');
+            var result = getLocalTime(utcDate, UserPreferrenceTimeZone);
+            $('#AlertPublishedDate_DPart').val(getDateTimeInMMDDYYYY(result.time));
+            $('#AlertPublishedDate_TPart').val(getDateTimeInHHMM(result.time));
+            $('#AlertPublishedDate_ZPart').val(result.timeZoneLkup);
+    }
+
+    //In edit Mode on page load show or hide Depatment and User dropdowns based on send alert to value from DB
+    function fnSetDropdownsVisibility() {
+        var selectedValue = $('#ddllstSendAlertToLkup').val();
+        if (selectedValue == enums.SendAlertToLkp.Department) {
+            $('#divDepartment').show();
+            $('#divUser').hide();
+        } else if (selectedValue == enums.SendAlertToLkp.Individual) {
+            $('#divDepartment').hide();
+            $('#divUser').show();
+        } else {
+            $('#divDepartment').hide();
+            $('#divUser').hide();
+        }
+    };
+
+    //function to set model date time values from date time picker before submitting
+    function fnGetUtcDateIntoHdnFields() {
+        var date = getFieldUTCTime('AlertEffectiveDate');
+        if (date != null && date != '') {
+            $('#AlertEffectiveDate').val(getDateTimeInMMDDYYYYHHMM(date, true));
+        } else {
+            $('#AlertEffectiveDate').val(null);
+        }
+        date = getFieldUTCTime('AlertInactivationDate');
+        if (date != null && date != '') {
+            $('#AlertInactivationDate').val(getDateTimeInMMDDYYYYHHMM(date, true));
+        } else {
+            $('#AlertInactivationDate').val(null);
+        }
+        date = getFieldUTCTime('AlertPublishedDate');
+        if (date != null && date != '') {
+            $('#AlertPublishedDate').val(getDateTimeInMMDDYYYYHHMM(date, true));
+        } else {
+            $('#AlertPublishedDate').val(null);
+        }
+    };
+
+    //fuction to set values for date time fields from date time picker to match format for comparision
+    fnGetUtcDateIntoHdnFields();
+
+    //save intial form value to compare before saving
+    var $myForm = $("#frmAddAlert");
+    origForm = $myForm.serialize();
+
+    //set visibilty of Department and User Dropdown beased on send alert to dropdown
+    fnSetDropdownsVisibility();
+
+    //function to unlock receord on click of cancel button
+    function fnCancel() {
+        var idToUnlock = recordId;
+        var urlForUnlock = unlockUrl;
+        var urlToNavigate = cancelUrl;
+        fnUnlockRecord(urlForUnlock, idToUnlock, enums.ScreenType.Alerts, urlToNavigate);
+    };
+
+    //reset function to clear all the fields in edit mode and reset to original value in Edit mode
+    $('#btnReset').click(function () {
+        MainLayout.fnResetValidationSummary();
+        $("#frmAddAlert").deserialize(origForm);
+        fnSetDropdownsVisibility();//set visibilty of Department and User Dropdown beased on send alert to dropdown
+    });
+
+    //function for ajax form submit
+    $('#btnSubmit').click(function () {
+    var $form = $('#frmAddAlert');
+    $('.validation-summary-errors ul').empty();//clear the error messages
+    fnGetUtcDateIntoHdnFields(); //fuction to set values for date time fields from date time picker fields
+    var formValid = $form.valid(); //validate form
+    var isCustomValid = validateCustom();// validate the dates and send alert to filds
+    if (!formValid || !isCustomValid)
+        return;
+    if (origForm != $form.serialize())//check if form fields as changes
+    {
+        try {
+            $.ajax({
+                data: $form.serialize(),
+                url: submitUrl,
+                type: "POST",
+                success: function (data) {
+                    if (data.ID > 0) {
+                        //if any errors while saving from controller
+                        MainLayout.fnAlertMessege("Error!", data.Message);
+                    }
+                    else {
+                        //if save successfull
+                        MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                            window.location.href = saveSuccessUrl;
+                        });
+                    }
+                },
+                error: function (x) {
+                    //Network errror
+                    MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                }
+            });
+        }
+        catch (e) {
+            //exception forming ajax request or submitting form
+            MainLayout.fnAlertMessege("Error!", "An error occoured.");
+        }
+    } else {
+        MainLayout.fnAlertMessege("Alert!", "There is no change in the form to update.");
+    }
+    });
+
+    //show,hide and clear department and user dropdowns when send to dropdown value is changed
+    $('#ddllstSendAlertToLkup').change(function () {
+        var selectedValue = $('#ddllstSendAlertToLkup').val();
+        if (selectedValue == enums.SendAlertToLkp.Department) {
+            $('#divDepartment').show();
+            $('#ddlADM_UserMasterRef').val("");
+            $('#divUser').hide();
+        } else if (selectedValue == enums.SendAlertToLkp.Individual) {
+            $('#divDepartment').hide();
+            $('#ddlCMN_DepartmentRef').val("");
+            $('#divUser').show();
+        } else {
+            $('#divDepartment').hide();
+            $('#ddlADM_UserMasterRef').val("");
+            $('#divUser').hide();
+            $('#ddlCMN_DepartmentRef').val("");
+        }
+    })
+
+    //custom validations on effective date, inactivation date and send alert to (department and users)
+    function validateCustom() {
+        var inactivationDate = new Date($('#AlertInactivationDate_DPart').val());
+        var effectiveDate = new Date($('#AlertEffectiveDate_DPart').val());
+
+        var today = new Date();
+        var errorList = "";
+        var isValid = true;
+        today.setHours(0, 0, 0, 0)
+
+        //add error if send to alert to value is department and department is not selected
+        if ($('#ddllstSendAlertToLkup').val() == enums.SendAlertToLkp.Department && $('#ddlCMN_DepartmentRef').val() == "") {
+            $('#ddlCMN_DepartmentRef').removeClass("valid").addClass("input-validation-error");//to highlight the field
+            errorList = errorList + '<li>Department is Required.</li>';//html for error to be added in validation summary
+            isValid = false;
+        }
+        //add error if send to alert to value is individual and user email is not selected
+        if ($('#ddllstSendAlertToLkup').val() == enums.SendAlertToLkp.Individual && $('#ddlADM_UserMasterRef').val() == "") {
+            $('#ddlADM_UserMasterRef').removeClass("valid").addClass("input-validation-error");
+            errorList = errorList + '<li>User Email is Required.</li>';
+            isValid = false;
+        }
+        //add error if effective date value is entered and effective date time zone is not selected
+        if (!$('#AlertEffectiveDate_DPart').val() == "" && $('#AlertEffectiveDate_ZPart').val() == "") {
+            $('#AlertEffectiveDate_ZPart').removeClass("valid").addClass("input-validation-error");
+            errorList = errorList + '<li>Time Zone for Effective Date is Required.</li>';
+            isValid = false;
+        }
+        //add error if Inactivation date value is entered and Inactivation date time zone is not selected
+        if (!$('#AlertInactivationDate_DPart').val() == "" && $('#AlertInactivationDate_ZPart').val() == "") {
+            $('#AlertInactivationDate_ZPart').removeClass("valid").addClass("input-validation-error");
+            errorList = errorList + '<li>Time Zone for Inactivation Date is Required.</li>';
+            isValid = false;
+        }
+        //add error if effective date is greater than today
+        if (effectiveDate > today) {
+            $('#AlertEffectiveDate_DPart').removeClass("valid").addClass("input-validation-error");
+            errorList = errorList + '<li>Effective Date must be less than or equal to Current Date.</li>';
+            isValid = false;
+        }
+        //add error if inactivation date smaller than today
+        if (inactivationDate <= today) {
+            $('#AlertInactivationDate_DPart').removeClass("valid").addClass("input-validation-error");
+            errorList = errorList + '<li>Inactivation Date must be Future Date.</li>';
+            isValid = false;
+        }
+        //add error if inactivation date smaller than effective date
+        if (inactivationDate < effectiveDate) {
+            $('#AlertInactivationDate_DPart').removeClass("valid").addClass("input-validation-error");
+            errorList = errorList + '<li>Inactivation Date must be greater than effective date.</li>';
+            isValid = false;
+        }
+        if (!isValid) {
+            if ($('.validation-summary-errors').length != 0) {
+                //if validion errors div is present add errors to list
+                $('.validation-summary-errors ul').append(errorList);
+            } else {
+                //if validion errors div is not present update validation-summary-valid div and add errors to list
+                $('.validation-summary-valid').addClass('validation-summary-errors').removeClass('validation-summary-valid');
+                $('.validation-summary-errors ul').append(errorList);
+            }
+        }
+        return isValid;
+    };
+</script>
+}

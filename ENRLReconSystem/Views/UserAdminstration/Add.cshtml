@@ -1,0 +1,694 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@using ENRLReconSystem.Utility
+@model DOADM_UserMaster
+@{
+    var Header = "";
+    if (Model.ADM_UserMasterId == 0)
+    {
+        ViewBag.Title = "Add User";
+        Header = "Add User";
+    }
+    else
+    {
+        ViewBag.Title = "Edit User";
+        Header = "Manage User";
+    }
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .emptyRow {
+        border: 1px solid red;
+    }
+
+    .mandatory {
+        color: red;
+        font-weight: bold;
+    }
+
+    .text-danger {
+        padding-left: 10px;
+        padding-top: 5px;
+        color: red;
+        list-style-type: symbols('*');
+    }
+
+    .gridCol {
+        padding-left: 20px;
+    }
+
+    td {
+        text-align: center;
+    }
+</style>
+<section class="container main-body-wrpr">
+    @using (Html.BeginForm("Add", "UserAdminstration", FormMethod.Post, new { @id = "frmAddUser" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.HiddenFor(m => m.ADM_UserMasterId)
+        @Html.HiddenFor(m => m.StartDate)
+        @Html.HiddenFor(m => m.EndDate)
+        @Html.HiddenFor(m => m.CreatedByRef)
+        @Html.HiddenFor(m => m.UTCCreatedOn)
+
+        <div class="wdgt-wrapper">
+            <div class="wdgt-hdr">
+                <img src="~/Images/user-icon.png" /><h4>@Header</h4>
+            </div>
+            <div class="wdgt-body clearfix">
+                @Html.ValidationSummary()
+                <div class="form-group col-md-3">
+                    <label id="lblMSID">MS ID<span style="color:red;">*</span></label>
+                    @if (Model.ADM_UserMasterId == 0)
+                    {
+                        <div class="input-group">
+                            @Html.TextBoxFor(m => m.MSID, new CustomValidation().Required("MS ID is required.").AddCssClass("form-control").CustomAttributes("id", "txtMSID").RegularExpression(RegexType.AlphabetsWithNumeric, "MS ID").CustomAttributes("maxlength", "100").StringMaxLength(100, "MS ID").validationAttributes)
+                            <span class="input-group-btn">
+                                <button type="button" id="btnCheckMSIDExists" class="btn btn-default">
+                                    <img src="~/Images/get-icon.png" />
+                                </button>
+                            </span>
+                        </div>
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.MSID, new CustomValidation().Required("MS ID is required.").AddCssClass("form-control").CustomAttributes("id", "txtMSID").CustomAttributes("readonly", "true").RegularExpression(RegexType.AlphabetsWithNumeric, "MS ID").CustomAttributes("maxlength", "100").StringMaxLength(100, "MS ID").validationAttributes)
+                    }
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblTitle">Title<span style="color:red;">*</span></label>
+                    @Html.DropDownListFor(m => m.Titlelkup, new SelectList(Model.lstSalutation, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Title is required.").AddCssClass("form-control").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblFirstName">First Name<span style="color:red;">*</span></label>
+                    @Html.TextBoxFor(m => m.FirstName, new CustomValidation().Required("First Name is required.").CustomAttributes("id", "txtFirstName").AddCssClass("form-control").RegularExpression(RegexType.AlphabetsWithSpaces, "First Name").CustomAttributes("maxlength", "35").StringMaxLength(35, "First Name").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblLastName">Last Name<span style="color:red;">*</span></label>
+                    @Html.TextBoxFor(m => m.LastName, new CustomValidation().Required("Last Name is required.").CustomAttributes("id", "txtLastName").AddCssClass("form-control").RegularExpression(RegexType.AlphabetsWithSpaces, "Last Name").CustomAttributes("maxlength", "35").StringMaxLength(35, "Last Name").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblLocation">Location</label>
+                    @Html.DropDownListFor(m => m.LocationLkup, new SelectList(Model.lstLocation, "CMN_LookupMasterId", "LookupValue", Model.LocationLkup), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblEmail">Email<span style="color:red;">*</span></label>
+                    @Html.TextBoxFor(m => m.Email, new CustomValidation().AddCssClass("form-control emailVal").CustomAttributes("id", "txtEmail").Required("Email is required.").RegularExpression(RegexType.Email, "Email").StringMaxLength(100, "Email").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblConfirmEmail">Confirm Email<span style="color:red;">*</span></label>
+                    @Html.TextBoxFor(m => m.ConfirmEmail, new CustomValidation().AddCssClass("form-control confirmEmailVal").CustomAttributes("id", "txtConfirmEmail").Required("Confirm Email is required.").RegularExpression(RegexType.Email, "Confirm Email").StringMaxLength(100, "Confirm Email").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblIsActive">Is Active</label>
+                    @Html.CheckBoxFor(m => m.IsActive, (Model.ADM_UserMasterId > 0) ? new { @class = "form-control" } : new { @checked = "checked", @class = "form-control" } as object)
+                </div>
+                <div class="form-group date-group col-md-3">
+                    <label id="lblStartDate">Start Date<span style="color:red;">*</span></label>
+                    @Html.DateTimeFor(m => m.StartDate, true, new CustomValidation().Required("Start Date is required.").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblStartDateTimeZone">Time Zone</label>
+                    @Html.DropDownList("Start Date Time Zone", new SelectList(Model.lstTimeZone, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "StartDate_ZPart").Required("Start Date Time Zone is required.").AddCssClass("form-control").validationAttributes)
+                </div>
+                <div class="form-group date-group col-md-3">
+                    <label id="lblEndDate">End Date<span style="color:red;">*</span></label>
+                    @Html.DateTimeFor(m => m.EndDate, true, new CustomValidation().Required("End Date is required.").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblEndDateTimeZone">Time Zone</label>
+                    @Html.DropDownList("End Date Time Zone", new SelectList(Model.lstTimeZone, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "EndDate_ZPart").Required("End Date Time Zone is required.").AddCssClass("form-control").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblManager">Manager</label>
+                    @Html.DropDownListFor(m => m.ManagerId, new SelectList(Model.lstManagers, "ADM_UserMasterId", "FullName", Model.ManagerId), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblIsManager">Is Manager</label>
+                    @Html.CheckBoxFor(m => m.IsManager, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "chkIsManager").validationAttributes)
+                </div>
+            </div>
+        </div>
+        <div class="wdgt-wrapper">
+            <div class="wdgt-hdr">
+                <img src="~/Images/user-icon.png" /><h4>User Address</h4>
+            </div>
+            <div class="wdgt-body clearfix">
+                <div class="form-group col-md-3">
+                    <label id="lblUserAddressLine1">Address Line 1</label>
+                    @Html.TextBoxFor(m => m.UserAddressLine1, new CustomValidation().AddCssClass("form-control").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAmpersandAtSignAndSpaces, "Address Line1").StringMaxLength(100, "Address Line1").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblUserAddressLine2">Address Line 2</label>
+                    @Html.TextBoxFor(m => m.UserAddressLine2, new CustomValidation().AddCssClass("form-control").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAmpersandAtSignAndSpaces, "Address Line2").StringMaxLength(100, "Address Line2").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblUserCity">City</label>
+                    @Html.TextBoxFor(m => m.UserCity, new CustomValidation().AddCssClass("form-control").RegularExpression(RegexType.AlphabetsWithSpaces, "City").StringMaxLength(100, "City").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblUserState">State</label>
+                    @Html.DropDownListFor(m => m.UserStateLkup, new SelectList(Model.lstState, "CMN_LookupMasterId", "LookupValue", Model.UserStateLkup), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblUserZip">Zip</label>
+                    @Html.TextBoxFor(m => m.UserZip, new CustomValidation().AddCssClass("form-control zip").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAndSpaces, "Zip").StringMaxLength(10, "Zip").validationAttributes)
+                </div>
+            </div>
+        </div>
+        <div class="wdgt-wrapper">
+            <div class="wdgt-hdr">
+                <img src="~/Images/user-icon.png" /><h4>Specialist Info</h4>
+            </div>
+            <div class="wdgt-body clearfix">
+                <div class="form-group col-md-3">
+                    <label id="lblSpecialistTitle">Specialist Title</label>
+                    @Html.TextBoxFor(m => m.SpecialistTitle, new CustomValidation().AddCssClass("form-control").RegularExpression(RegexType.AlphabetsWithSpaces, "Specialist Title").StringMaxLength(50, "Specialist Title").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblSpecialistPhone">Specialist Phone</label>
+                    @Html.TextBoxFor(m => m.SpecialistPhone, new CustomValidation().AddCssClass("form-control phone").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAndSpaces, "Specialist Phone").StringMaxLength(12, "Specialist Phone").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblSpecialistFax">Specialist Fax</label>
+                    @Html.TextBoxFor(m => m.SpecialistFax, new CustomValidation().AddCssClass("form-control fax").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAndSpaces, "Specialist Fax").StringMaxLength(12, "Specialist Fax").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblSpecialistHours">Specialist Hours</label>
+                    @Html.TextBoxFor(m => m.SpecialistHours, new CustomValidation().AddCssClass("form-control").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAndSpaces, "Specialist Hours").StringMaxLength(100, "Specialist Hours").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label id="lblSpecialistTimeZone">Specialist Time Zone</label>
+                    @Html.DropDownListFor(m => m.SpecialistTimeZone, new SelectList(Model.lstTimeZone, "CMN_LookupMasterId", "LookupValue", Model.SpecialistTimeZone), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").validationAttributes)
+                </div>
+            </div>
+        </div>
+        <div class="wdgt-wrapper">
+            <div class="wdgt-hdr">
+                <img src="~/Images/list-icon.png" /><h4>Access Groups</h4>
+            </div>
+            <div class="wdgt-add-btn clearfix">
+                <button type="button" id="btnAddNew" class="btn btn-primary"><img src="~/Images/add-icon.png" title="Click here to add new skill" /></button>
+                <label class="validation-summary-errors" id="txtNoAccessGroupErrorMsg" hidden="hidden">No more Access Groups.</label>
+            </div>
+            <div class="wdgt-body clearfix" id="divAccessGroups">
+                @Html.Partial("_AccessGroup", Model.lstDOADM_AccessGroupUserCorrelation)
+            </div>
+        </div>
+        <div class="btn-group clearfix">
+            <button type="button" id="btnSubmit" class="btn btn-primary"><img src="~/Images/save-icon.png" /><span>Save</span></button>
+            <button type="button" id="btnReset" class="btn btn-primary"><img src="~/Images/reset-icon.png" /><span>Reset</span></button>
+            <button type="button" id="btnCancel" class="btn btn-primary" onclick="fnCancel();"><img src="~/Images/cancle-icon.png" /><span>Cancel</span></button>
+        </div>
+    }
+</section>
+@section scripts{
+    <script type="text/javascript">
+        //validate and create date time picker fields
+        if ('@Model.StartDate' != null && '@Model.StartDate' != '') {
+            //fnSetDateToField('@Model.StartDate','StartDate');
+              var utcDate = new Date('@Model.StartDate');
+            var result = getLocalTime(utcDate, UserPreferrenceTimeZone);
+            $('#StartDate_DPart').val(getDateTimeInMMDDYYYY(result.time));
+            $('#StartDate_TPart').val(getDateTimeInHHMM(result.time));
+            $('#StartDate_ZPart').val(result.timeZoneLkup);
+        }
+
+        if ('@Model.EndDate' != null && '@Model.EndDate' != '') {
+            //fnSetDateToField('@Model.EndDate','EndDate');
+              var utcDate = new Date('@Model.EndDate');
+            var result = getLocalTime(utcDate, UserPreferrenceTimeZone);
+            $('#EndDate_DPart').val(getDateTimeInMMDDYYYY(result.time));
+            $('#EndDate_TPart').val(getDateTimeInHHMM(result.time));
+            $('#EndDate_ZPart').val(result.timeZoneLkup);
+        }
+
+        var submitUrl = '@Url.Action("Add", "UserAdminstration")';
+        var recordId = '@Model.ADM_UserMasterId';
+        var urlForUnlock = '@Url.Action("UnlockRecord", "RecordsLocked")';
+        var cancelUrl = '@Url.Action("Search", "UserAdminstration")';
+        var dropdownDefaultValue = '@ConstantTexts.dropdownDefaultValue';
+        var urlAddAccessGroupsToSession = '@Url.Action("AddAccessGroupsToSession", "UserAdminstration")';
+        var urlCheckUserExistsUsingMsid = '@Url.Action("CheckUserExistsUsingMSID", "UserAdminstration")';
+        var urlGetUserDetailsLdap = '@Url.Action("GetUserDetailsLdap", "UserAdminstration")';
+        var AccessGroups = @Html.Raw(Json.Encode(ViewBag.AccessGroups));;//fix array of all the Access Groups in this category
+        var AddedUserAccessGroups = [];//temp added Access Groups
+        var ToBeAddedUserAccessGroups = [];//Access Groups that can be added from this category
+        var oldAccessGroup = 0;//to save old work queue value while editing
+
+        //---parameters in edit mode----//
+        var PrevoiuslyAddedUserAccessGroups = @Html.Raw(Json.Encode(Model.lstDOADM_AccessGroupUserCorrelation));
+        var ViewBagAccessGroups = @Html.Raw(Json.Encode(ViewBag.AccessGroups));
+
+        $myForm = $('#frmAddUser');
+        origForm = $myForm.serialize();
+
+        $(document).ready(function () {
+            if (recordId != 0) {
+                $('#txtConfirmEmail').val($('#txtEmail').val());
+                //set Access Group table values
+                if (PrevoiuslyAddedUserAccessGroups.length > 0) {
+                    $.each(ViewBagAccessGroups, function (index, item) {
+                        if (item != undefined) {
+                            if ($.grep(PrevoiuslyAddedUserAccessGroups, function (x) { return x.ADM_AccessGroupMasterRef == item.ADM_AccessGroupMasterId }).length > 0)
+                                AddedUserAccessGroups.push(item);
+                            else
+                                ToBeAddedUserAccessGroups.push(item);
+                        }
+                    });
+                    AccessGroups = ViewBagAccessGroups;
+                    if (ToBeAddedUserAccessGroups.length <= 0) {
+                        $('#btnAddNew').attr('disabled', 'disabled');
+                        $('#txtNoAccessGroupErrorMsg').show();
+                    } else {
+                        $('#btnAddNew').removeAttr('disabled');
+                        $('#txtNoAccessGroupErrorMsg').hide();
+                    }
+                } else {
+                    AddedUserAccessGroups = [];
+                    ToBeAddedUserAccessGroups = AccessGroups;
+                }
+            }
+            else {
+                ToBeAddedUserAccessGroups = AccessGroups;
+            }
+            fnDisableControls(false);
+        });
+
+        //function to set model date time values from date time picker before submitting
+        function fnGetUtcDateIntoHdnFields() {
+            var date = getFieldUTCTime('EndDate');
+            if (date != null && date != '') {
+                $('#EndDate').val(getDateTimeInMMDDYYYYHHMM(date, true));
+            } else {
+                $('#EndDate').val(null);
+            }
+            date = getFieldUTCTime('StartDate');
+            if (date != null && date != '') {
+                $('#StartDate').val(getDateTimeInMMDDYYYYHHMM(date, true));
+            } else {
+                $('#StartDate').val(null);
+            }
+        };
+
+       ///Unlock Logic///
+        function fnCancel() {
+            fnUnlockRecord(urlForUnlock, recordId, enums.ScreenType.UserAdmin, cancelUrl);
+        }
+
+        function fnDisableControls(disable) {
+            if (disable) {
+                $('#btnAddNew ,#btnSubmit, #btnReset, #btnCancel,.input-sm').attr('disabled', 'disabled');
+                $('.paginate_button').addClass('disabled');
+                $('.edit-queue').hide();
+            } else {
+                $('#btnSubmit, #btnReset, #btnCancel,.input-sm').removeAttr('disabled');
+                $('.paginate_button').removeClass('disabled');
+                $('.edit-queue').show();
+
+                if (ToBeAddedUserAccessGroups.length <= 0) {
+                    $('#btnAddNew').attr('disabled', 'disabled');
+                    $('#txtNoAccessGroupErrorMsg').show();
+                } else {
+                    $('#btnAddNew').removeAttr('disabled');
+                    $('#txtNoAccessGroupErrorMsg').hide();
+                }
+
+            }
+        }
+
+        function fnCheckUserExistsUsingMsid() {
+            var Msid = $("#txtMSID").val();
+            var MsidResult = { isValid: true };
+            if (recordId == '0') {
+                if (Msid != '') {
+                    MsidResult.isValid = false;
+                    $.ajax({
+                        url: urlCheckUserExistsUsingMsid,
+                        type: 'POST',
+                        cache: false,
+                        async: false,
+                        data: { Msid: Msid },
+                        dataType: "json",
+                        success: function (result) {
+                            MsidResult.isValid = !result.MsidExists;
+                        },
+                        error: function (data) {
+                            MainLayout.fnAlertMessege("Alert", data);
+                        }
+                    })
+                }
+                return MsidResult;
+            }
+            return MsidResult;
+        };
+
+        function fngetLdapUserDetails() {
+            var Msid = $("#txtMSID").val();
+            var MsidResult = { isValid: true, UserDetails: null };
+            if (recordId == '0') {
+                if (Msid != '') {
+                    MsidResult.isValid = false;
+                    $.ajax({
+                        url: urlGetUserDetailsLdap,
+                        type: 'POST',
+                        cache: false,
+                        async: false,
+                        data: { data: Msid },
+                        dataType: "json",
+                        success: function (result) {
+                            var data1 = result.data;
+                            if (data1.FirstName != null && data1.LastName != null && data1.Email != null)
+                            {
+                                MsidResult.isValid = true;
+                                MsidResult.UserDetails = data1;
+                            }
+                            //MsidResult.isValid = result.FirstName;
+                        },
+                        error: function (data) {
+                            MainLayout.fnAlertMessege("Alert", data);
+                        }
+                    })
+                }
+                return MsidResult;
+            }
+            return MsidResult;
+        };
+
+        $('#btnReset').on("click",function () {
+            window.location.reload();
+        });
+
+        function fnPerformAccessGroupOperation(mode, ddlAccessGroup) {
+            try {
+
+                var newAccessGroupRowData = {
+                    ADM_UserMasterRef: recordId,
+                    ADM_AccessGroupMasterRef: ddlAccessGroup,
+                }
+
+                $.ajax({
+                    data: { objDOADM_AccessGroupUserCorrelation: newAccessGroupRowData, lPreviousAccessGroup: oldAccessGroup, mode: mode },
+                    url: urlAddAccessGroupsToSession,
+                    type: "POST",
+                    success: function (data) {
+
+                        if (data != "") {
+                            $('#divAccessGroups').empty().html(data);
+                            if (mode == 3) {//remove all the AccessGroups
+                                ToBeAddedUserAccessGroups = AccessGroups;
+                                AddedUserAccessGroups = [];
+                            } else if (mode == 2) {//update work queue
+                                //select 1st object with mathced condition and add it to selecetd AccessGroups array
+                                AddedUserAccessGroups.push($.grep(ToBeAddedUserAccessGroups, function (e) { return e.ADM_AccessGroupMasterId == ddlAccessGroup; })[0]);
+                                //remove same object from pending AccessGroups list array
+                                ToBeAddedUserAccessGroups = $.grep(ToBeAddedUserAccessGroups, function (e) { return e.ADM_AccessGroupMasterId != ddlAccessGroup; });
+                            }
+                            else if (mode == 1) {//delete AccessGroup
+                                //select 1st object with mathced condition and add it to pending AccessGroup array
+                                ToBeAddedUserAccessGroups.push($.grep(AddedUserAccessGroups, function (e) { return e.ADM_AccessGroupMasterId == ddlAccessGroup; })[0]);
+                                //remove same object from selecetd AccessGroup list array
+                                AddedUserAccessGroups = $.grep(AddedUserAccessGroups, function (e) { return e.ADM_AccessGroupMasterId != ddlAccessGroup; });
+                            } else {//add new AccessGroup
+                                //select 1st object with mathced condition and add it to selecetd AccessGroup array
+                                AddedUserAccessGroups.push($.grep(ToBeAddedUserAccessGroups, function (e) { return e.ADM_AccessGroupMasterId == ddlAccessGroup; })[0]);
+                                //remove same object from pending AccessGroup list array
+                                ToBeAddedUserAccessGroups = $.grep(ToBeAddedUserAccessGroups, function (e) { return e.ADM_AccessGroupMasterId != ddlAccessGroup; });
+                            }
+                            fnDisableControls(false);
+                            MainLayout.fnInitialiseDataTable($('#tblAccessGroup'));
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Alert!", "An error occoured contact administrator!");
+                        }
+                    },
+                    error: function (x) {
+                        MainLayout.fnAlertMessege("Alert!", "An error occoured contact administrator!");
+                    }
+                });
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured contact administrator!");
+            }
+        }
+
+        //custom validations
+        function validateCustom() {
+
+            var errorList = "";
+            var isValid = true;
+            var result = fnCheckUserExistsUsingMsid();
+
+            var startDateVal = $('#StartDate').val();
+            var endDateVal = $('#EndDate').val();
+            var isActive = $('#IsActive').prop('checked');
+            var today = new Date();
+            today.setHours(0, 0, 0, 0)
+
+            var email = $('#txtEmail').val();
+            var confirmEmail = $('#txtConfirmEmail').val();
+
+            if (startDateVal != null && startDateVal != '' && endDateVal != null && endDateVal != '') {
+                var startDate = new Date(startDateVal);
+                var endDate = new Date(endDateVal);
+                if (startDate > endDate) {
+                    $('#EndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    $('#StartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>' + "End Date should be greater than Start Date." + '</li>';
+                    isValid = false;
+                }
+            }
+
+            if (endDateVal != null && endDateVal != '') {
+                var startDate = new Date(startDateVal);
+                var endDate = new Date(endDateVal);
+                if (today > endDate && isActive == true) {
+                    $('#EndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>' + "End Date should be greater than today or User cannot be active." + '</li>';
+                    isValid = false;
+                }
+            }
+
+            if (email != confirmEmail) {
+                $('#txtEmail').removeClass("valid").addClass("input-validation-error");
+                $('#txtConfirmEmail').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>' + "Email and Confirm Email values should be same." + '</li>';
+                isValid = false;
+            }
+
+            if ($("#txtMSID").val() != "" && !result.isValid) {
+                $('#txtMSID').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>' + "MS Id already exists." + '</li>';
+                isValid = false;
+            }
+
+            if (AddedUserAccessGroups.length == 0) {
+                errorList = errorList + '<li>' + "Minimum One Access Group is required." + '</li>';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                if ($('.validation-summary-errors').length != 0) {
+                    //if validion errors div is present add errors to list
+                    $('.validation-summary-errors ul').append(errorList);
+                } else {
+                    //if validion errors div is not present update validation-summary-valid div and add errors to list
+                    $('.validation-summary-valid').addClass('validation-summary-errors').removeClass('validation-summary-valid');
+                    $('.validation-summary-errors ul').append(errorList);
+                }
+            }
+            return isValid;
+        };
+
+        $("#btnSubmit").on("click", function () {
+
+            MainLayout.fnResetValidationSummary();
+            fnGetUtcDateIntoHdnFields(); //fuction to set values for date time fields from date time picker fields
+            var $form = $('#frmAddUser'),
+                frmData = $form.serialize();
+            var formValid = $form.valid(); //validate form
+            var isCustomValid = validateCustom();// custom validations
+            if (!formValid || !isCustomValid)
+                return;
+            if (origForm != $form.serialize()) {
+                try {
+                    $.ajax({
+                        data: $form.serialize(),
+                        url: submitUrl,
+                        type: "POST",
+                        success: function (data) {
+                            if (data.ID > 0) {
+                                MainLayout.fnAlertMessege("Error!", data.Message);
+                            }
+                            else {
+                                MainLayout.fnAlertMessege("Alert!", 'Record saved successfully.', function () {
+                                    window.location.href = cancelUrl;
+                                });
+                            }
+                        },
+                        error: function (x) {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                        }
+                    });
+                }
+                catch (e) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                }
+            } else {
+                MainLayout.fnAlertMessege("Alert!", "There is no change in the form to update.");
+            }
+        });
+
+        //add new AccessGroup in table
+        $(document).on("click", '#btnAddNew', function () {
+            if (AddedUserAccessGroups.length == 0) {
+                $('#tblAccessGroup tbody').empty();
+            }
+
+            var newRow = "<tr role='row'><td style='padding-left:20px'><a id='btnSaveNewAccessGroup' ><img src='/Images/save-img.png' alt= 'Save' /></a>";
+            newRow = newRow + "&nbsp;<a id='btnCancelNewAccessGroup' ><img src='/Images/cancle-icon.png' alt='Cancel'/></a></td>";
+            newRow = newRow + "<td><select class='form-control' id='ddlAccessGroups'></select></td>";
+            newRow = newRow + "<td></td><td></td><td></td><td></td></tr>";
+            $('#tblAccessGroup tbody:last').append(newRow);
+            $('#tblAccessGroup th').unbind('click.DT');//to stop the sorting buttons in header
+
+            MainLayout.getDropDownList('#ddlAccessGroups', ToBeAddedUserAccessGroups, dropdownDefaultValue, 'AccessGroupName', 'ADM_AccessGroupMasterId');
+            fnDisableControls(true);
+        });
+
+        //Cancel current editing AccessGroup
+        $(document).on("click", "#btnCancelNewAccessGroup", function () {
+            try {
+                var tr = $(this).parents('tr');
+                MainLayout.fnConfirmDialogbox("Confirmation", "Do you wish to remove the AccessGroup ?", function (isTrue) {
+                    if (isTrue) {
+                        if (AddedUserAccessGroups.length == 0)
+                            tr.empty().html('<td class="dataTables_empty" valign="top" colspan="6">No data available</td>');
+                        else
+                            tr.remove();
+                        fnDisableControls(false);
+                    }
+                    else {
+                        return;
+                    }
+                });
+            }
+            catch (e) {
+            }
+        });
+
+        //save currently editing AccessGroup
+        $(document).on("click", "#btnSaveNewAccessGroup", function () {
+            var ddlAccessGroup = $('#ddlAccessGroups').val();
+
+            if (ddlAccessGroup != "")
+                fnPerformAccessGroupOperation(0, ddlAccessGroup);//0 for save new AccessGroup
+            else
+                MainLayout.fnAlertMessege("Alert!", "Please Select AccessGroup !");
+        });
+
+        //delete prevoiusly added AccessGroup
+        $(document).on("click", "#btnDeleteAccessGroup", function () {
+            var ddlAccessGroup = $(this).parents('tr').attr('AccessGroupId');
+            MainLayout.fnConfirmDialogbox("Confirmation", "Do you wish to delete selected AccessGroup ?", function (isTrue) {
+                if (isTrue) {
+                    fnPerformAccessGroupOperation(1, ddlAccessGroup);//1 for delete AccessGroup action
+                } else {
+                    return;
+                }
+            });
+        });
+
+        //edit prevoiusly added AccessGroup
+        $(document).on("click", "#btnEditAccessGroup", function () {
+            var row = $(this).parents('tr');
+            oldAccessGroup = row.attr('AccessGroupId');
+            //select 1st object with mathced condition and add it to pending queues array
+            ToBeAddedUserAccessGroups.push($.grep(AddedUserAccessGroups, function (e) { return e.ADM_AccessGroupMasterId == oldAccessGroup; })[0]);
+            //remove same object from selecetd queues list array
+            AddedUserAccessGroups = $.grep(ToBeAddedUserAccessGroups, function (e) { return e.ADM_AccessGroupMasterId != oldAccessGroup; });
+
+            var newRow = "<td style='padding-left:20px'><a id='btnUpdateAccessGroup' ><img src='/Images/save-img.png' alt='Update' /></a>";
+            newRow = newRow + "&nbsp;<a id='btnCancelOldAccessGroup' ><img src='/Images/cancle-icon.png' alt='Cancel'/></a></td>";
+            newRow = newRow + "<td><select class='form-control' id='ddlAccessGroups'></select></td>";
+            newRow = newRow + "<td>" + row.children('td')[2].innerHTML + "</td><td>" + row.children('td')[3].innerHTML + "</td>";
+            newRow = newRow + "<td></td><td></td>";
+            row.empty().html(newRow);
+
+            MainLayout.getDropDownList('#ddlAccessGroups', ToBeAddedUserAccessGroups, dropdownDefaultValue, 'AccessGroupName', 'ADM_AccessGroupMasterId');
+            $('#ddlAccessGroups').val(oldAccessGroup);
+            fnDisableControls(true);
+        });
+
+        //Cancel current editing already added AccessGroup
+        $(document).on("click", "#btnCancelOldAccessGroup", function () {
+            try {
+                var tr = $(this).parents('tr');
+                MainLayout.fnConfirmDialogbox("Confirmation", "Do you wish to discard the changes ?", function (isTrue) {
+                    if (isTrue) {
+                        fnPerformAccessGroupOperation(0, oldAccessGroup);// reset the queue value to old value by performing save on previous value
+                        oldAccessGroup = 0;//reset old work queue
+                        fnDisableControls(false);
+                    }
+                    else {
+                        return;
+                    }
+                });
+            }
+            catch (e) {
+            }
+        });
+
+        //update currently editing AccessGroup
+        $(document).on("click", "#btnUpdateAccessGroup", function () {
+            var ddlAccessGroups = $('#ddlAccessGroups').val();
+            if (ddlAccessGroups != "")
+                fnPerformAccessGroupOperation(2, ddlAccessGroups);//0 for save WQ action
+            else
+                MainLayout.fnAlertMessege("Alert!", "Please Select AccessGroup !");
+        });
+
+        //update currently editing AccessGroup
+        $(document).on("click", "#btnCheckMSIDExists", function () {
+            if ($("#txtMSID").val() != "") {
+                $('#txtFirstName').val("");
+                $('#txtLastName').val("");
+                $('#txtEmail').val("");
+                $('#txtConfirmEmail').val("");
+                var result = fnCheckUserExistsUsingMsid();
+                if (!result.isValid) {
+                    MainLayout.fnAlertMessege("Alert!", "MS ID already Exists.");
+                }
+                else
+                {
+                    //MainLayout.fnAlertMessege("Alert!", "MS ID can be added to ERS.");
+                    var getLdapUserDetails = fngetLdapUserDetails();
+                    if (getLdapUserDetails.isValid)
+                    {
+                        MainLayout.fnConfirmDialogbox("Confirmation", "Do you Want to Populate Data ?", function (isTrue) {
+                            if (isTrue) {
+                                $('#txtFirstName').val(getLdapUserDetails.UserDetails.FirstName);
+                                $('#txtLastName').val(getLdapUserDetails.UserDetails.LastName);
+                                $('#txtEmail').val(getLdapUserDetails.UserDetails.Email);
+                                $('#txtConfirmEmail').val(getLdapUserDetails.UserDetails.Email);
+                            }
+                        })
+                    }
+                    else
+                    {
+                        MainLayout.fnAlertMessege("Alert!", "MS ID is Not Valid");
+                        $("#txtMSID").val("");
+                    }
+                }
+            }
+        });
+
+        //fuction to set values for date time fields from date time picker to match format for comparision
+        fnGetUtcDateIntoHdnFields();
+        MainLayout.fnInitialiseDataTable($('#tblAccessGroup'));
+
+    </script>
+}
+

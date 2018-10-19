@@ -1,0 +1,174 @@
+﻿@model ENRLReconSystem.DO.UIUserLogin
+@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.Utility
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="main-body-wrpr">
+    <div class="login-ctr">
+    <div class="login-wrpr centered">
+        <div class="login-hdr">
+            <img src="~/Images/login-hdr-img.png" /><span>Login</span>
+        </div>
+        <div class="login-body">
+            @if (Model.IsAuthorizedUser)
+            {
+                using (Html.BeginForm("Login", "Login", FormMethod.Post, new { @id = "frmLogin", @class = "form-horizontal" }))
+                {
+                    <div style="padding:10px;">
+                        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                    </div>
+
+                    @*@Html.AntiForgeryToken()*@
+                    <div class="form-group">
+                        <label id="lblUserName" class="control-label col-xs-5 required">User Name</label>
+                        <div class="col-xs-7">
+                            <input type="text" class="form-control" id="inputUserName" readonly="readonly" placeholder="User Name" value="@User.Identity.Name.Replace("MS\\", "")">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label id="lblBusinessSegment" class="control-label col-xs-5 required">Business Segment</label>
+                        <div class="col-xs-7">
+                            @Html.DropDownListFor(model => model.BusinessSegmentLkup, Enumerable.Empty<SelectListItem>(), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Business Segment is Required").AddCssClass("form-control").CustomAttributes("id", "ddlBusinessSegment").validationAttributes)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label id="lblWorkBasket" class="control-label col-xs-5 required">Work Basket</label>
+                        <div class="col-xs-7">
+                            @Html.DropDownListFor(model => model.WorkBasketLkup, Enumerable.Empty<SelectListItem>(), "Please Select Business Segment", new CustomValidation().Required("Work Basket is Required").AddCssClass("form-control").CustomAttributes("id", "ddlWorkBasket").CustomAttributes("readonly", "readonly").validationAttributes)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label id="lblRole" class="control-label col-xs-5 required">Role</label>
+                        <div class="col-xs-7">
+                            @Html.DropDownListFor(model => model.RoleLkup, Enumerable.Empty<SelectListItem>(), "Please Select Work Basket", new CustomValidation().Required("Role is Required").AddCssClass("form-control").CustomAttributes("id", "ddlRole").CustomAttributes("readonly", "readonly").validationAttributes)
+                        </div>
+                    </div>
+                    <div class="clearfix">
+                        <button type="submit" id="btnLogin" class="btn btn-primary col-md-6"><img src="~/Images/login-icon.png" /><span>Login</span></button>
+                        <button type="button" id="btnLgpageCancel" class="btn btn-primary col-md-6"><img src="~/Images/cancle-icon.png" /><span>Cancel</span></button>
+                    </div>
+                }
+                if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                {
+                    <div class="form-group" style="color:red;font-weight:bold;">
+                        <br />
+                        @Model.ErrorMessage
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Production Access Steps</label>
+                        <a href="@Url.Action("DownloadTemplate", "Login")" target="_blank">Production Access Steps</a>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="form-group" style="color:red;font-weight:bold;">
+                    <br />
+                    @Model.ErrorMessage
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Production Access Steps</label>
+                    @*<a id="lnkDownLoadFile" href="_blank" style="display:block;">Production Access Steps</a>*@
+                    <a href="@Url.Action("DownloadTemplate", "Login")" target="_blank">Production Access Steps</a>
+                </div>
+            }
+        </div>
+    </div>
+    </div>
+</section>
+@section scripts{
+    <script>
+        $('#btnLgpageCancel').click(function (event) {
+            window.close();
+        });
+
+        var Correlations = @Html.Raw(Json.Encode(Model.Correlations));
+        var LookUps = @Html.Raw(Json.Encode(Model.LookUps));
+        var dropdownDefaultValue = '@ConstantTexts.dropdownDefaultValue';
+        var BusinessSegment =  @(Model.BusinessSegmentLkup.HasValue ? Model.BusinessSegmentLkup : 0);
+        var WorkBasket = @(Model.WorkBasketLkup.HasValue ? Model.WorkBasketLkup : 0);
+        var Role = @(Model.RoleLkup.HasValue ? Model.RoleLkup : 0);
+        var UserAuthorized = '@Model.IsAuthorizedUser';
+        var urlDownloadFile ='@Url.Action("DownloadTemplate", "Login")';
+
+        if (UserAuthorized) {
+            $('#document').ready(function () {
+                var options = [];
+                for (var filter in Correlations) {
+                    for (var arr in LookUps) {
+                        if (LookUps[arr].CMN_LookupMasterId == Correlations[filter].BusinessSegmentLkup) {
+                            if (options.indexOf(LookUps[arr]) == -1)
+                                options.push(LookUps[arr]);
+                        }
+                    }
+                }
+                var result = MainLayout.getDropDownList('#ddlBusinessSegment', options, dropdownDefaultValue, 'LookupValue', 'CMN_LookupMasterId')
+                if (result > 0 && BusinessSegment != "" && BusinessSegment != 0) {
+                    $("#ddlBusinessSegment").val(BusinessSegment);
+                    $("#ddlBusinessSegment").trigger('change');
+                    if (WorkBasket != "" && WorkBasket != 0) {
+                        $("#ddlWorkBasket").val(WorkBasket);
+                        $("#ddlWorkBasket").trigger('change');
+                        if (Role != "" && Role != 0) {
+                            $("#ddlRole").val(Role);
+                            $("#ddlRole").trigger('change');
+                        }
+                    }
+                }
+            });
+
+            $('#ddlBusinessSegment').change(function () {
+                var selected = $('#ddlBusinessSegment').val();
+                var options = [];
+                if (selected != "" || selected != 0) {
+                    for (var filter in Correlations) {
+                        if (Correlations[filter].BusinessSegmentLkup == selected) {
+                            for (var arr in LookUps) {
+                                if (LookUps[arr].CMN_LookupMasterId == Correlations[filter].WorkBasketLkup) {
+                                    if (options.indexOf(LookUps[arr]) == -1)
+                                        options.push(LookUps[arr]);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (options.length > 0) {
+                    MainLayout.getDropDownList('#ddlWorkBasket', options, dropdownDefaultValue, 'LookupValue', 'CMN_LookupMasterId')
+                    $('#ddlWorkBasket').removeAttr('readonly');
+                } else {
+                    MainLayout.getDropDownList('#ddlWorkBasket', [], 'Please Select Business Segment', 'LookupValue', 'CMN_LookupMasterId')
+                    $('#ddlWorkBasket,#ddlRole').attr('readonly', 'readonly');
+                }
+                MainLayout.getDropDownList('#ddlRole', [], 'Please Select Work Basket')
+            })
+
+            $('#ddlWorkBasket').change(function () {
+                var selected = $('#ddlWorkBasket').val();
+                var options = [];
+                if (selected != "" || selected != 0) {
+                    for (var filter in Correlations) {
+                        if (Correlations[filter].WorkBasketLkup == selected) {
+                            for (var arr in LookUps) {
+                                if (LookUps[arr].CMN_LookupMasterId == Correlations[filter].RoleLkup) {
+                                    if (options.indexOf(LookUps[arr]) == -1)
+                                        options.push(LookUps[arr]);
+                                }
+                            }
+                        }
+                    }
+                }
+                if (options.length > 0) {
+                    MainLayout.getDropDownList('#ddlRole', options, dropdownDefaultValue, 'LookupValue', 'CMN_LookupMasterId')
+                    $('#ddlRole').removeAttr('readonly');
+                } else {
+                    MainLayout.getDropDownList('#ddlRole', [], 'Please Select Work Basket', 'LookupValue', 'CMN_LookupMasterId')
+                    $('#ddlRole').attr('readonly', 'readonly');
+                }
+            })
+
+        }       
+
+    </script>
+}

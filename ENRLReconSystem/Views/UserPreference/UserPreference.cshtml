@@ -1,0 +1,254 @@
+﻿@using ENRLReconSystem.DO
+@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.Utility
+@model DOADM_UserPreference
+@{
+    ViewBag.Title = "UserPreference";
+    Layout = "~/Views/Shared/_LayoutPopup.cshtml";
+    var ShowOSTQueueSummary = ViewBag.ShowOSTQueueSummary == true ? "normal" : "none";
+    var ShowEligQueueSummary = ViewBag.ShowEligQueueSummary == true ? "normal" : "none";
+    var ShowRPRQueueSummary = ViewBag.ShowRPRQueueSummary == true ? "normal" : "none";
+}
+
+@using (Html.BeginForm("SaveUserPreference", "UserPreference", FormMethod.Post, new { @id = "frmAddUserPreference" }))
+{
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <div class="wdgt-wrapper">
+        @Html.AntiForgeryToken()
+        <div class="wdgt-hdr">
+            <img src="~/images/list-icon.png" /><h4>User Preferences</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <div class="clearfix">
+                <div style="color:red;">
+                    @Html.ValidationSummary()
+                    <div class="validation-summary-errors" data-valmsg-summary="true" id="dvErrorMsg" hidden="hidden">
+                        <li id="dateError"></li>
+                    </div>
+                </div>
+                @Html.HiddenFor(xx => xx.ADM_UserPreferenceId, new { @id = "hdnUserPreferenceId" })
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">Business Segment</label>
+                    @Html.DropDownListFor(model => model.BusinessSegmentLkup, Enumerable.Empty<SelectListItem>(), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "ddlBusinessSegment").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="txtPriority">Work Basket</label>
+                    @Html.DropDownListFor(model => model.WorkBasketLkup, Enumerable.Empty<SelectListItem>(), "Please Select Business Segment", new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "ddlWorkBasket").CustomAttributes("readonly", "readonly").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">Role</label>
+                    @Html.DropDownListFor(model => model.RoleLkup, Enumerable.Empty<SelectListItem>(), "Please Select Work Basket", new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "ddlRole").CustomAttributes("readonly", "readonly").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="txtPriority">Time Zone</label>
+                    @Html.DropDownListFor(model => model.TimezoneLkup, new SelectList(ViewBag.TimeZoneList, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "ddlTimeZone").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="txtPriority">Alerts</label>
+
+                    @Html.CheckBoxFor(model => model.ShowAlerts, new { id = "chkAlerts", @class = "form-control" })
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="txtPriority">Resources</label>
+
+                    @Html.CheckBoxFor(model => model.ShowResources, new { id = "chkResources", @class = "form-control" })
+                </div>
+
+                <div class="form-group col-md-3" style="display:@ShowOSTQueueSummary">
+                    <label for="txtPriority">OST Summary</label>
+                    @Html.CheckBoxFor(model => model.ShowOSTSummary, new { id = "chkOSTSummary", @class = "form-control" })
+                </div>
+
+                <div class="form-group col-md-3" style="display:@ShowEligQueueSummary">
+                    <label for="txtPriority">GPS vs MMR Discrepancy Summary</label>
+                    @Html.CheckBoxFor(model => model.ShowEligibilitySummary, new { id = "chkEligibilitySummary", @class = "form-control" })
+                </div>
+
+                <div class="form-group col-md-3" style="display:@ShowRPRQueueSummary">
+                    <label for="txtPriority">RPR Summary</label>
+                    @Html.CheckBoxFor(model => model.ShowRPRSummary, new { id = "chkRPRSummary", @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="btn-group clearfix">
+                <button type="submit" id="btnSaveUserPref" class="btn btn-primary"><img src="~/images/save-icon.png" /><span>Save</span></button>
+                <button type="button" id="btnUserPrefReset" class="btn btn-primary"><img src="~/images/reset-icon.png" /><span>Reset</span></button>
+                <button type="button" id="btnCancelUserPref" class="btn btn-primary" data-dismiss="modal"><img src="~/images/cancle-icon.png" /><span>Cancel</span></button>
+
+
+            </div>
+        </div>
+
+    </div>
+
+}
+
+@section scripts{
+    <script type="text/javascript">
+
+        var Correlations = @Html.Raw(Json.Encode(ViewBag.Correlations));
+        var LookUps = @Html.Raw(Json.Encode(ViewBag.LookUps));
+        var dropdownDefaultValue = '@ConstantTexts.dropdownDefaultValue';
+        var BusinessSegment =  @(Model.BusinessSegmentLkup.HasValue ? Model.BusinessSegmentLkup : 0);
+        var WorkBasket = @(Model.WorkBasketLkup.HasValue ? Model.WorkBasketLkup : 0);
+        var Role = @(Model.RoleLkup.HasValue ? Model.RoleLkup : 0);
+        var submitUrl = '@Url.Action("SaveUserPreference", "UserPreference")';
+
+
+        $('#btnSaveUserPref').prop('disabled', false);
+        var pageLoadObject = {
+            BusinessSegmentLkup: $('#ddlBusinessSegment').val(),
+            RoleLkup: $('#ddlRole').val(),
+            WorkBasketLkup: $('#ddlWorkBasket').val(),
+            ShowAlerts: $('#chkAlerts:checked').val(),
+            ShowResources: $('#chkResources:checked').val(),
+            TimezoneLkup: $('#ddlTimeZone').val(),
+            ShowOSTSummary: $('#chkOSTSummary:checked').val(),
+            ShowEligibilitySummary: $('#chkEligibilitySummary:checked').val(),
+            ShowRPRSummary: $('#chkRPRSummary:checked').val()
+        }
+
+        $('#document').ready(function () {
+            var options = [];
+            for (var filter in Correlations) {
+                for (var arr in LookUps) {
+                    if (LookUps[arr].CMN_LookupMasterId == Correlations[filter].BusinessSegmentLkup) {
+                        if (options.indexOf(LookUps[arr]) == -1)
+                            options.push(LookUps[arr]);
+                    }
+                }
+            }
+            var result = MainLayout.getDropDownList('#ddlBusinessSegment', options, dropdownDefaultValue, 'LookupValue', 'CMN_LookupMasterId')
+            if (result > 0 && BusinessSegment != "" && BusinessSegment != 0) {
+                $("#ddlBusinessSegment").val(BusinessSegment);
+                $("#ddlBusinessSegment").trigger('change');
+                if (WorkBasket != "" && WorkBasket != 0) {
+                    $("#ddlWorkBasket").val(WorkBasket);
+                    $("#ddlWorkBasket").trigger('change');
+                    if (Role != "" && Role != 0) {
+                        $("#ddlRole").val(Role);
+                        $("#ddlRole").trigger('change');
+                    }
+                }
+            }
+            var $myForm = $("#frmAddUserPreference");
+            var origForm = $myForm.serialize();
+        });
+
+        $('#ddlBusinessSegment').change(function () {
+            var selected = $('#ddlBusinessSegment').val();
+            var options = [];
+            if (selected != "" || selected != 0) {
+                for (var filter in Correlations) {
+                    if (Correlations[filter].BusinessSegmentLkup == selected) {
+                        for (var arr in LookUps) {
+                            if (LookUps[arr].CMN_LookupMasterId == Correlations[filter].WorkBasketLkup) {
+                                if (options.indexOf(LookUps[arr]) == -1)
+                                    options.push(LookUps[arr]);
+                            }
+                        }
+                    }
+                }
+            }
+            if (options.length > 0) {
+                MainLayout.getDropDownList('#ddlWorkBasket', options, dropdownDefaultValue, 'LookupValue', 'CMN_LookupMasterId')
+                $('#ddlWorkBasket').removeAttr('readonly');
+            } else {
+                MainLayout.getDropDownList('#ddlWorkBasket', [], 'Please Select Business Segment', 'LookupValue', 'CMN_LookupMasterId')
+                $('#ddlWorkBasket,#ddlRole').attr('readonly', 'readonly');
+            }
+            MainLayout.getDropDownList('#ddlRole', [], 'Please Select Work Basket')
+        })
+
+        $('#ddlWorkBasket').change(function () {
+            var selected = $('#ddlWorkBasket').val();
+            var options = [];
+            if (selected != "" || selected != 0) {
+                for (var filter in Correlations) {
+                    if (Correlations[filter].WorkBasketLkup == selected) {
+                        for (var arr in LookUps) {
+                            if (LookUps[arr].CMN_LookupMasterId == Correlations[filter].RoleLkup) {
+                                if (options.indexOf(LookUps[arr]) == -1)
+                                    options.push(LookUps[arr]);
+                            }
+                        }
+                    }
+                }
+            }
+            if (options.length > 0) {
+                MainLayout.getDropDownList('#ddlRole', options, dropdownDefaultValue, 'LookupValue', 'CMN_LookupMasterId')
+                $('#ddlRole').removeAttr('readonly');
+            } else {
+                MainLayout.getDropDownList('#ddlRole', [], 'Please Select Work Basket', 'LookupValue', 'CMN_LookupMasterId')
+                $('#ddlRole').attr('readonly', 'readonly');
+            }
+        })
+
+        fnClearUserPreferencePopup = function () {
+            try {
+                MainLayout.fnResetValidationSummary();
+                $("#frmAddUserPreference").deserialize(orgFrmAddUserPreference);
+            } catch (e) {
+
+            }
+        };
+
+        //Reset Button function
+        var $myForm = $("#frmAddUserPreference");
+        var origForm = $myForm.serialize();
+        $('#btnUserPrefReset').click(function () {
+            $('#frmAddUserPreference').deserialize(origForm);
+            $("#ddlBusinessSegment").trigger('change');
+            $("#ddlWorkBasket").trigger('change');
+        });
+
+        $('#btnSaveUserPref').click(function (event) {
+            event.preventDefault();
+            var $form = $('#frmAddUserPreference');
+            frmData = $form.serialize();
+            var formValid = $form.valid();
+            if (formValid)
+                $('validation-summary-errors').empty();
+            var objUserPreference = {
+                ADM_UserPreferenceId: $('#hdnUserPreferenceId').val(),
+                ShowAlerts: $('#chkAlerts:checked').val(),
+                ShowResources: $('#chkResources:checked').val(),
+                BusinessSegmentLkup: $('#ddlBusinessSegment').val(),
+                RoleLkup: $('#ddlRole').val(),
+                TimezoneLkup: $('#ddlTimeZone').val(),
+                WorkBasketLkup: $('#ddlWorkBasket').val(),
+                ShowOSTSummary: $('#chkOSTSummary:checked').val(),
+                ShowEligibilitySummary: $('#chkEligibilitySummary:checked').val(),
+                ShowRPRSummary: $('#chkRPRSummary:checked').val()
+            }
+            if (!formValid) return false;
+            {
+                if (origForm != frmData) {
+                    $.ajax({
+                        type: "POST",
+                        url: submitUrl,
+                        data: objUserPreference,
+                        success: function (data) {
+                            if (data != null && data.ID == 0) {
+                                MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                                    $('#myModalUserPreferrence').hide();
+                                    location.reload();
+                                });
+                            }
+                        },
+                        error: function (data) {
+                            MainLayout.fnAlertMessege("Error!", data.Message);
+                            return;
+                        }
+                    });
+                }
+                else {
+                    MainLayout.fnAlertMessege("Alert", "No Changes done!");
+                }
+            }
+        });
+
+    </script>
+}
+
+

@@ -1,0 +1,576 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@model DOGEN_Queue
+
+@functions {
+    private string TruncateAndPaddString(string text)
+    {
+        return text = (text.NullToString().Length > 20) ? text.Substring(0, 20).PadRight(23, '.') : text;
+    }
+}
+<div class="tab-panel-group clearfix">
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#sectionSummaryInformation">Summary Information</a></li>
+        <li><a data-toggle="tab" href="#sectionBadTransactionHistory">Bad Transaction History</a></li>
+        <li><a data-toggle="tab" href="#sectionBadTransactionPending">Bad Transaction Pending</a></li>
+        <li><a data-toggle="tab" href="#sectionResponse">Response</a></li>
+    </ul>
+    <div class="tab-content wdgt-tab-content">
+        <div id="sectionSummaryInformation" class="tab-pane tab-paneScrollable fade in active">
+            @for (int i = 0; i < Model.lstTrrSummaryTransaction.Count(); i++)
+            {
+                <div class="tab-pane-wdgt tab-pane-ProcessWork clearfix">
+                    <div class="tab-pane-section col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-6">Application Date</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ApplicationDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">District Office</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].DistrictOffice, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Medical Claim Number</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].MedicareClaimNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">RX Id</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].RXId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Contract Year</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ContractYear, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">PBP Number</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PBPNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Previous PBP</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PBPNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Co-Pay Category</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].CoPayCategory, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">EGHB indicator</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].EGHBIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Premium Amount Value</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PremiumAmountValue, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Processing Time</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ProcessingTime, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">System Tracking Id</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].SystemtrackingId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Reply Code</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].TransactionReplyCode, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Short Name</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].TransactionShortName, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="tab-pane-section col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-6">Change Initiator Indicator</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ChangeInitiatorIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Effective Date</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].EffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">RX Bin</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].RXBin, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">RX PCN</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].RXPCN, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">PartC Premium</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PartCPremium, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Plan ID</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PlanId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Product Code</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ProductCode, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Co-Pay Effctive Date</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].CoPayEffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">EmpSubsidy Overide Indicator</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].EmpSubsidyOverrideIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Premium Withhold Option</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PartDPremium, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Record Type</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].RecordType, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Code</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].TransactionCode, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Date</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].TransactionDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="tab-pane-section col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-6">Change Org Name</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ChangeOrgName, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">GPS Tracking Number</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].GPSTrackingNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">RX Group</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].RXGroup, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Contract Number</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ContractNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">PartD premium</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PartDPremium, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Previous Contract PDP</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PreviousContractNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">SNP Flag</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].SNPFlag, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Creditable Coverage Indicator</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].CreditableCoverageIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Not Covered Months</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].NotCoveredMonths, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Process Date</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ProcessDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Source Identifier</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].SourceIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Code Description</label>
+                            <div class="tool-tip-box clearfix">
+                                @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].TransactionCodeDescription, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.lstTrrSummaryTransaction[i].TransactionCodeDescription), @class = "form-control" })
+                                @if (!string.IsNullOrEmpty(Model.lstTrrSummaryTransaction[i].TransactionCodeDescription))
+                                {
+                                    <span class="tool-tip">@Model.lstTrrSummaryTransaction[i].TransactionCodeDescription</span>
+                                }
+                                else
+                                {
+                                    <span class="tool-tip hide"></span>
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Id</label>
+                            @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].TransactionId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div id="sectionBadTransactionHistory" class="tab-pane tab-paneScrollable fade">
+            @for (int i = 0; i < Model.lstBadHistoryTransaction.Count(); i++)
+            {
+                <div class="tab-pane-wdgt tab-pane-ProcessWork clearfix">
+                    <div class="tab-pane-section col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-6">Application Date</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ApplicationDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">District Office</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].DistrictOffice, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Medical Claim Number</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].MedicareClaimNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">RX Id</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].RXId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Contract Year</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ContractYear, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">PBP Number</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PBPNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Previous PBP</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PBPNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Co-Pay Category</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].CoPayCategory, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">EGHB indicator</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].EGHBIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Premium Amount Value</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PremiumAmountValue, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Processing Time</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ProcessingTime, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">System Tracking Id</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].SystemtrackingId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Reply Code</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].TransactionReplyCode, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Short Name</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].TransactionShortName, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="tab-pane-section col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-6">Change Initiator Indicator</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ChangeInitiatorIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Effective Date</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].EffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">RX Bin</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].RXBin, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">RX PCN</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].RXPCN, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">PartC Premium</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PartCPremium, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Plan ID</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PlanId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Product Code</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ProductCode, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Co-Pay Effctive Date</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].CoPayEffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">EmpSubsidy Overide Indicator</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].EmpSubsidyOverrideIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Premium Withhold Option</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PartDPremium, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Record Type</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].RecordType, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Code</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].TransactionCode, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Date</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].TransactionDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="tab-pane-section col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-6">Change Org Name</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ChangeOrgName, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">GPS Tracking Number</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].GPSTrackingNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">RX Group</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].RXGroup, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Contract Number</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ContractNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">PartD premium</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PartDPremium, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Previous Contract PDP</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PreviousContractNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">SNP Flag</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].SNPFlag, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Creditable Coverage Indicator</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].CreditableCoverageIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Not Covered Months</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].NotCoveredMonths, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Process Date</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ProcessDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Source Identifier</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].SourceIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Code Description</label>
+                            <div class="tool-tip-box clearfix">
+                                @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].TransactionCodeDescription, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.lstBadHistoryTransaction[i].TransactionCodeDescription), @class = "form-control" })
+                                @if (!string.IsNullOrEmpty(Model.lstBadHistoryTransaction[i].TransactionCodeDescription))
+                                {
+                                    <span class="tool-tip">@Model.lstBadHistoryTransaction[i].TransactionCodeDescription</span>
+                                }
+                                else
+                                {
+                                    <span class="tool-tip hide"></span>
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Id</label>
+                            @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].TransactionId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <div id="sectionBadTransactionPending" class="tab-pane tab-paneScrollable fade">
+            @for (int i = 0; i < Model.lstBadPendingTransaction.Count(); i++)
+            {
+                <div class="tab-pane-wdgt tab-pane-ProcessWork clearfix">
+                    <div class="tab-pane-section col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-6">Application Date</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ApplicationDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">District Office</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].DistrictOffice, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Medical Claim Number</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].MedicareClaimNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">RX Id</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].RXId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Contract Year</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ContractYear, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">PBP Number</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PBPNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Previous PBP</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PBPNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Co-Pay Category</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].CoPayCategory, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">EGHB indicator</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].EGHBIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Premium Amount Value</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PremiumAmountValue, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Processing Time</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ProcessingTime, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">System Tracking Id</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].SystemtrackingId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Reply Code</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].TransactionReplyCode, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Short Name</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].TransactionShortName, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="tab-pane-section col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-6">Change Initiator Indicator</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ChangeInitiatorIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Effective Date</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].EffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">RX Bin</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].RXBin, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">RX PCN</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].RXPCN, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">PartC Premium</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PartCPremium, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Plan ID</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PlanId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Product Code</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ProductCode, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Co-Pay Effctive Date</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].CoPayEffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">EmpSubsidy Overide Indicator</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].EmpSubsidyOverrideIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Premium Withhold Option</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PartDPremium, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Record Type</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].RecordType, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Code</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].TransactionCode, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Date</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].TransactionDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="tab-pane-section col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-6">Change Org Name</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ChangeOrgName, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">GPS Tracking Number</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].GPSTrackingNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">RX Group</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].RXGroup, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Contract Number</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ContractNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">PartD premium</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PartDPremium, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Previous Contract PDP</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PreviousContractNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">SNP Flag</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].SNPFlag, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Creditable Coverage Indicator</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].CreditableCoverageIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Not Covered Months</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].NotCoveredMonths, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Process Date</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ProcessDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Source Identifier</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].SourceIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Code Description</label>
+                            <div class="tool-tip-box clearfix">
+                                @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].TransactionCodeDescription, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.lstBadPendingTransaction[i].TransactionCodeDescription), @class = "form-control" })
+                                @if (!string.IsNullOrEmpty(Model.lstBadPendingTransaction[i].TransactionCodeDescription))
+                                {
+                                    <span class="tool-tip">@Model.lstBadPendingTransaction[i].TransactionCodeDescription</span>
+                                }
+                                else
+                                {
+                                    <span class="tool-tip hide"></span>
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Transaction Id</label>
+                            @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].TransactionId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+        <div id="sectionResponse" class="tab-pane fade">
+            <div class="tab-pane-wdgt clearfix">
+                @*Need to add Controls*@
+            </div>
+        </div>
+    </div>
+</div>

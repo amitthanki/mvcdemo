@@ -1,0 +1,2092 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@model ENRLReconSystem.DO.DOGEN_Queue
+@{
+    ViewBag.Title = "EligibilityProcessWork";
+    string PageName = ViewBag.PageName;
+    if (PageName == ConstantTexts.MiimPageName)
+    {
+        ViewBag.isPopUp = true;
+    }
+    if (ViewBag.ViewName != "View")
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = null;
+    }
+}
+@functions {
+    private string TruncateAndPaddString(string text)
+    {
+        return text = (text.NullToString().Length > 20) ? text.Substring(0, 20).PadRight(23, '.') : text;
+    }
+}
+
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/Images/manage-case-icon.png" /><h4>Eligibility Process Work</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            @Html.HiddenFor(m => m.DiscrepancyCategoryLkup, new { @id = "hdnDisCategory" })
+            <div class="inner-wdgt clearfix">
+                <div class="primary-hdr">
+                    <h4><img src="~/images/manage-case-icon.png" /><span>Work Case</span></h4>
+                </div>
+                @*Work Case*@
+                <div class="inner-wdgt-body clearfix">
+                    <div class="tab-pane-section col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-6">ERS Case ID</label>
+                            @Html.TextBoxFor(xx => xx.GEN_QueueId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Subject</label>
+                            @Html.HiddenFor(m => m.DiscrepancyCategoryLkup, new { id = "hdnDiscrepancyCategoryLkup" })
+                            @Html.TextBoxFor(m => m.DiscrepancyCategory, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Most Recent Queue</label>
+                            @Html.TextBoxFor(m => m.MostRecentWorkQueue, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Updated By</label>
+                            <div class="tool-tip-box clearfix">
+                                @Html.TextBoxFor(xx => xx.LastUpdatedBy, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.LastUpdatedBy), @class = "form-control" })
+                                <span class="tool-tip">@Model.LastUpdatedBy</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Close Date</label>
+                            @Html.TextBoxFor(m => m.UTCResolvedOn, "{0:MM/dd/yyyy hh:mm tt}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="tab-pane-section col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-6">Business Segment</label>
+                            @Html.TextBoxFor(m => m.BusinessSegment, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Most Recent Status</label>
+                            @Html.TextBoxFor(xx => xx.MostRecentStatus, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Created By</label>
+                            <div class="tool-tip-box clearfix">
+                                @Html.TextBoxFor(xx => xx.CreatedBy, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.CreatedBy), @class = "form-control" })
+                                <span class="tool-tip">@Model.CreatedBy</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Updated On</label>
+                            @Html.TextBoxFor(m => m.UTCLastUpdatedOn, "{0:MM/dd/yyyy hh:mm tt}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6" title="Turn Around Time: (Current Date - Created Date) In Days">TAT(In Days)</label>
+                            @Html.TextBoxFor(m => m.TurnAroundTime, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="tab-pane-section col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-6">Work Basket</label>
+                            @Html.TextBoxFor(m => m.WorkBasket, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Action</label>
+                            <div class="tool-tip-box clearfix">
+                                @Html.TextBoxFor(m => m.MostRecentAction, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.MostRecentAction), @class = "form-control" })
+                                <span class="tool-tip">@Model.MostRecentAction</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Created On</label>
+                            @Html.TextBoxFor(m => m.UTCCreatedOn, "{0:MM/dd/yyyy hh:mm tt}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6" title="Case Age Calculation: (Current Date - Compliance Date) In Days">Case Age (In Days)</label>
+                            @Html.TextBoxFor(m => m.Aging, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </div>
+
+
+                    <div class="btn-group clearfix">
+                        <button type="button" id="btnUpdateCaseInfo" class="btn btn-primary" title="Update Case Info"><img src="~/images/save-icon.png"><span>Update Case Info</span></button>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-panel-group">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#sectionA">Case Details</a></li>
+                    <li><a data-toggle="tab" href="#sectionB" onclick="return fnAccessLinkTab('@Model.GEN_QueueId','discrepancydata');">Discrepancy Data</a></li>
+                    @*<li><a data-toggle="tab" href="#sectionD">CMS Transaction Details</a></li>*@
+                    @*<li><a data-toggle="tab" href="#sectionC">Eligibility Action Details</a></li>*@
+                    <li><a data-toggle="tab" href="#SectionTrrData" onclick="return fnAccessLinkTab('@Model.GEN_QueueId','TrrData');">TRR Data</a></li>
+                    <li><a data-toggle="tab" href="#sectionE">Referenced Cases</a></li>
+                    <li><a data-toggle="tab" href="#sectionF">Comments</a></li>
+                    <li><a data-toggle="tab" href="#sectionG">Attachments</a></li>
+                </ul>
+                <div class="tab-content">
+                    @*Case Details*@
+                    <div id="sectionA" class="tab-pane fade in active">
+                        <div class="tab-pane-wdgt">
+                            <div class="secondary-sub-hdr">
+                                <h4>Member Info</h4>
+                            </div>
+                            <div class="tab-pane-body clearfix">
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Member ID</label>
+                                        @Html.TextBoxFor(m => m.MemberID, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">First Name</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(xx => xx.MemberFirstName, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.MemberFirstName), @class = "form-control" })
+                                            @if (!string.IsNullOrEmpty(Model.MemberFirstName))
+                                            {
+                                                <span class="tool-tip">@Model.MemberFirstName</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="tool-tip hide"></span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Last Name</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(xx => xx.MemberLastName, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.MemberLastName), @class = "form-control" })
+                                            @if (!string.IsNullOrEmpty(Model.MemberLastName))
+                                            {
+                                                <span class="tool-tip">@Model.MemberLastName</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="tool-tip hide"></span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Middle Name</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(xx => xx.MemberMiddleName, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.MemberMiddleName), @class = "form-control" })
+                                            @if (!string.IsNullOrEmpty(Model.MemberMiddleName))
+                                            {
+                                                <span class="tool-tip">@Model.MemberMiddleName</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="tool-tip hide"></span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Medicare ID</label>
+                                        @Html.TextBoxFor(m => m.MemberCurrentHICN, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">GPS Household ID</label>
+                                        @Html.TextBoxFor(m => m.GPSHouseholdID, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">PBP</label>
+                                        @Html.TextBoxFor(m => m.MemberPBP, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Contract Number</label>
+                                        @Html.TextBoxFor(m => m.MemberContractID, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    @*<div class="form-group">
+                                            <label class="col-md-6">Member MBI</label>
+                                            @Html.TextBoxFor(m => m.MemberCurrentMBI, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                        </div>*@
+                                    <div class="form-group">
+                                        <label class="col-md-6">DOB</label>
+                                        @Html.TextBoxFor(m => m.MemberDOB, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">LOB</label>
+                                        @Html.TextBoxFor(m => m.MemberLOB, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Gender</label>
+                                        @Html.TextBoxFor(m => m.MemberGender, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">OOA Flag</label>
+                                        @Html.TextBox("EligOOAFlag", Model.EligOOAFlagLkup ? "Yes" : "No", new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+
+                                    @*<div class="form-group col-md-3">
+                                            <label>Member Verified State</label>
+                                            <input class="form-control" type="text">
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Member Verified County Code</label>
+                                            <input class="form-control" type="text">
+                                        </div>*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane-wdgt">
+                            <div class="secondary-sub-hdr">
+                                <h4>Discrepancy Info</h4>
+                            </div>
+                            <div class="tab-pane-body clearfix">
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Discrepancy Category</label>
+                                        @Html.TextBoxFor(m => m.DiscrepancyCategory, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Discrepancy Start Date</label>
+                                        @Html.TextBoxFor(m => m.DiscrepancyStartDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Discrepancy Type</label>
+                                        @Html.TextBoxFor(m => m.DiscrepancyType, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Discrepancy End Date</label>
+                                        @Html.TextBoxFor(m => m.DiscrepancyEndDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Compliance Start Date</label>
+                                        @Html.TextBoxFor(m => m.ComplianceStartDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane-wdgt">
+                            <div class="secondary-sub-hdr">
+                                <h4>Discrepancy Data</h4>
+                            </div>
+                            <div class="tab-pane-body clearfix">
+                                <div class="gps-mmr-wdgt-ctr clearfix">
+                                    <div class="inner-wdgt inner-wdgt-2 clearfix">
+                                        <div class="primary-hdr">
+                                            <h4>GPS Data</h4>
+                                        </div>
+                                        <form>
+                                            <div class="tab-pane-body clearfix">
+                                                <div class="tab-pane-section">
+                                                    <div class="form-group">
+                                                        <label>Contract Number</label>
+                                                        @Html.TextBoxFor(m => m.EligGPSContractID, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>SCC Code</label>
+                                                        @Html.TextBoxFor(m => m.EligGPSSCCCode, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Insured Plan Effective Date</label>
+                                                        @Html.TextBoxFor(m => m.EligGPSInsuredPlanEffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Line of Business Desc</label>
+                                                        @Html.TextBoxFor(m => m.EligGPSLOB, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane-section">
+                                                    <div class="form-group">
+                                                        <label>PBP</label>
+                                                        @Html.TextBoxFor(m => m.EligGPSPBP, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Medicare ID</label>
+                                                        @Html.TextBoxFor(m => m.EligGPSCurrentHICN, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Insured Plan Term Date</label>
+                                                        @Html.TextBoxFor(m => m.EligGPSInsuredPlanTermDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="inner-wdgt inner-wdgt-2 clearfix">
+                                        <div class="primary-hdr">
+                                            <h4>MMR Data</h4>
+                                        </div>
+                                        <form>
+                                            <div class="tab-pane-body clearfix">
+                                                <div class="tab-pane-section">
+                                                    <div class="form-group">
+                                                        <label>Contract Number</label>
+                                                        @Html.TextBoxFor(m => m.EligMMRContractID, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>SCC Code</label>
+                                                        @Html.TextBoxFor(m => m.EligMMRSCCCode, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Payment Adjustment Start Date</label>
+                                                        @Html.TextBoxFor(m => m.EligMMRPaymentAdjustmentStartDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Payment</label>
+                                                        @Html.TextBoxFor(m => m.EligMMRPaymentMonth, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane-section">
+                                                    <div class="form-group">
+                                                        <label>PBP</label>
+                                                        @Html.TextBoxFor(m => m.EligMMRPBP, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Medicare ID</label>
+                                                        @Html.TextBoxFor(m => m.EligMMRCurrentHICN, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label>Payment Adjustment End Date</label>
+                                                        @Html.TextBoxFor(m => m.EligMMRPaymentAdjustmentEndDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane-wdgt">
+                            <div class="secondary-sub-hdr">
+                                <h4>Action Details</h4>
+                            </div>
+                            <div class="tab-pane-body clearfix">
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Resolution</label>
+                                        @*@Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.Resolution, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })*@
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.Resolution, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_EligibilityActions.Resolution), @class = "form-control" })
+                                            @if (!string.IsNullOrEmpty(Model.objDOGEN_EligibilityActions.Resolution))
+                                            {
+                                                <span class="tool-tip">@Model.objDOGEN_EligibilityActions.Resolution</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="tool-tip hide"></span>
+                                            }
+                                        </div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model.objDOGEN_EligibilityActions.OtherRootCause))
+                                    {
+                                        <div class="form-group">
+                                            <label class="col-md-6">Other Root Cause</label>
+                                            <div class="tool-tip-box clearfix">
+                                                @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.OtherRootCause, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_EligibilityActions.OtherRootCause), @class = "form-control" })
+                                                @if (!string.IsNullOrEmpty(Model.objDOGEN_EligibilityActions.OtherRootCause))
+                                                {
+                                                    <span class="tool-tip">@Model.objDOGEN_EligibilityActions.OtherRootCause</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="tool-tip hide"></span>
+                                                }
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Root Cause</label>
+                                        @*@Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.RootCause, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })*@
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.RootCause, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_EligibilityActions.RootCause), @class = "form-control" })
+                                            @if (!string.IsNullOrEmpty(Model.objDOGEN_EligibilityActions.RootCause))
+                                            {
+                                                <span class="tool-tip">@Model.objDOGEN_EligibilityActions.RootCause</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="tool-tip hide"></span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Pend Reason</label>
+                                        @*@Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.PendReason, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })*@
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.PendReason, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_EligibilityActions.PendReason), @class = "form-control" })
+                                            @if (!string.IsNullOrEmpty(Model.objDOGEN_EligibilityActions.PendReason))
+                                            {
+                                                <span class="tool-tip">@Model.objDOGEN_EligibilityActions.PendReason</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="tool-tip hide"></span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    @*Discrepancy Data*@
+                    <div id="sectionB" class="tab-pane fade">
+                        @*<div class="tab-panel-group clearfix">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#sectionH">GPS Data</a></li>
+                                @*<li><a data-toggle="tab" href="#sectionK">SMS</a></li>*@
+                        @*</ul>
+                                <div class="tab-content">
+                                    <div id="sectionH" class="tab-pane fade in active clearfix">
+                                        <div class="tab-pane-section col-md-4">
+                                            <div class="form-group">
+                                                <label class="col-md-6">HICN</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.HICN, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">LOB</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.LOB, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">PBP</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.PBP, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Date of Birth</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.DOB, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">City</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.City, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="col-md-6">Plan Effective Date</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.PlanEffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+
+
+                                            <div class="form-group">
+                                                <label class="col-md-6">SCC Effective Date</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.SCCEffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Out of Area Indicator</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.OOAIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Application Approved Status</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.ApplicationApprovedStatus, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane-section col-md-4">
+                                            <div class="form-group">
+                                                <label class="col-md-6">Member ID</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.MemberId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Line of Business Desc</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.LOBDescription, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">First Name</label>
+
+                                                <div class="tool-tip-box clearfix">
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.FirstName, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_GPSData.FirstName), @class = "form-control" })
+                                                    @if (!string.IsNullOrEmpty(Model.objDOGEN_GPSData.FirstName))
+                                                    {
+                                                        <span class="tool-tip">@Model.objDOGEN_GPSData.FirstName</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="tool-tip hide"></span>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Address Line 1</label>
+                                                <div class="tool-tip-box clearfix">
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.AddressLine1, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_GPSData.AddressLine1), @class = "form-control" })
+                                                    @if (!string.IsNullOrEmpty(Model.objDOGEN_GPSData.AddressLine1))
+                                                    {
+                                                        <span class="tool-tip">@Model.objDOGEN_GPSData.AddressLine1</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="tool-tip hide"></span>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Zip Code 5</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.ZipCode5, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">State</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.State, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Plan Term Date</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.PlanTermDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">SCC End</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.SCCEndDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">GPS OOA Disenrollment Date</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.GPSOOADisenrollmentDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane-section col-md-4">
+                                            <div class="form-group">
+                                                <label class="col-md-6">GPS Household ID</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.HouseholdId, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Contract Number</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.ContractNumber, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Last Name</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.LastName, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Address Line 2</label>
+                                                <div class="tool-tip-box clearfix">
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.AddressLine2, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_GPSData.AddressLine2), @class = "form-control" })
+                                                    @if (!string.IsNullOrEmpty(Model.objDOGEN_GPSData.AddressLine2))
+                                                    {
+                                                        <span class="tool-tip">@Model.objDOGEN_GPSData.AddressLine2</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="tool-tip hide"></span>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Zip Code 4</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.ZipCode4, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">SCC Code</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.SCCCode, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Application Information</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.ApplicationApprovedStatus, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">PDP Auto Enrollee Indicator</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.PDPAutoEntrolleeIndicator, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Individual Id</label>
+                                                @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.IndividualId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>*@
+                    </div>
+
+                    @*CMS Transaction Details*@
+                    @*<div id="sectionD" class="tab-pane fade">
+                            <div class="secondary-hdr">
+                                <h4>CMS Transaction Details</h4>
+                            </div>
+                            <div class="tab-pane-ctr clearfix">
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">HICN</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.HICN, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Contract ID</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.ContractID, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Root Cause</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.RootCause, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Effective Date</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.EffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">EGHP Indicator</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.EGHPIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Last Name</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.LastName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">PBP</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.PBP, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Transaction Type Code</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.TransactionTypeCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Other Resolution</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.OtherResolution, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Date of Birth</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.DateofBirth, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Application Date</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.ApplicationDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Election Type</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.ElectionType, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-md-6">Resolution</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_EligibilityActions.Resolution, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+                    @*<div id="sectionC" class="tab-pane fade">
+                            <div id="sectionL" class="tab-pane fade in active clearfix">
+                                <div class="clearfix">
+                                    <iframe src="http://dp-mrssrsprd01.xlhealth.local/ReportServer/Pages/ReportViewer.aspx?%2fOOA%2fRPT_OOA_ONE_STOP_SHOP&rs:Command=Render&SEARCH_VALUE=@Model.MemberCurrentHICN" width="100%" frameborder="0" draggable="false" scrolling="auto"></iframe>
+                                </div>
+                            </div>
+                        </div>*@
+                    @*TRR Data*@
+                    <div id="SectionTrrData" class="tab-pane fade clearfix">
+                        @*<div class="tab-panel-group clearfix">
+                            <ul class="nav nav-tabs">
+                                <li class="active"><a data-toggle="tab" href="#sectionSummaryInformation">Summary Information</a></li>
+                                <li><a data-toggle="tab" href="#sectionBadTransactionHistory">Bad Transaction History</a></li>
+                                <li><a data-toggle="tab" href="#sectionBadTransactionPending">Bad Transaction Pending</a></li>
+                                <li><a data-toggle="tab" href="#sectionResponse">Response</a></li>
+                            </ul>
+                            <div class="tab-content wdgt-tab-content">
+                                <div id="sectionSummaryInformation" class="tab-pane tab-paneScrollable fade in active">
+                                    @for (int i = 0; i < Model.lstTrrSummaryTransaction.Count(); i++)
+                                    {
+                                        <div class="tab-pane-wdgt tab-pane-ProcessWork clearfix">
+                                            <div class="tab-pane-section col-md-4">
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Application Date</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ApplicationDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">District Office</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].DistrictOffice, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Medical Claim Number</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].MedicareClaimNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">RX Id</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].RXId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Contract Year</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ContractYear, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">PBP Number</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PBPNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Previous PBP</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PBPNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Co-Pay Category</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].CoPayCategory, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">EGHB indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].EGHBIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Premium Amount Value</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PremiumAmountValue, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Processing Time</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ProcessingTime, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">System Tracking Id</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].SystemtrackingId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Reply Code</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].TransactionReplyCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Short Name</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].TransactionShortName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane-section col-md-4">
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Change Initiator Indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ChangeInitiatorIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Effective Date</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].EffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">RX Bin</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].RXBin, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">RX PCN</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].RXPCN, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">PartC Premium</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PartCPremium, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Plan ID</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PlanId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Product Code</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ProductCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Co-Pay Effctive Date</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].CoPayEffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">EmpSubsidy Overide Indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].EmpSubsidyOverrideIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Premium Withhold Option</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PartDPremium, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Record Type</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].RecordType, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Code</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].TransactionCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Date</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].TransactionDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane-section col-md-4">
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Change Org Name</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ChangeOrgName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">GPS Tracking Number</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].GPSTrackingNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">RX Group</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].RXGroup, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Contract Number</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ContractNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">PartD premium</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PartDPremium, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Previous Contract PDP</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].PreviousContractNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">SNP Flag</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].SNPFlag, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Creditable Coverage Indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].CreditableCoverageIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Not Covered Months</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].NotCoveredMonths, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Process Date</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].ProcessDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Source Identifier</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].SourceIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Code Description</label>
+                                                    <div class="tool-tip-box clearfix">
+                                                        @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].TransactionCodeDescription, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.lstTrrSummaryTransaction[i].TransactionCodeDescription), @class = "form-control" })
+                                                    @if (!string.IsNullOrEmpty(Model.lstTrrSummaryTransaction[i].TransactionCodeDescription))
+                                                    {
+                                                        <span class="tool-tip">@Model.lstTrrSummaryTransaction[i].TransactionCodeDescription</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="tool-tip hide"></span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Id</label>
+                                                    @Html.TextBoxFor(xx => xx.lstTrrSummaryTransaction[i].TransactionId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div id="sectionBadTransactionHistory" class="tab-pane tab-paneScrollable fade">
+                                    @for (int i = 0; i < Model.lstBadHistoryTransaction.Count(); i++)
+                                    {
+                                        <div class="tab-pane-wdgt tab-pane-ProcessWork clearfix">
+                                            <div class="tab-pane-section col-md-4">
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Application Date</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ApplicationDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">District Office</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].DistrictOffice, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Medical Claim Number</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].MedicareClaimNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">RX Id</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].RXId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Contract Year</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ContractYear, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">PBP Number</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PBPNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Previous PBP</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PBPNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Co-Pay Category</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].CoPayCategory, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">EGHB indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].EGHBIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Premium Amount Value</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PremiumAmountValue, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Processing Time</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ProcessingTime, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">System Tracking Id</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].SystemtrackingId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Reply Code</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].TransactionReplyCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Short Name</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].TransactionShortName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane-section col-md-4">
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Change Initiator Indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ChangeInitiatorIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Effective Date</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].EffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">RX Bin</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].RXBin, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">RX PCN</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].RXPCN, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">PartC Premium</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PartCPremium, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Plan ID</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PlanId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Product Code</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ProductCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Co-Pay Effctive Date</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].CoPayEffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">EmpSubsidy Overide Indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].EmpSubsidyOverrideIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Premium Withhold Option</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PartDPremium, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Record Type</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].RecordType, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Code</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].TransactionCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Date</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].TransactionDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane-section col-md-4">
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Change Org Name</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ChangeOrgName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">GPS Tracking Number</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].GPSTrackingNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">RX Group</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].RXGroup, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Contract Number</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ContractNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">PartD premium</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PartDPremium, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Previous Contract PDP</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].PreviousContractNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">SNP Flag</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].SNPFlag, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Creditable Coverage Indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].CreditableCoverageIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Not Covered Months</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].NotCoveredMonths, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Process Date</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].ProcessDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Source Identifier</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].SourceIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Code Description</label>
+                                                    <div class="tool-tip-box clearfix">
+                                                        @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].TransactionCodeDescription, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.lstBadHistoryTransaction[i].TransactionCodeDescription), @class = "form-control" })
+                                                        @if (!string.IsNullOrEmpty(Model.lstBadHistoryTransaction[i].TransactionCodeDescription))
+                                                        {
+                                                        <span class="tool-tip">@Model.lstBadHistoryTransaction[i].TransactionCodeDescription</span>
+                                                        }
+                                                        else
+                                                        {
+                                                        <span class="tool-tip hide"></span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Id</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadHistoryTransaction[i].TransactionId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div id="sectionBadTransactionPending" class="tab-pane tab-paneScrollable fade">
+                                    @for (int i = 0; i < Model.lstBadPendingTransaction.Count(); i++)
+                                    {
+                                        <div class="tab-pane-wdgt tab-pane-ProcessWork clearfix">
+                                            <div class="tab-pane-section col-md-4">
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Application Date</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ApplicationDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">District Office</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].DistrictOffice, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Medical Claim Number</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].MedicareClaimNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">RX Id</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].RXId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Contract Year</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ContractYear, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">PBP Number</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PBPNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Previous PBP</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PBPNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Co-Pay Category</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].CoPayCategory, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">EGHB indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].EGHBIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Premium Amount Value</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PremiumAmountValue, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Processing Time</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ProcessingTime, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">System Tracking Id</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].SystemtrackingId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Reply Code</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].TransactionReplyCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Short Name</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].TransactionShortName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane-section col-md-4">
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Change Initiator Indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ChangeInitiatorIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Effective Date</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].EffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">RX Bin</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].RXBin, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">RX PCN</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].RXPCN, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">PartC Premium</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PartCPremium, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Plan ID</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PlanId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Product Code</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ProductCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Co-Pay Effctive Date</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].CoPayEffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">EmpSubsidy Overide Indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].EmpSubsidyOverrideIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Premium Withhold Option</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PartDPremium, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Record Type</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].RecordType, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Code</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].TransactionCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Date</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].TransactionDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane-section col-md-4">
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Change Org Name</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ChangeOrgName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">GPS Tracking Number</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].GPSTrackingNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">RX Group</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].RXGroup, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Contract Number</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ContractNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">PartD premium</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PartDPremium, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Previous Contract PDP</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].PreviousContractNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">SNP Flag</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].SNPFlag, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Creditable Coverage Indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].CreditableCoverageIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Not Covered Months</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].NotCoveredMonths, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Process Date</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].ProcessDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Source Identifier</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].SourceIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Code Description</label>
+                                                    <div class="tool-tip-box clearfix">
+                                                        @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].TransactionCodeDescription, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.lstBadPendingTransaction[i].TransactionCodeDescription), @class = "form-control" })
+                                                        @if (!string.IsNullOrEmpty(Model.lstBadPendingTransaction[i].TransactionCodeDescription))
+                                                        {
+                                                            <span class="tool-tip">@Model.lstBadPendingTransaction[i].TransactionCodeDescription</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="tool-tip hide"></span>
+                                                        }
+                                                    </div>
+                                                    </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Transaction Id</label>
+                                                    @Html.TextBoxFor(xx => xx.lstBadPendingTransaction[i].TransactionId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+
+                                </div>
+                                <div id="sectionResponse" class="tab-pane fade">
+                                    <div class="tab-pane-wdgt clearfix">
+                                        @*Need to add Controls*@
+                        @*</div>
+                                    </div>
+                                </div>
+                            </div>*@
+
+                    </div>
+
+                    @*Referenced Cases*@
+                    <div id="sectionE" class="tab-pane fade">
+                        <div class="tab-pane-wdgt">
+                            <div class="secondary-sub-hdr">
+                                <h4>Eligibility Records</h4>
+                            </div>
+                            <div class="tab-pane-body clearfix">
+                                @*<div class="table-responsive">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Case ID</th>
+                                                    <th>Case Category</th>
+                                                    <th>Case Type</th>
+                                                    <th>Case ID</th>
+                                                    <th>Discrepancy Start Date</th>
+                                                    <th>Reason Code</th>
+                                                    <th>Work Status</th>
+                                                    <th>Assigned To</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>N/A</td>
+                                                    <td>N/A</td>
+                                                    <td>N/A</td>
+                                                    <td>N/A</td>
+                                                    <td>N/A</td>
+                                                    <td>N/A</td>
+                                                    <td>N/A</td>
+                                                    <td>N/A</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>*@
+                                @Html.Partial("_RefferencedCases", Model.lstDOGEN_QueueRefferencedCases)
+                            </div>
+                        </div>
+                    </div>
+                    @*Comments*@
+                    <div id="sectionF" class="tab-pane fade">
+                        <div class="secondary-hdr">
+                            <h4>Comments</h4>
+                        </div>
+                        <div class="tab-pane-ctr clearfix">
+                            @Html.Partial("_PWComments", Model.lstDOGEN_Comments)
+                        </div>
+                    </div>
+                    @*Attachments*@
+                    <div id="sectionG" class="tab-pane fade">
+                        <div class="secondary-hdr">
+                            <h4>Attachments</h4>
+                        </div>
+                        <div class="tab-pane-ctr clearfix">
+                            <div class="table-responsive" id="divPWAttachment">
+                                @Html.Partial("_Attachment", Model.lstDOGEN_Attachments)
+                            </div>
+                            <div class="btn-group clearfix">
+                                <button type="button" id="btnAddPWAttachment" class="btn btn-primary"><img src="~/images/add-icon.png"><span>Add Attachment</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*Action*@
+            <div class="inner-wdgt clearfix" id="divActionSection">
+                <div class="primary-hdr">
+                    <h4><img src="~/Images/action-icon.png"><span>Action</span></h4>
+                </div>
+                <div class="inner-wdgt-body clearfix">
+                    @using (Html.BeginForm("SaveAction", "Eligibility", FormMethod.Post, new { @id = "frmSaveEligibilityAction" }))
+                    {
+                        @Html.HiddenFor(m => m.CommentsSourceSystemLkup)
+                        @Html.Hidden("GEN_QueueRef", Model.GEN_QueueId, new { @id = "hdnGEN_QueueRef", @name = "GEN_QueueRef" })
+                        if (ViewBag.ViewName != "View" && Model.MostRecentStatusLkup == (long)CurrentStatusLkup.ResolvedComplted)
+                        {
+                            <div class="clearfix" id="divOption">
+                                <div class="form-group col-md-3">
+                                    <label for="inputEmail">Option</label>
+                                    @Html.DropDownListFor(m => m.OptionLkup, new SelectList(Model.lstOptionsforReopen, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "ddloptions").validationAttributes)
+                                </div>
+                            </div>
+                        }
+                        <div class="clearfix" id="divAction">
+                            <div class="form-group col-md-3">
+                                <label for="inputEmail">Action</label>
+                                @Html.DropDownListFor(m => m.ActionLkup, new SelectList(Model.lstActions, "CMN_LookupMasterChildRef", "LookupMasterChildValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "ddlActions").validationAttributes)
+                            </div>
+                        </div>
+                        @Html.ValidationSummary(false)
+                        <div class="validation-summary-errors" data-valmsg-summary="true" id="dvErrorMsg" hidden="hidden">
+                            <li id="dateError"></li>
+                        </div>
+                        <div class="sub-inner-wrapper clearfix" id="divEligibilityProcessWork">
+
+                        </div>
+                        <div class="btn-group clearfix">
+                            <button type="submit" id="btnSubmit" title="Save" class="btn btn-primary divActionVisibility"><img src="~/Images/save-icon.png"><span>Save</span></button>
+                            @if (PageName != ConstantTexts.MiimPageName)
+                            {
+                                if (PageName == ConstantTexts.QueueSummary)
+                                {
+                                <button type="button" id="btnSaveAndGetNextProcessWork" class="btn btn-primary divActionVisibility" title="Save And Get Next"><img src="~/images/save-next-icon.png"><span>Save & Get Next</span></button>
+                                }
+                                <button type="button" id="btnReset" title="Reset" class="btn btn-primary divActionVisibility"><img src="~/Images/reset-icon.png"><span>Reset</span></button>
+                                                                <button type="button" id="btnCancel" title="Cancel" callFrom="@PageName" class="btn btn-primary"><img src="~/Images/cancle-icon.png"><span>Cancel</span></button>
+                                                                <button type="button" id="btnHistory" title="History" class="btn btn-primary divActionVisibility" onclick="fnAccessReport('@Model.GEN_QueueId');"><img src="~/Images/history-icon.png"><span>History</span></button>
+
+                            }
+                            else
+                            {
+                                <button type="Button" id="btnClose" class="btn btn-primary" onclick="MainLayout.fnUnlockRecordMIIM('@Model.GEN_QueueId','@Url.Action("UnlockRecord", "RecordsLocked")');"><img src="~/images/cancle-icon.png" /><span>Close</span></button>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="inner-wdgt clearfix">
+                <div class="primary-hdr">
+                    <h4><img src="~/images/work-flow-icon.png"><span>Workflow Log</span></h4>
+                </div>
+                <div class="inner-wdgt-body clearfix" id="divProcessWorkWorkFlowLog">
+                    @Html.Partial("_WorkFlowLog", Model.lstDOGEN_QueueWorkFlowCorrelation)
+                </div>
+            </div>
+        </div>
+</section>
+
+@*Attachment Popup*@
+<div id="myPWAttachmentModal" class="modal fade">
+    <div class="modal-dialog" style="width:40% !important">
+        <div class="modal-content" id="divModalPWAttachment">
+        </div>
+    </div>
+</div>
+
+<div id="myModalViewRef" class="modal fade">
+    <div class="modal-dialog" id="divDialog">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <div class="clearfix" id="divMyModalViewRef">
+
+            </div>
+        </div>
+    </div>
+</div>
+@* End *@
+@section scripts{
+    <script type="text/javascript">
+        ////Variables/////
+        var PWScreenType = enums.ScreenType.Queue;//To identify the page from Custom script and clear the local storage
+        var GetQueueForEdit = '@Url.Action("GetQueueForEdit", "Eligibility")';
+        var urlGetActionsByActionID = '@Url.Action("GetActionsByActionID", "Eligibility")';
+        var urlSaveEligibilityActions = '@Url.Action("SaveAction", "Eligibility")';
+        var urlGetQueue = '@Url.Action("EligibilityGetQueue", "EligibilityQueues")';
+        var unlockUrl = '@Url.Action("UnlockRecord", "RecordsLocked")';
+        var recordId = '@Model.GEN_QueueId';
+        var searchCancelUrl = '@Url.Action("Search", "Common", new { @discCat = (long)DiscripancyCategory.Eligibility })';
+        var urlHomeScreen = '@Url.Action("Home", "Home")';
+        var ReportsUrl = '@Url.Action("GetCommonReportURL", "Eligibility")';
+        var urlClearTempdataByGenId = '@Url.Action("ClearTempdataByGenId", "Common")';
+        var winHistoryReport;
+        var actionList = ["28001"];
+        var urlCreateEligibilityCase='@Url.Action("CreateEligibilityCase", "Eligibility")';
+        var urlForLock = '@Url.Action("GetLockedRecordOrLockRecord", "RecordsLocked")';
+        var page = '@PageName';
+        if (page == '@ConstantTexts.MiimPageName')
+            $('#CommentsSourceSystemLkup').val('@SourceSystemLkup.MIIM.ToInt64()');
+        else {
+            $('#CommentsSourceSystemLkup').val('@SourceSystemLkup.ERS.ToInt64()');
+        }
+        var $myForm = $("#frmSaveEligibilityAction"),
+            origForm = $myForm.serialize();
+        $(".divActionVisibility").hide();
+        var caseStatus = parseInt('@Model.MostRecentStatusLkup');
+
+        var LoadDiscTRRUrl = '@Url.Action("GetDiscrepancyOrTRRDataByTab", "Common")';
+        /////Events//////
+        @*if (caseStatus == @((long)CurrentStatusLkup.ResolvedComplted)) {//if staus is resolved completed
+            $("#divActionSection").remove();
+            $('#btnAddPWAttachment').attr('disabled', true);
+            $('.deletePWAttachmentIco').remove();
+        }*@
+         if (caseStatus == @((long)CurrentStatusLkup.ResolvedComplted)) {//if staus is resolved completed
+             $("#divAction").hide();
+             if ($("#divOption").length > 0) {
+                 $("#divOption").show();
+             }
+         }
+         else
+         {
+             $("#divAction").show();
+             if ($("#divOption").length > 0) {
+                 $("#divOption").hide();
+             }
+         }
+
+        $("#ddloptions").on("change", function () {
+            try {
+                var actionID = $(this).val();
+                var CateLookup = $('#hdnDisCategory').val();
+                $("#divEligibilityProcessWork").empty().html();
+                $("#divAction").hide();
+                $(".divActionVisibility").hide();//hide the buttons
+                $('.validation-summary-errors ul').empty();  // Clear Validation Summary Message.
+                if (actionID != "" && actionID == 48002) {
+                    $.ajax({
+                        data: { "DisCategory": CateLookup },
+                        url: GetQueueForEdit,
+                        type: "POST",
+                        success: function (data) {
+                            if (data != "" && (data.ID == null || data.ID == "undefined")) {
+                                $("#divEligibilityProcessWork").empty().html(data);
+                                $(".divActionVisibility").show();
+                                MainLayout.fnLoadDateTimePicker();
+                            }
+                            else if (data != "" && (data.ID != null || data.ID != "undefined")
+                                && data.ID == 1 && data.Message != "") {
+                                MainLayout.fnAlertMessege("Alert!", data.Message);
+                            }
+                            else {
+                                MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                            }
+                        },
+                        error: function (x) {
+                            $(".divActionVisibility").hide();
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+                    });
+                }
+                else if (actionID == 48001)
+                {
+                    $("#ddlActions").val('');
+                    $("#divAction").show();
+                }
+                else
+                {
+                    $("#ddlActions").val('');
+                    $("#divAction").hide();
+                }
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+            }
+        });
+
+        $("#ddlActions").on("change", function () {
+            try {
+                var actionID = $(this).val();
+                var CateLookup = $('#hdnDisCategory').val();
+                $("#divEligibilityProcessWork").empty().html();
+                $(".divActionVisibility").hide();//hide the buttons
+                $('.validation-summary-errors ul').empty();  // Clear Validation Summary Message.
+                if (actionID != "")
+                {
+                    $.ajax({
+                        data: {"actionID": actionID, "DisCategory": CateLookup,"genQueueId":'@Model.GEN_QueueId' },
+                        url: urlGetActionsByActionID,
+                        type: "POST",
+                        success: function (data) {
+                            if (data != "" && (data.ID == null || data.ID == "undefined")) {
+                                $("#divEligibilityProcessWork").empty().html(data);
+                                $(".divActionVisibility").show();
+                                MainLayout.fnLoadDateTimePicker();
+                            }
+                            else if (data != "" && (data.ID != null || data.ID != "undefined")
+                                && data.ID == 1 && data.Message != "") {
+                                MainLayout.fnAlertMessege("Alert!", data.Message);
+                            }
+                            else {
+                                MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                            }
+                        },
+                        error: function (x) {
+                            $(".divActionVisibility").hide();
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+                    });
+                }
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+            }
+        });
+
+        $("#btnUpdateCaseInfo").on("click", function () {
+            try {
+
+                var urlUpdateCaseInfo = '@Url.Action("UpdateCaseInfo", "Eligibility")';
+                $.ajax({
+                    data: { "discripancyCategory":'@Model.DiscrepancyCategoryLkup',"genQueueId":'@Model.GEN_QueueId'},
+                    url: urlUpdateCaseInfo,
+                    type: "POST",
+                    success: function (data) {
+                       $("#divMyModalViewRef").empty().html(data);
+                       $("#myModalViewRef").modal('show');
+                    }
+                });
+            } catch (e) {
+
+            }
+        });
+
+        //function to set model date time values from date time picker
+        fnGetDateIntoHdnFields = function () {
+            var date = $('#DateofBirth_DPart').val();
+            if (date != null && date != '') {
+                $('#DateofBirth').val(getDateTimeInMMDDYYYY(date));
+            }
+            date = $('#ApplicationDate_DPart').val();
+            if (date != null && date != '') {
+                $('#ApplicationDate').val(getDateTimeInMMDDYYYY(date));
+            }
+            date = $('#EffectiveDate_DPart').val();
+            if (date != null && date != '') {
+                $('#EffectiveDate').val(getDateTimeInMMDDYYYY(date));
+            }
+            date = $('#RPRRequestedEffectiveDate_DPart').val();
+            if (date != null && date != '') {
+                $('#RPRRequestedEffectiveDate').val(getDateTimeInMMDDYYYY(date));
+            }
+        };
+
+        $("#btnSaveAndGetNextProcessWork").on("click", function () {
+            try {
+                fnProcessWork(1);
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+
+
+        // Submit Event
+        $('#btnSubmit').click(function (e) {
+
+            try {
+                e.preventDefault();
+                    fnProcessWork(0);
+                } catch (e) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+
+
+
+        //_UpdateCMSEligibility Action Transaction Type Code  Change Event.
+        $(document).on("change", "#ddlTransactionType", function () {
+            $("#EffectiveDate_DPart").val("");
+            $("#ddlElectionType").val("");
+            if ($("#ddlTransactionType").val() == 29002) {
+                    $("#ddlElectionType").val("");
+                    return;
+            }
+        });
+
+           //_UpdateCMSEligibility Action Election Type Change Event.
+        $(document).on("change", "#ddlElectionType", function () {
+            $("#EffectiveDate_DPart").val("");
+            if ($("#ddlTransactionType").val() == 29002) {
+                if (($("#ddlElectionType").val() == 23005) || ($("#ddlElectionType").val() == 23003)) {
+                    MainLayout.fnAlertMessege("Message!", "Transaction Type Code is Retro – Disenrollment, user is not allowed to select IEP or ICEP");
+                    $("#ddlElectionType").val("");
+                    $("#EffectiveDate_DPart").val("");
+                    return;
+                }
+            }
+            if ($("#ddlTransactionType").val() == 29001) {
+                if (($("#ddlElectionType").val() == 23001)) {
+                    var d = new Date();
+                    var n = d.getFullYear();
+                    $("#EffectiveDate_DPart").val("1/1/" + n);
+                }
+                else
+                {
+                    $("#EffectiveDate_DPart").val("");
+                }
+            }
+        });
+
+        //_UpdateCMSEligibility Action Resolution Change Event.
+        $(document).on("change", "#ddlResolution", function () {
+            if ($("#ddlResolution").val() == 18023) {
+                $("#divResolution").show();
+            }
+            else
+            {
+                $("#divResolution").hide();
+            }
+        });
+
+        // Date Validations.
+        function isDatesValid() {
+            var EffectiveDate = $('#EffectiveDate_DPart').val() != "" ? new Date($('#EffectiveDate_DPart').val()) : $('#EffectiveDate_DPart').val();
+            var DOB = $('#DateofBirth_DPart').val() != "" ? new Date($('#DateofBirth_DPart').val()) : $('#DateofBirth_DPart').val();
+            var ApplicationDate = $('#ApplicationDate_DPart').val() != "" ? new Date($('#ApplicationDate_DPart').val()) : $('#ApplicationDate_DPart').val();
+
+            var today = new Date();
+            var errorList = "";
+            var isValid = true;
+            today.setHours(0, 0, 0, 0)
+
+            //Date Of Birth Validation
+            if (DOB != "") {
+                if (DOB > today) {
+                    $('#DateofBirth_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Date Of Birth Should be Past Date</li>';
+                    isValid = false;
+                }
+            }
+
+            //Effective Date validation
+            //if (EffectiveDate != "") {
+                //if (EffectiveDate < DOB) {
+                   // $('#EffectiveDate_DPart').removeClass("valid").addClass("input-validation-error");
+                   // errorList = errorList + '<li>Effective Date should be more than Date Of Birth</li>';
+                    //isValid = false;
+               // }
+           // }
+
+            if ($("#ddlResolution").val() == 18023) { // Resolution Other Selected.
+                if ($("#txtOtherResolution").val() == "") {
+                    $('#txtOtherResolution').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Resolution Details Required</li>';
+                    isValid = false;
+                }
+            }
+
+            // if ($("#ddlTransactionType").val() == 29001) {
+            //     if (($("#ddlElectionType").val() == 23001)) {
+            //         debugger;
+            //         var date = new Date($('#EffectiveDate_DPart').val());
+            //         // getFirstDayOfMonth(date);
+            //         var lastDay = new Date(date.setMonth(0, 1));
+            //         if (date != lastDay) {
+            //             $('#EffectiveDate_DPart').removeClass("valid").addClass("input-validation-error");
+            //             errorList = errorList + '<li>Effective Date Should be First Month of First Day</li>';
+            //             isValid = false;
+            //         }
+            //    }
+            //}
+
+            if (isValid) {
+                $('#dvErrorMsg').hide();
+            } else {
+                $('#dateError').html(errorList);
+                $('#dvErrorMsg').show();
+            }
+            return isValid;
+        }
+
+         //Reset Button Click Event
+        $('#btnReset').click(function () {
+            MainLayout.fnResetValidationSummary();
+            $("#frmSaveEligibilityAction").deserialize(origForm);
+            $("#divEligibilityProcessWork").empty().html();
+            $(".divActionVisibility").hide();
+            if (caseStatus == @((long)CurrentStatusLkup.ResolvedComplted)) {//if staus is resolved completed
+                $("#divAction").hide();
+            }
+        });
+
+        function ConfirmPOPUP()
+        {
+            var promptText = confirm("Are you sure want to leave this page?");
+            if (promptText) {
+               // event.preventDefault();
+            }
+            else
+            {
+                event.preventDefault();
+            }
+        }
+
+        //Cancel Button Click Event
+        $('#btnCancel').click(function () {
+            var promptText = confirm("Are you sure want to leave this page?");
+            if (!promptText) {
+                event.preventDefault();
+            }
+            else {
+                fnClearTempdataByGenId();
+                if ($(this).attr("callFrom") == "Search") {
+                    fnUnlockRecord(unlockUrl, recordId, enums.ScreenType.Queue, searchCancelUrl);
+                    //window.location.href = '@Url.Action("Search", "Eligibility")';
+                }
+                else if ($(this).attr("callFrom") == "EligCreateCase") {
+                    fnUnlockRecord(unlockUrl, recordId, enums.ScreenType.Queue, urlCreateEligibilityCase);
+                }
+                else if ($(this).attr("callFrom") == "Home") {
+                    fnUnlockRecord(unlockUrl, recordId, enums.ScreenType.Queue, urlHomeScreen);
+                }
+                else {
+                   // window.location.href = urlGetQueue;
+                    fnUnlockRecord(unlockUrl, recordId, enums.ScreenType.Queue, urlGetQueue);
+                }
+            }
+        });
+
+         //Action Requested extra field control for Other option
+          $(document).on("change", "#ddlActionRequestedLkup", function () {
+        var value = $('#ddlActionRequestedLkup').val();
+        if (value == 14008) {//14013 value for Action Requested - Reinstatement - Other
+            $('#divOtherAction').removeAttr("hidden")
+            $('#divOtherAction :input').removeAttr("disabled");
+        } else {
+            $('#divOtherAction :input').val("")
+            $('#divOtherAction :input').removeClass("input-validation-error").addClass("valid")
+            $('#divOtherAction').attr("hidden", "hidden")
+            $('#divOtherAction :input').attr("disabled", "disabled")
+        }
+    });
+        //enabale and Disable CTM number depending upon CTM Member check box
+        $(document).on("change", "#cbxCTMMember", function () {
+            var value = $('#cbxCTMMember').prop("checked")
+            if (value) {
+                $('#txtCTMNumber').removeAttr("disabled")
+            } else {
+                $('#txtCTMNumber').val("");
+                $('#txtCTMNumber').removeClass("input-validation-error").addClass("valid")
+                $('#txtCTMNumber').attr("disabled", "disabled")
+            }
+        });
+
+        //enabale and Disable Employer Id depending upon EGHP Member check box
+        $(document).on("change", "#cbxEGHPMember", function () {
+            var value = $('#cbxEGHPMember').prop("checked")
+            if (value) {
+                $('#txtEmployerId').removeAttr("disabled")
+            } else {
+                $('#txtEmployerId').val("");
+                $('#txtEmployerId').removeClass("input-validation-error").addClass("valid")
+                $('#txtEmployerId').attr("disabled", "disabled")
+            }
+        });
+
+        //Reason for Request extra field control for Other option
+        $(document).on("change", "#ddlTaskPerformedLkup", function () {
+            var value = $('#ddlTaskPerformedLkup').val();
+            if (value == 15015) {//14013 value for Task Being performed - other
+                $('#divOtherTaskType').removeAttr("hidden")
+                $('#divOtherTaskType :input').removeAttr("disabled");
+            } else {
+                $('#divOtherTaskType :input').val("")
+                $('#divOtherTaskType :input').removeClass("input-validation-error").addClass("valid")
+                $('#divOtherTaskType').attr("hidden", "hidden")
+                $('#divOtherTaskType :input').attr("disabled", "disabled")
+            }
+        });
+        // Root Cause extra field control for other option
+        $(document).on("change", "#ddlRootCause", function () {
+            var value = $('#ddlRootCause').val();
+            if (value == 24038) {//24038 value for Root Cause - other
+                $('#divOtherRootCause').removeAttr("hidden")
+                $('#divOtherRootCause :input').removeAttr("disabled");
+            } else {
+                $('#divOtherRootCause :input').val("")
+                $('#divOtherRootCause :input').removeClass("input-validation-error").addClass("valid")
+                $('#divOtherRootCause').attr("hidden", "hidden")
+                $('#divOtherRootCause :input').attr("disabled", "disabled")
+            }
+        });
+
+            $(document).on("change", "#EffectiveDate_DPart", function () {
+                try {
+                    var date = ($("#EffectiveDate_DPart").length > 0) ? $("#EffectiveDate_DPart").val() : "";
+                    if (date != null && date != '') {
+                        var patePart = new Date($('#EffectiveDate_DPart').val());
+                        var firstDay = new Date(patePart.getFullYear(), patePart.getMonth(), 1);
+                        $('#EffectiveDate_DPart').val(getDateTimeInMMDDYYYY(firstDay));
+                    }
+                    if ($("#ddlTransactionType").val() == 29001) {
+                        if (($("#ddlElectionType").val() == 23001)) {
+                            var d = new Date();
+                            var n = d.getFullYear();
+                            $("#EffectiveDate_DPart").val("1/1/" + n);
+                        }
+                    }
+
+                } catch (e) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                }
+        });
+
+            $(document).on("change", "#RPRRequestedEffectiveDate_DPart", function () {
+                var RPRRequestedEffectiveDate = $('#RPRRequestedEffectiveDate_DPart').val() != "" ? new Date($('#RPRRequestedEffectiveDate_DPart').val()) : $('#RPRRequestedEffectiveDate_DPart').val();
+                if (RPRRequestedEffectiveDate != "" && RPRRequestedEffectiveDate.getDate() != 1) {
+                    RPRRequestedEffectiveDate.setDate(1);
+                    var strDate = Get2DigitText((RPRRequestedEffectiveDate.getMonth() + 1)) + "/" + Get2DigitText(RPRRequestedEffectiveDate.getDate()) + "/" + RPRRequestedEffectiveDate.getFullYear();
+                    $('#RPRRequestedEffectiveDate_DPart').val(strDate);
+                }
+            });
+            // function to access history report
+            fnAccessReport = function (id) {
+                // debugger
+                var urlToNavigate = ReportsUrl;
+                $.ajax({
+                    url: urlToNavigate,
+                    type: "POST",
+                    success: function (data) {
+                        //debugger
+                        if (data != "") {
+                            var Data = data.Data;
+                            var reportUrl = Data + "&GenQueueId=" + id;
+                            var strWindowFeatures = "location=yes,height=580,width=1000,scrollbars=no,resizable=yes,toolbar=no,status=no,menu=no, directories=no,titlebar=no,location=no,addressbar=no,top=100,left=100";
+                            winHistoryReport = MainLayout.fnMyOpenWindow(reportUrl, "_blank", strWindowFeatures, winHistoryReport);
+                        }
+                    },
+                    error: function (x) {
+                        MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                    }
+                });
+            }
+            fnViewReferenceCase = function (Id, catId) {
+                var url = '@Url.Action("CheckUserPermission", "Common")/' + enums.PermissionType.CanView + '/' + catId;
+                var url1 = '@Url.Action("ViewRecord", "Common")';
+                        $.ajax({
+                        type: 'POST',
+                        url: url,
+                        success: function (response) {
+                                if(response==true)
+                                {
+
+                                $.ajax({
+                                    type: 'POST',
+                                    url: url1,
+                                    data: { "id": Id, "data": catId},
+                                    cache:false,
+                                    success: function (response) {
+                                        var $response = $("#divMyModalViewRef").empty().html(response).find('section');
+                                        //$responseTest.find('div').each(function (i) {
+
+                                        //    $(this).attr('id', 'div' + (i + 1));  // Set id for each div
+                                        //    console.log($(this).attr('id'));
+                                        //});
+                                        fnViewReferenceCaseInfo($response, Id);
+                                        $("#divMyModalViewRef").empty().html($response);
+                                        $('#divMyModalViewRef').find(':input').attr('disabled', true);
+                                        $('#divMyModalViewRef').find(':button').attr('disabled', true);
+                                        $("#myModalViewRef").modal('show');
+                                        $('#divMyModalViewRef').find("#tblPWAttachments .deletePWAttachmentIco").remove();
+                                        $('#divMyModalViewRef').find("#tblRefferencedCases .deleteViewIcon").remove();
+                                        $('#divMyModalViewRef').find("#tblPWAttachments .downloadAttachment").href = "";
+                                        $(".dispMsg").unbind("click");
+                                    },
+                                    error: function (result) {
+                                        MainLayout.fnAlertMessege("Error!", result.responseText);
+                                    }
+                                });
+                                } else { MainLayout.fnAlertMessege("Alert!", "You don't have sufficient permission to perform View operation for " + MainLayout.getEnumKey(enums.DiscripancyCategory, catId));}
+                        },
+                        error: function (result) {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+                     });
+            };
+            fnProcessWork = function (flag) {
+                try {
+
+                    var $form = $('#frmSaveEligibilityAction');
+                    fnGetDateIntoHdnFields();
+                    //var $form = $(this),
+                    //urlForm = $form.attr('action'),
+                    var frmData = $form.serialize();
+                    $form.removeData('validator');
+                    $form.removeData('unobtrusiveValidation');
+                    $.validator.unobtrusive.parse($form);
+                    var form = $('#frmSaveEligibilityAction').valid();
+                    var datesValid = isDatesValid();
+                    if (form)
+                        $('.validation-summary-errors ul').empty();
+                    //  if (fnValidateSaveActions($form)) {
+                    if (!(form && datesValid)) return false;
+                    if ($("#ddlActions").val() == enums.ActionLkup.UpdateCMSEligibility) {
+                        var promptText = confirm("Do you want to Save?");
+                        if (!promptText) {
+                            event.preventDefault();
+                            return false;
+                        }
+                    }
+                    $.ajax({
+                        data: frmData,
+                        url: urlSaveEligibilityActions,
+                        type: "POST",
+                        success: function (data) {
+                            MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                                if (page == '@ConstantTexts.MiimPageName')
+                                    window.close();
+                                else
+                                    if (data.ID == '@ExceptionTypes.UnlockedRecord') {
+                                        MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                                            //window.location.href = urlGetQueue;
+                                            fnPageNavigationAfterSavePW(flag);
+
+                                        });
+                                    }
+                                fnPageNavigationAfterSavePW(flag);
+                                //  window.location.href = urlGetQueue;
+                            });
+
+                        },
+                        error: function (x) {
+                            MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+                        }
+                    });
+                    // }
+
+                } catch (e) {
+
+                }
+            };
+            fnPageNavigationAfterSavePW = function (flag) {
+                try {
+
+
+                var mostRecentWorkQueueLkup = '@Model.MostRecentWorkQueueLkup';
+                var curGen_Queue = '@Model.GEN_QueueId';
+                var urlGMURecordCommon='@Url.Action("GMURecordCommon", "Common")';
+                var pageName='@PageName';
+                if ($("#ddlActions").length > 0 && $("#ddlActions").val() != "" && $.inArray($("#ddlActions").val(),actionList)>=0)
+                {
+                    var urlToNavigate='@Url.Action("EligibilityProcessWork", "Eligibility")/' + '?queueId=' + btoa(curGen_Queue)+"&PageName="+pageName;
+                    fnLockRecord(urlForLock, curGen_Queue, enums.ScreenType.Queue, urlToNavigate);
+                    return;
+                }
+
+                     if (flag > 0) {
+
+                         var GetQueueform = MainLayout.fnGetLocalStorage(enums.DiscripancyCategory.Eligibility);
+                         var map = {};
+                         jQuery.each(GetQueueform.split("&"), function () {
+                             var nv = this.split("="),
+                                 n = decodeURIComponent(nv[0]),
+                                 v = nv.length > 1 ? decodeURIComponent(nv[1]) : null;
+                             if (!(n in map)) {
+                                 map[n] = [];
+                             }
+                             map[n].push(v);
+                         });
+
+                         ///Call the Get next and pass the Queue to Process work for Load the next record.
+                         $.ajax({
+                             data: { "queueLkup": mostRecentWorkQueueLkup, "queueIdToSkip": curGen_Queue, 'StartDate': map["StartDate"], "EndDate": map["EndDate"] },
+                             url: urlGMURecordCommon,
+                             type: "POST",
+                             success: function (data) {
+                                 if (data.ID == 0 && data.Gen_QueuId != "") {
+                                     window.location.href = '@Url.Action("EligibilityProcessWork", "Eligibility")/' + '?queueId=' + data.Gen_QueuId+"&PageName="+pageName;
+                                 }
+                                 else if (data.ID == 0 && data.Gen_QueuId == "") {
+                                     MainLayout.fnAlertMessege("Alert!", "No more records in this queue.", function () {
+                                         window.location.href = urlGetQueue;
+                                     });
+                                 }
+                                 else {
+                                     MainLayout.fnAlertMessege("Alert!", "An error occoured.", function () {
+                                         window.location.href = urlGetQueue;
+                                     });
+                                 }
+                             },
+                             error: function (x) {
+                                 MainLayout.fnAlertMessege("Alert!", "An error occoured.", function () {
+                                     window.location.href = urlGetQueue;
+                                 });
+                             }
+                         });
+                     }
+                     else {
+                         if ($("#btnCancel").length > 0) {
+                             var cancelCurObject = $("#btnCancel").attr("callFrom");
+
+                             if (cancelCurObject == "Search") {
+                                 window.location.href = searchCancelUrl;
+                             }
+                             else if (cancelCurObject == "Home") {
+                                 window.location.href = urlHomeScreen;
+                             }
+                             else if (cancelCurObject == "EligCreateCase") {
+                                 window.location.href = urlCreateEligibilityCase;
+                             }
+                             else {
+                                 window.location.href = urlGetQueue;
+                             }
+                         }
+                         else {
+                             window.location.href = urlGetQueue;
+                         }
+                     }
+                 } catch (e) {
+
+                 }
+
+             };
+
+        ///////////
+        MainLayout.fnInitialiseDataTable($('#tblOSTWorkFlowLog'));
+        MainLayout.fnInitialiseDataTable($('#tblPWComments'));
+        MainLayout.fnInitialiseDataTable($('#tblRefferencedCases'));
+        MainLayout.fnInitialiseDataTable($('#tblPWAttachments'));
+       ////Methods/////
+
+        var fnAccessLinkTab = function (GEN_QueueId, TabType) {
+            //debugger
+            var TabToBeUsed = (TabType == 'discrepancydata') ? $("#sectionB") : $("#SectionTrrData");
+            try {
+                $.ajax({
+                    data: { "GEN_QueueId": GEN_QueueId, "TabType": TabType },
+                    url: LoadDiscTRRUrl,
+                    type: "POST",
+                    success: function (data) {
+                        //debugger
+                        if (data != "") {
+                            TabToBeUsed.empty().html(data);
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+
+                    },
+                    error: function (x) {
+                        //debugger
+                        $("#sectionB").empty();
+                        $("#SectionTrrData").empty();
+                        MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                    }
+                });
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        }
+        //Clear Tempdata
+        fnClearTempdataByGenId = function () {
+            try {
+                $.ajax({
+                    data: { "genQueueId": '@Model.GEN_QueueId' },
+                    url: urlClearTempdataByGenId,
+                    async: false,
+                    type: "POST",
+                    success: function (data) {
+                    }
+                });
+            } catch (e) {
+            }
+        };
+    </script>
+}
+
+

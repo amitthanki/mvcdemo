@@ -1,0 +1,39 @@
+﻿@using ENRLReconSystem.DO
+@using ENRLReconSystem.Utility
+@model List<DOADM_SkillWorkQueuesCorrelation>
+<div class="table-responsive">
+    <table class="table table-bordered" id="tblWorkQueue">
+        <thead>
+            <tr>
+                <th style="text-align:center">Actions</th>
+                <th style="text-align:center">Work Queues</th>
+                <th style="text-align:center">Created On</th>
+                <th style="text-align:center">Created By</th>
+                <th style="text-align:center">Updated On</th>
+                <th style="text-align:center">Updated By</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in Model)
+            {
+
+                <tr WorkQueuesLkup="@item.WorkQueuesLkup">
+                    <td>
+                        <a id="btnEditWQ" class="edit-queue"><img src="~/Images/edit-img.png" height="20" alt="Edit" /></a>
+                        <a id="btnDeleteWQ" class="edit-queue"><img src="~/Images/deleteiconimg.png" width="20" alt="Delete" /></a>
+                    </td>
+
+                    <td>
+                        @Html.DropDownList("ddlWorkQueues-Add", new SelectList(ViewBag.WorkQueues, "CMN_LookupMasterChildRef", "LookupMasterChildValue", @item.WorkQueuesLkup), ConstantTexts.dropdownDefaultValue, new { @class = "form-control", @disabled = true })
+                    </td>
+                    <td>@item.UTCCreatedOn.ToString("MM/dd/yyyy hh:mm tt")</td>
+                    <td>@item.CreatedByName</td>
+                    <td>@(item.UTCLastUpdatedOn.HasValue ? item.UTCLastUpdatedOn.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                    <td>@item.LastUpdatedByName</td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>

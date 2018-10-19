@@ -1,0 +1,50 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@model DOGEN_OSTActions
+
+
+<div class="clearfix">
+    @Html.HiddenFor(m => m.ApplicationDate)  
+    <div class="form-group col-md-3">
+        <label>Residential Documentation Required</label>
+        @Html.DropDownListFor(m => m.ResidentialDocumentationRequired, new SelectList(Model.lstResidentialDocRequired, "LookupValue1", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "ddlResidentialDocumentationRequired").AddCssClass("form-control").validationAttributes)
+        @*@Html.CheckBoxFor(xx => xx.ResidentialDocumentationRequired,new { @id = "chkResidentialDocumentationRequired", @class = "form-control" })*@
+    </div>
+    <div class="form-group col-md-3">
+        <label>County Attestation Required</label>
+        @Html.DropDownListFor(m => m.CountyAttestationRequired, new SelectList(Model.lstCountryAttestationRequired, "LookupValue1", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "ddlCountyAttestationRequired").validationAttributes)
+        @*@Html.CheckBoxFor(xx => xx.CountyAttestationReq, new { @id = "chkCountryAttestationRequired", @class = "form-control" })*@
+    </div>
+    <div class="form-group col-md-3">
+        <label for="txtContractNumber" class="required">Contract Number</label>
+        @Html.DropDownListFor(m => m.ContractIDLkup, new SelectList(Model.lstContractid, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please select Contract Number").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group date-group col-md-3">
+        <label for="txApplicationDate">Application Date</label>
+        @Html.DateTimeFor(m => m.ApplicationDate, false, new CustomValidation().CustomAttributes("id", "txApplicationDate").validationAttributes)
+    </div>
+    @if (Model.FirstLetterMailDate != null)
+    {
+        <div class="form-group col-md-3">
+            <label for="txtLastName">First Letter Mail Date</label>
+            @Html.TextBoxFor(xx => xx.FirstLetterMailDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+        </div>
+    }
+    <div class="form-group col-md-3">
+        <label for="txtLastName">GPS Household ID</label>
+        @Html.TextBoxFor(xx => xx.GPSHouseholdID, new { @class = "form-control", @readonly = "readonly" })
+    </div>
+    <div class="form-group textarea col-md-12">
+        <label for="txtComments" class="required">Comments</label>
+        @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtComments").Required("Please enter Comments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+    </div>
+
+</div>
+<script>
+   
+    if ('@Model.ApplicationDate' != null && '@Model.ApplicationDate' != '') {
+        //fnSetDateToField('@Model.AdjustedComplianceStartDate','AdjustedComplianceStartDate');
+        $('#ApplicationDate_DPart').val(getDateTimeInMMDDYYYY('@Model.ApplicationDate'));
+    }   
+</script>

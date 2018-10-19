@@ -1,0 +1,146 @@
+﻿@using ENRLReconSystem.Utility
+@model ENRLReconSystem.DO.QueueSummary
+
+@functions {
+    public IHtmlString QueueActions(long queueId, long count, bool showGetQueue = true)
+    {
+        string strTag = "";
+        if (count > 0 && Model.lstUserAccessQueueLkups.Contains(queueId))
+        {
+            var discCat = (long)DiscripancyCategory.Eligibility;
+            var href = Url.Action("SearchFromHome", "Common", new { @CaseCreationStartDate = Model.StartDate, @CaseCreationEndDate = Model.EndDate, @Queue = queueId, @data = discCat, @screenType = 37010 });
+            var reportHref = ViewBag.ReportUrl + "&FromDate=" + Model.StartDate.ToString("MM/dd/yyyy") + "&ToDate=" + Model.EndDate.ToString("MM/dd/yyyy") + "&WorkQueueLkup=" + queueId + "&BusinessSegmentLkup=" + Model.BusinessSegment;
+            if (showGetQueue)
+                strTag = "<a id = '" + queueId + "' class='getQueue' href='#' title='Get Queue'><img src = '/Images/get-queue-img.png' ></a>";//get queue link
+            strTag = strTag + "<a href='" + href + "'><img src = '/Images/view-img.png' title='View Queue' ></a>";//View Queue link
+            strTag = strTag + "<a href='" + reportHref + "' target ='_blank' title='View Report'><img src='/Images/report-img.png'></a>";//Report link
+        }
+        else
+        {
+            if (showGetQueue)
+                strTag = "<a  class='inAccessible' href='#'><img src = '/Images/disable-get-queue-img.png' ></ a >";//get queue link disabled
+            strTag = strTag + "<a  class='inAccessible' href='#'><img src = '/Images/disable-view-img.png' title='View Queue' ></a>";//View Queue link disabled
+            strTag = strTag + "<a class='inAccessible' href='#' title='View Report'><img src='/Images/disable-report-img.png'></a>";//Report link disabled
+        }
+        return new HtmlString(strTag);
+    }
+}
+
+
+<div class="queue-smry-wdgt">
+    <div class="processing-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Processing Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>New Case</td>
+                    <td>@Model.objEligibilityQueueSummary.EligNewCase</td>
+                    <td>
+                        @QueueActions(EligibilityQueue.EligNewCase.ToInt64(), @Model.objEligibilityQueueSummary.EligNewCase)                       
+                    </td>
+                </tr>
+                @*<tr>
+                    <td>CMS Rejected</td>
+                    <td>@Model.objEligibilityQueueSummary.EligCMSRejected</td>
+                    <td>
+                        @QueueActions(EligibilityQueue.EligCMSRejected.ToInt64(), @Model.objEligibilityQueueSummary.EligCMSRejected)                        
+                       
+                    </td>
+                </tr>*@
+                <tr>
+                    <td>Pending Audit</td>
+                    <td>@Model.objEligibilityQueueSummary.EligPendingAudit</td>
+                    <td>
+                        @QueueActions(EligibilityQueue.EligPendingAudit.ToInt64(), @Model.objEligibilityQueueSummary.EligPendingAudit) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>Peer Audit Failed</td>
+                    <td>@Model.objEligibilityQueueSummary.EligPeerAuditFailed</td>
+                    <td>
+                        @QueueActions(EligibilityQueue.EligPeerAuditFailed.ToInt64(), @Model.objEligibilityQueueSummary.EligPeerAuditFailed)
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pended</td>
+                    <td>@Model.objEligibilityQueueSummary.EligPended</td>
+                    <td>
+                       @QueueActions(EligibilityQueue.EligPended.ToInt64(), @Model.objEligibilityQueueSummary.EligPended)
+                    </td>
+                </tr>
+                @*<tr>
+                    <td>CMS Rejected</td>
+                    <td>@Model.objEligibilityQueueSummary.EligCMSRejected</td>
+                    <td>
+                        @QueueActions(EligibilityQueue.EligCMSRejected.ToInt64(), @Model.objEligibilityQueueSummary.EligCMSRejected)
+                    </td>
+                </tr>*@
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="queue-smry-wdgt">
+    @*<div class="holding-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Holding Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Submit to CMS</td>
+                    <td>@Model.objEligibilityQueueSummary.EligSubmitToCMS</td>
+                    <td>
+                      
+                        @QueueActions(EligibilityQueue.EligSubmitToCMS.ToInt64(), @Model.objEligibilityQueueSummary.EligSubmitToCMS,false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Update Sent to CMS</td>
+                    <td>@Model.objEligibilityQueueSummary.EligUpdateSentToCMS</td>
+                    <td>                      
+                        @QueueActions(EligibilityQueue.EligUpdateSentToCMS.ToInt64(), @Model.objEligibilityQueueSummary.EligUpdateSentToCMS, false)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>*@
+    <div class="completed-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Completed Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Completed</td>
+                    <td>@Model.objEligibilityQueueSummary.EligCompleted</td>
+                    <td>
+                       @QueueActions(EligibilityQueue.EligCompleted.ToInt64(), @Model.objEligibilityQueueSummary.EligCompleted, false)
+
+                    </td>
+                </tr>
+                @*<tr>
+                    <td>CMS Accepted</td>
+                    <td>@Model.objEligibilityQueueSummary.EligCMSAccepted</td>
+                    <td>
+                        @QueueActions(EligibilityQueue.EligCMSAccepted.ToInt64(), @Model.objEligibilityQueueSummary.EligCMSAccepted, false)
+                    </td>
+                </tr>*@
+            </tbody>
+        </table>
+    </div>
+</div>

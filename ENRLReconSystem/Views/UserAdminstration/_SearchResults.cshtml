@@ -1,0 +1,36 @@
+﻿@model List<ENRLReconSystem.DO.DOADM_UserMaster>
+    <div class="table-responsive">
+        <table class="table table-bordered" id="tblSearchResult" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Actions</th>
+                    <th>MS ID</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>LockedBy</th>
+                    <th>LockedOn</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+            {
+                    
+                    <tr class='@(item.LockedByRef!=null?"alert-danger" : "")'>
+                        <td>                         
+                            <a onclick="fnLockAndEdit(@item.ADM_UserMasterId,'@item.IsActive.ToString()');" title="Edit"><img src="~/Images/edit-img.png" alt="Edit" /></a>                         
+                            <a onclick="fnAccessReport(@item.ADM_UserMasterId);" title="View History"><div class='divDataTableActions'></div><img src="~/images/history-img.png" alt="Edit" /></a>
+                        </td>
+                        <td>@item.MSID</td>
+                        <td>@item.FullName</td>
+                        <td>@item.Email</td>
+                        <td>@item.StartDate.ToString("MM/dd/yyyy hh:mm tt")</td>
+                        <td>@item.EndDate.ToString("MM/dd/yyyy hh:mm tt")</td>
+                        <td>@item.LockedByName</td>
+                        <td>@item.UTCLockedOn</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+</div>

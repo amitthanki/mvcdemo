@@ -1,0 +1,38 @@
+﻿@model IEnumerable<ENRLReconSystem.DO.DOADM_AccessGroupMaster>
+<div class="table-responsive">
+    @{
+        <table class="table table-bordered" id="tblSearchResult" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Actions</th>
+                    <th>Access group Name</th>
+                    <th>Created By</th>
+                    <th>Created On</th>
+                    <th>Last Updated By</th>
+                    <th>Last Updated On</th>
+                    <th>LockedBy</th>
+                    <th>LockedOn</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    string lockedClass = item.LockedByRef != null ? "alert-danger" : "";
+                    <tr class="@lockedClass">
+                        <td>
+                            <a onclick="fnLockAndEdit(@item.ADM_AccessGroupMasterId,'@item.IsActive.ToString()');" title="Edit Acces Group"><img src="~/Images/edit-img.png" alt="Edit" /></a>
+                            <a onclick="fnAccessReport(@item.ADM_AccessGroupMasterId);" title="View History"><div class='divDataTableActions'></div><img src="~/images/history-img.png" alt="Edit" /></a>
+                        </td>
+                        <td>@item.AccessGroupName</td>
+                        <td>@item.CreatedByName</td>
+                        <td>@item.UTCCreatedOn.ToString("MM/dd/yyyy hh:mm tt")</td>
+                        <td>@item.LastUpdateByName</td>
+                        <td>@item.UTCLastUpdatedOn</td>
+                        <td>@item.LockedByName</td>
+                        <td>@item.UTCLockedOn</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

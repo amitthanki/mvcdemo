@@ -1,0 +1,981 @@
+﻿@model ENRLReconSystem.DO.DOGEN_Queue
+@using ENRLReconSystem.Helpers
+@{
+    Layout = null;
+}
+
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/images/manage-case-icon.png" /><h4>OOA Process Work</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <div class="inner-wdgt clearfix">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a class="primary-hdr" aria-expanded="true" href="#collapseOne" data-toggle="collapse"><img src="~/images/manage-case-icon.png"> <span>Work Case</span></a>
+                        </h4>
+                    </div>
+                    <div class="panel-collapse collapse in" id="collapseOne" aria-expanded="true">
+                        <div class="tab-pane-section col-md-4">
+                            <div class="form-group">
+                                <label class="col-md-6">ERS Case ID</label>
+                                @Html.TextBoxFor(xx => xx.GEN_QueueId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-6">Status</label>
+                                @Html.TextBoxFor(xx => xx.MostRecentStatus, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-6">Updated By</label>
+                                @Html.TextBoxFor(xx => xx.LastUpdatedBy, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="tab-pane-section col-md-4">
+                            <div class="form-group">
+                                <label class="col-md-6">Subject</label>
+                                @Html.HiddenFor(xx => xx.DiscrepancyCategoryLkup, new { id = "hdnDiscrepancyCategoryLkup" })
+                                @Html.TextBoxFor(xx => xx.DiscrepancyCategory, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-6">Created By</label>
+                                @Html.TextBoxFor(xx => xx.CreatedBy, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-6">Updated Date</label>
+                                @Html.TextBoxFor(m => m.UTCLastUpdatedOn, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="tab-pane-section col-md-4">
+                            <div class="form-group">
+                                <label class="col-md-6">Work Basket</label>
+                                @Html.TextBoxFor(xx => xx.WorkBasket, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-6">Created Date</label>
+                                @Html.TextBoxFor(xx => xx.UTCCreatedOn, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-md-6">Close Date</label>
+                                @Html.TextBoxFor(m => m.UTCResolvedOn, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-6" title="Case Age Calculation: (Current Date - Compliance Date) In Days">Case Age (In Days)</label>
+                                @Html.TextBoxFor(m => m.Aging, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-panel-group">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#sectionA">Case Details</a></li>
+                            <li><a data-toggle="tab" href="#sectionB">Discrepancy Data</a></li>
+                            <li><a data-toggle="tab" href="#sectionC">One Stop Shop</a></li>
+                            <li><a data-toggle="tab" href="#SectionTrrData">TRR Data</a></li>
+                            <li><a data-toggle="tab" href="#sectionD">CMS Transaction Details</a></li>
+                            <li><a data-toggle="tab" href="#sectionE">Referenced Cases</a></li>
+                            <li><a data-toggle="tab" href="#sectionF">Comments</a></li>
+                            <li><a data-toggle="tab" href="#sectionG">Attachments</a></li>
+                        </ul>
+                        <div class="tab-content wdgt-tab-content">
+                            <div id="sectionA" class="tab-pane fade in active">
+                                <div class="tab-pane-wdgt clearfix">
+                                    <div class="secondary-sub-hdr">
+                                        <h4>Member Info</h4>
+                                    </div>
+                                    <div class="tab-pane-body clearfix">
+                                        <div class="tab-pane-section col-md-4">
+                                            <div class="form-group">
+                                                <label class="col-md-6">Member ID</label>
+                                                @Html.TextBoxFor(xx => xx.MemberID, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">GPS Household ID</label>
+                                                @Html.TextBoxFor(xx => xx.GPSHouseholdID, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Member Last Name</label>
+                                                @Html.TextBoxFor(xx => xx.MemberLastName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Contract Number</label>
+                                                @Html.TextBoxFor(xx => xx.MemberContractID, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane-section col-md-4">
+                                            <div class="form-group">
+                                                <label class="col-md-6">Medicare ID</label>
+                                                @Html.TextBoxFor(xx => xx.MemberCurrentHICN, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Member First Name</label>
+                                                @Html.TextBoxFor(xx => xx.MemberFirstName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Member Verified State</label>
+                                                @Html.TextBoxFor(xx => xx.MemberVerifiedState, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">PBP</label>
+                                                @Html.TextBoxFor(xx => xx.MemberPBP, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane-section col-md-4">
+                                            <div class="form-group">
+                                                <label class="col-md-6">MBI</label>
+                                                @Html.TextBoxFor(xx => xx.MemberCurrentMBI, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Member Middle Name</label>
+                                                @Html.TextBoxFor(xx => xx.MemberMiddleName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">Member Verified County Code</label>
+                                                @Html.TextBoxFor(xx => xx.MemberVerifiedCountyCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-6">LOB</label>
+                                                @Html.TextBoxFor(xx => xx.MemberLOB, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane-wdgt clearfix">
+                                        <div class="secondary-sub-hdr">
+                                            <h4>Discrepancy Info</h4>
+                                        </div>
+                                        <div class="tab-pane-body clearfix">
+                                            <div class="tab-pane-section col-md-4">
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Discrepancy Category</label>
+                                                    @Html.TextBoxFor(xx => xx.DiscrepancyCategory, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">MIIM Updated</label>
+                                                    <input class="form-control" type="text" readonly>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">MBR Date</label>
+                                                    @Html.TextBoxFor(m => m.MemberResponseVerificationDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">PDP Auto Enrollee Indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.PDPAutoEnrolleeInd, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Resolution</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_OSTActions.Resolution, new { @disabled = "disabled", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane-section col-md-4">
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Discrepancy Type</label>
+                                                    @Html.TextBoxFor(xx => xx.DiscrepancyType, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">First Letter Mail Date</label>
+                                                    @Html.TextBoxFor(m => m.FirstLetterMailDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Disenrollment Date</label>
+                                                    @Html.TextBoxFor(m => m.DisenrollmentDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Referenced Eligibility Case Indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.ReferencedEligibilityCaseInd, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+
+                                            </div>
+                                            <div class="tab-pane-section col-md-4">
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Compliance Start Date</label>
+                                                    @Html.TextBoxFor(m => m.ComplianceStartDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Second Letter Mail Date</label>
+                                                    @Html.TextBoxFor(m => m.SecondLetterMailDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Discrepancy Source</label>
+                                                    @Html.TextBoxFor(xx => xx.DiscrepancySource, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Referenced SCC Case Indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.ReferencedSCCCaseInd, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @if (Model.DiscrepancySourceLkup == 13005)
+                                    {
+                                        <div class="tab-pane-wdgt clearfix">
+                                            <div class="secondary-sub-hdr">
+                                                <h4>Xerox Link</h4>
+                                            </div>
+                                            <div class="tab-pane-body clearfix">
+                                                <a id="@Model.ODMDocID" href="@Model.ODMAddressLink">@Model.ODMAddressLink</a>
+                                            </div>
+                                        </div>
+                                    }
+                                    else if (Model.DiscrepancySourceLkup == 13006 && Model.FileTypeLkup == 40001)
+                                    {
+                                        <div class="tab-pane-wdgt clearfix">
+                                            <div class="secondary-sub-hdr">
+                                                <h4>Grayhair (USPS) Undeliverabled Mail</h4>
+                                            </div>
+                                            <div class="tab-pane-body clearfix">
+                                                <div class="form-group col-md-3">
+                                                    <label>Undelivered Address1</label>
+                                                    @Html.TextBoxFor(xx => xx.UndeliveredAddress1, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>Undelivered Address2</label>
+                                                    @Html.TextBoxFor(xx => xx.UndeliveredAddress2, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>Undelivered City</label>
+                                                    @Html.TextBoxFor(xx => xx.UndeliveredCity, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>Undelivered State</label>
+                                                    @Html.TextBoxFor(xx => xx.UndeliveredState, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>Undelivered Zip</label>
+                                                    @Html.TextBoxFor(xx => xx.UndeliveredZip, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    else if (Model.DiscrepancySourceLkup == 13006 && Model.FileTypeLkup == 40002)
+                                    {
+                                        <div class="tab-pane-wdgt clearfix">
+                                            <div class="secondary-sub-hdr">
+                                                <h4>Grayhair (USPS) Change Of Address</h4>
+                                            </div>
+                                            <div class="tab-pane-body clearfix">
+                                                <div class="form-group col-md-3">
+                                                    <label>COA Old Address1</label>
+                                                    @Html.TextBoxFor(xx => xx.COAOldAddress1, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>COA Old Address2</label>
+                                                    @Html.TextBoxFor(xx => xx.COAOldAddress2, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>COA Old City</label>
+                                                    @Html.TextBoxFor(xx => xx.COAOldCity, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>COA Old State</label>
+                                                    @Html.TextBoxFor(xx => xx.COAOldState, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>Undelivered State</label>
+                                                    @Html.TextBoxFor(xx => xx.COAOldZip, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>COA New Address1</label>
+                                                    @Html.TextBoxFor(xx => xx.COANewAddress1, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>COA New Address2</label>
+                                                    @Html.TextBoxFor(xx => xx.COANewAddress2, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>COA New City</label>
+                                                    @Html.TextBoxFor(xx => xx.COANewCity, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>COA New State</label>
+                                                    @Html.TextBoxFor(xx => xx.COANewState, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group col-md-3">
+                                                    <label>COA New Zip</label>
+                                                    @Html.TextBoxFor(xx => xx.COANewZip, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            <div id="sectionB" class="tab-pane fade">
+                                <div class="tab-panel-group clearfix">
+                                    <ul class="nav nav-tabs">
+                                        <li class="active"><a data-toggle="tab" href="#sectionH">GPS Data</a></li>
+                                        <li><a data-toggle="tab" href="#sectionJ">BEQ</a></li>
+                                        <li><a data-toggle="tab" href="#sectionK">SMS</a></li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div id="sectionH" class="tab-pane fade in active clearfix">
+                                            <div class="tab-pane-section col-md-4">
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Medicare ID</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.HICN, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">LOB</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.LOB, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">PBP</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.PBP, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Date of Birth</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.DOB, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">City</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.City, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Plan Effective Date</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.PlanEffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+
+
+                                                <div class="form-group">
+                                                    <label class="col-md-6">SCC Effective Date</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.SCCEffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Out of Area Indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.OOAIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Application Approved Status</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.ApplicationApprovedStatus, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane-section col-md-4">
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Member ID</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.MemberId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Line of Business Desc</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.LOBDescription, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">First Name</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.FirstName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Address Line 1</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.AddressLine1, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Zip Code 5</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.ZipCode5, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">State</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.State, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Plan Term Date</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.PlanTermDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">SCC End</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.SCCEndDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">GPS OOA Disenrollment Date</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.GPSOOADisenrollmentDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                            <div class="tab-pane-section col-md-4">
+                                                <div class="form-group">
+                                                    <label class="col-md-6">GPS Household ID</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.HouseholdId, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Contract Number</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.ContractNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Last Name</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.LastName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Address Line 2</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.AddressLine2, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Zip Code 4</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.ZipCode4, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">SCC Code</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.SCCCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Application Information</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.ApplicationApprovedStatus, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">PDP Auto Enrollee Indicator</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.PDPAutoEntrolleeIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-6">Individual Id</label>
+                                                    @Html.TextBoxFor(xx => xx.objDOGEN_GPSData.IndividualId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="sectionJ" class="tab-pane fade clearfix">
+                                            MARx
+                                        </div>
+                                        <div id="sectionK" class="tab-pane fade clearfix">
+                                            MARx
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="sectionC" class="tab-pane fade">
+                                <div id="sectionL" class="tab-pane fade in active clearfix">
+                                    <div class="clearfix">
+                                        <iframe src="http://dp-mrssrsprd01.xlhealth.local/ReportServer/Pages/ReportViewer.aspx?%2fOOA%2fRPT_OOA_ONE_STOP_SHOP&rs:Command=Render&SEARCH_VALUE=@Model.MemberCurrentHICN" width="100%" frameborder="0" draggable="false" scrolling="auto"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="SectionTrrData" class="tab-pane fade clearfix">
+                                <div class="tab-panel-group clearfix">
+                                    <ul class="nav nav-tabs">
+                                        <li class="active"><a data-toggle="tab" href="#sectionSummaryInformation">Summary Information</a></li>
+                                        <li><a data-toggle="tab" href="#sectionBadTransactionHistory">Bad Transaction History</a></li>
+                                        <li><a data-toggle="tab" href="#sectionBadTransactionPending">Bad Transaction Pending</a></li>
+                                        <li><a data-toggle="tab" href="#sectionResponse">Response</a></li>
+                                    </ul>
+                                    <div class="tab-content wdgt-tab-content">
+                                        <div id="sectionSummaryInformation" class="tab-pane fade in active">
+                                            <div class="tab-pane-wdgt clearfix">
+                                                <div class="tab-pane-section col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Application Date</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ApplicationDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">District Office</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.DistrictOffice, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Medical Claim Number</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.MedicareClaimNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">RX Id</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.RXId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Contract Year</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ContractYear, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">PBP Number</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PBPNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Previous PBP</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PBPNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Co-Pay Category</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.CoPayCategory, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">EGHB indicator</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.EGHBIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Premium Amount Value</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PremiumAmountValue, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Processing Time</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ProcessingTime, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">System Tracking Id</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.SystemtrackingId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Transaction Reply Code</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.TransactionReplyCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Transaction Short Name</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.TransactionShortName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane-section col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Change Initiator Indicator</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ChangeInitiatorIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Effective Date</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.EffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">RX Bin</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.RXBin, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">RX PCN</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.RXPCN, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">PartC Premium</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PartCPremium, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Plan ID</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PlanId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Product Code</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ProductCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Co-Pay Effctive Date</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.CoPayEffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">EmpSubsidy Overide Indicator</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.EmpSubsidyOverrideIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Premium Withhold Option</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PartDPremium, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Record Type</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.RecordType, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Transaction Code</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.TransactionCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Transaction Date</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.TransactionDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane-section col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Change Org Name</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ChangeOrgName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">GPS Tracking Number</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.GPSTrackingNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">RX Group</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.RXGroup, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Contract Number</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ContractNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">PartD premium</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PartDPremium, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Previous Contract PDP</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PreviousContractNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">SNP Flag</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.SNPFlag, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Creditable Coverage Indicator</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.CreditableCoverageIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Not Covered Months</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.NotCoveredMonths, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Process Date</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ProcessDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Source Identifier</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.SourceIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Transaction Code Description</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.TransactionCodeDescription, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Transaction Id</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.TransactionId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="sectionBadTransactionHistory" class="tab-pane fade">
+                                            <div class="tab-pane-wdgt clearfix">
+                                                <div class="tab-pane-section col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Application Date</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ApplicationDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">District Office</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.DistrictOffice, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Medical Claim Number</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.MedicareClaimNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">RX Id</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.RXId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Contract Year</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ContractYear, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">PBP Number</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PBPNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Previous PBP</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PBPNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Co-Pay Category</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.CoPayCategory, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">EGHB indicator</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.EGHBIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Premium Amount Value</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PremiumAmountValue, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Processing Time</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ProcessingTime, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">System Tracking Id</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.SystemtrackingId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Transaction Reply Code</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.TransactionReplyCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Transaction Short Name</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.TransactionShortName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane-section col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Change Initiator Indicator</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ChangeInitiatorIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Effective Date</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.EffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">RX Bin</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.RXBin, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">RX PCN</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.RXPCN, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">PartC Premium</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PartCPremium, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Plan ID</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PlanId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Product Code</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ProductCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Co-Pay Effctive Date</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.CoPayEffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">EmpSubsidy Overide Indicator</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.EmpSubsidyOverrideIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Premium Withhold Option</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PartDPremium, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Record Type</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.RecordType, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Transaction Code</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.TransactionCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Transaction Date</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.TransactionDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                                <div class="tab-pane-section col-md-4">
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Change Org Name</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ChangeOrgName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">GPS Tracking Number</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.GPSTrackingNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">RX Group</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.RXGroup, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Contract Number</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ContractNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">PartD premium</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PartDPremium, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Previous Contract PDP</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.PreviousContractNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">SNP Flag</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.SNPFlag, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Creditable Coverage Indicator</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.CreditableCoverageIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Not Covered Months</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.NotCoveredMonths, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Process Date</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.ProcessDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Source Identifier</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.SourceIndicator, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Transaction Code Description</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.TransactionCodeDescription, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-6">Transaction Id</label>
+                                                        @Html.TextBoxFor(xx => xx.objDOGEN_TRRData.TransactionId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="sectionBadTransactionPending" class="tab-pane fade">
+                                            <div class="tab-pane-wdgt clearfix">
+                                                @*Need to add Controls*@
+                                            </div>
+                                        </div>
+                                        <div id="sectionResponse" class="tab-pane fade">
+                                            <div class="tab-pane-wdgt clearfix">
+                                                @*Need to add Controls*@
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div id="sectionD" class="tab-pane fade clearfix">
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Case Number</label>
+                                        @Html.TextBoxFor(xx => xx.objDOGEN_OSTActions.GEN_QueueRef, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Date of Birth</label>
+                                        @Html.TextBoxFor(xx => xx.objDOGEN_OSTActions.DateofBirth, "{0:MM/dd/yyyy}",new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Transaction Type Code</label>
+                                        <input class="form-control" type="text" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Effective Date</label>
+                                        @Html.TextBoxFor(xx => xx.objDOGEN_OSTActions.EffectiveDate, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">EGHP Indicator</label>
+                                        <input class="form-control" type="text" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Medicare ID</label>
+                                        @Html.TextBoxFor(xx => xx.HICN, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Contract ID</label>
+                                        @Html.TextBoxFor(xx => xx.objDOGEN_OSTActions.ContractID, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Application Date</label>
+                                        @Html.TextBoxFor(xx => xx.objDOGEN_OSTActions.ApplicationDate, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Resolution</label>
+                                        @Html.TextBoxFor(xx => xx.objDOGEN_OSTActions.Resolution, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Explanation of the Root Cause</label>
+                                        <input class="form-control" type="text" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Last Name</label>
+                                        @Html.TextBoxFor(xx => xx.objDOGEN_OSTActions.LastName, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">PBP</label>
+                                        @Html.TextBoxFor(xx => xx.objDOGEN_OSTActions.PBP, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Election Type</label>
+                                        <input class="form-control" type="text" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Root Cause</label>
+                                        <input class="form-control" type="text" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Verified Root Cause</label>
+                                        <input class="form-control" type="text" readonly>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div id="sectionE" class="tab-pane fade clearfix">
+                                <div class="tab-pane-wdgt">
+                                    <div class="secondary-sub-hdr">
+                                        <h4>OOA / SCC / TRR Records</h4>
+                                    </div>
+                                    <div class="tab-pane-body clearfix">
+                                        @Html.Partial("_RefferencedCases", Model.lstDOGEN_QueueRefferencedCases)
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="sectionF" class="tab-pane fade clearfix">
+                                @Html.Partial("_PWComments", Model.lstDOGEN_Comments)
+                            </div>
+                            <div id="sectionG" class="tab-pane fade clearfix">
+                                <div class="table-responsive" id="divPWAttachment">
+                                    @Html.Partial("_Attachment", Model.lstDOGEN_Attachments)
+                                </div>
+                                <div class="btn-group clearfix">
+                                    <button type="button" id="btnAddPWAttachment" class="btn btn-primary"><img src="~/images/add-icon.png"><span>Add Attachment</span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*Actions Section*@
+                    <div class="inner-wdgt clearfix">
+                        <div class="primary-hdr">
+                            <h4><img src="~/images/action-icon.png"><span>Add Comments</span></h4>
+                        </div>
+                        <div class="inner-wdgt-body clearfix">
+                            <form id="frmCommentsForm">
+                                @Html.ValidationSummary()
+                                @Html.HiddenFor(m => m.GEN_QueueId);
+                                <div class="sub-inner-wrapper clearfix">
+                                    <div class="form-group textarea col-md-12">
+                                        @Html.Label("Comments", new { @class = "required" })
+                                        @Html.TextArea("Comments", new CustomValidation().Required("Comments are Required").AddCssClass("form-control").CustomAttributes("id", "txtComments").StringMaxLength(4000, "Comments").validationAttributes)
+                                    </div>
+                                </div>
+                                <div class="btn-group clearfix">
+                                    <button type="Button" id="btnSubmit" class="btn btn-primary"><img src="~/images/action-icon.png"><span>Save</span></button>
+                                    <button type="Button" id="btnReset" class="btn btn-primary"><img src="~/images/reset-icon.png"><span>Reset</span></button>
+                                    <button type="Button" id="btnCancel" class="btn btn-primary"><img src="~/images/cancle-icon.png"><span>Cancel</span></button>
+                                    <button type="Button" id="btnHistory" class="btn btn-primary"><img src="~/images/history-icon.png"><span>History</span></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts {
+    <script>
+        var submitUrl = '@Url.Action("SaveComments", "MIIMConnector")';
+        var cancelUrl = '@Url.Action("RPRGetQueue", "RPRQueues")';
+        var saveSuccessUrl = '@Url.Action("RPRGetQueue", "RPRQueues")';
+        var recordId = '@Model.GEN_QueueId';
+
+        $('#btnSubmit').click(function () {
+            var $form = $('#frmCommentsForm');
+            $('.validation-summary-errors ul').empty();// clear the error messages
+            $form.removeData('validator');
+            $form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse($form);
+            var formValid = $form.valid(); //validate form
+            if (!formValid) {
+                return
+            } else {
+                try {
+                    $.ajax({
+                        data: $form.serialize(),
+                        url: submitUrl,
+                        type: "POST",
+                        success: function (data) {
+                            if (data.ID > 0) {
+                                //if any errors while saving from controller
+                                MainLayout.fnAlertMessege("Error!", data.Message);
+                            }
+                            else {
+                                //if save successfull
+                                MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                                    window.location.href = saveSuccessUrl;
+                                });
+                            }
+                        },
+                        error: function (x) {
+                            //Network errror
+                            MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                        }
+                    });
+                }
+                catch (e) {
+                    //exception forming ajax request or submitting form
+                    MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                }
+            }
+        });
+    </script>
+    }

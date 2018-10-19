@@ -1,0 +1,51 @@
+﻿@using ENRLReconSystem.Helpers
+@model ENRLReconSystem.DO.DOGEN_Queue
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/Images/list-icon.png" /><h4>Work Item - OOA</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <form>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">ERS Case ID</label>
+
+                    @Html.TextBoxFor(x => x.GEN_QueueId, new { @class = "form-control", @readonly = "readonly" })
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">Medicare ID</label>
+
+                   
+                    @Html.TextBoxFor(x => x.MemberCurrentHICN, new { @class = "form-control", @readonly = true })
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">Discrepancy Start Date</label>
+
+                    @*@Html.TextBoxFor(x => x.DiscrepancyStartDate, new CustomValidation().Required("Discrepancy Start Date").AddCssClass("form-control").validationAttributes)*@
+                    @Html.TextBoxFor(x => x.DiscrepancyStartDate, new { @class = "form-control", @readonly = "readonly" })
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">Compliance Start Date</label>
+                    @Html.TextBoxFor(x => x.ComplianceStartDate, new { @class = "form-control", @readonly = "readonly" })
+                </div>
+                <div class="form-group
+                        col-md-3">
+                    <label for="inputEmail">Member First Name</label>
+                    @Html.TextBoxFor(x => x.MemberFirstName, new { @class = "form-control", @readonly = "readonly" })
+
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">Member Last Name</label>
+                   
+                    @Html.TextBoxFor(x => x.MemberFirstName, new { @class = "form-control", @readonly = "readonly" })
+                </div>
+                <div class="btn-group clearfix">
+                    <button type="submit" id="btnCancel" class="btn btn-primary"><img src="~/Images/cancle-icon.png" /><span>Cancel</span></button>
+                    <button type="submit" id="btnLogin" class="btn btn-primary"><img src="~/Images/get-next-icon.png" /><span>Get Next</span></button>
+                    <button type="submit" id="btnLogin" class="btn btn-primary"><img src="~/Images/configuration-icon.png" /><span>Start Processing</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+

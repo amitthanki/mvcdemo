@@ -1,0 +1,50 @@
+﻿@*partial page for table to show search results for alerts*@
+@model IEnumerable<ENRLReconSystem.DO.DOADM_AlertDetails>
+<div class="table-responsive">
+    <table class="table table-bordered" id="tblSearchResult">
+        <thead>
+            <tr>
+                <th>Actions</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Published Date</th>
+                <th>Is Active</th>
+                <th>Created On</th>
+                <th>Created by</th>
+                <th>Last Updated On</th>
+                <th>Last Updated by</th> 
+                <th>LockedBy</th>
+                <th>LockedOn</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                foreach (var item in Model)
+                {
+                    //check locked by ref and set different class for locked records
+                    string lockedClass = item.LockedByRef != null ? "alert-danger" : "";
+                    <tr class="@lockedClass">
+                        <td>
+                            @*call fnLockAndEdit() on search page on click event to lock record before navigating to edit screen*@
+                            <a onclick="fnLockAndEdit(@item.ADM_AlertDetailsId, '@item.IsActive.ToString()');" title="Edit Alert"><img src='@Url.Content("/images/edit-img.png")'></a>
+                            @*Alert history report URL is to be added*@
+                            <a onclick="fnAccessReport(@item.ADM_AlertDetailsId);" title="View History"><div class='divDataTableActions'></div><img src="~/images/history-img.png" alt="Edit" /></a>
+                            @*<a title="Alert Histroy"><img src='@Url.Content("/images/history-img.png")'></a>*@
+                        </td>
+                        <td>@item.AlertTitle</td>
+                        <td>@item.AlertDescription</td>
+                        <td>@if (item.AlertPublishedDate.HasValue){@item.AlertPublishedDate.Value.ToString("MM/dd/yyyy hh:mm tt")}</td>
+                        <td>@(item.IsActive ? "Yes" : "No")</td>@*set coloumn value yes or based on isActive true or false*@
+                        <td>@item.UTCCreatedOn.ToString("MM/dd/yyyy hh:mm tt")</td>
+                        <td>@item.CreatedByName</td>
+                        <td>@item.UTCLastUpdatedOn.ToString("MM/dd/yyyy hh:mm tt")</td>
+                        <td>@item.LastUpdatedByName</td>
+                        <td>@item.LockedByName</td>
+                        <td>@item.UTCLockedOn</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

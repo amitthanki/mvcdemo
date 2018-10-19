@@ -1,0 +1,25 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.DO
+@model List<DOGEN_GPSData>
+
+<div class="wdgt-wrapper">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <div class="wdgt-hdr">
+        <img src="~/images/search-icon.png" /><h4>GPS HouseHold ID</h4>
+    </div>
+    <div class="wdgt-body clearfix">
+        <div class="clearfix" style="padding-left:15px;">
+            <label id="lblValidateSummaryPopup" style="color:red;"></label>
+        </div>
+        @foreach (var item in Model)
+        {
+            <div>
+                <input type="radio" id="HouseholdId" name="HouseholdId" value='@item.HouseholdId' />@item.HouseholdId<br />
+            </div>
+        }
+
+        <div class="btn-group clearfix">
+            <button class="btn btn-primary" id="btnGetHouseholdID" type="button"><img src="~/images/select-icon.png" /><span>Select</span></button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,801 @@
+﻿@model ENRLReconSystem.DO.UIDOAccessGroup
+@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.Utility
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Header = Model.ADM_AccessGroupMasterId == 0 ? "Add Access Group" : " Edit Access Group";
+}
+<style>
+    .emptyRow {
+        border: 1px solid red;
+    }
+
+    .mandatory {
+        color: red;
+        font-weight: bold;
+    }
+
+    .text-danger {
+        padding-left: 10px;
+        padding-top: 5px;
+        color: red;
+        list-style-type: symbols('*');
+    }
+
+    .gridCol {
+        padding-left: 20px;
+    }
+
+    td {
+        text-align: center;
+    }
+</style>
+<section class="container main-body-wrpr">
+    <form id="frmAddAccessGroup">
+        <div class="wdgt-wrapper">
+            @Html.HiddenFor(m => m.CreatedByRef)
+            @Html.HiddenFor(m => m.UTCCreatedOn)
+            @Html.HiddenFor(m => m.ADM_AccessGroupMasterId, new { @id = "hdnADM_AccessGroupMasterId" })
+            @Html.AntiForgeryToken()
+            <div class="wdgt-body clearfix">
+                <div class="wdgt-wrapper">
+                    <div class="wdgt-hdr">
+                        <img src="~/Images/access-group-icon.png" /><h4>@Header</h4>
+                    </div>
+                    <div class="wdgt-body clearfix">
+                        @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                        <div class="form-group col-md-3">
+                            <label for="inputEmail">Access group Name<span class="mandatory">*</span></label>
+                            @Html.TextBoxFor(model => model.AccessGroupName, new CustomValidation().Required("Access Group Name is required.").AddCssClass("form-control").CustomAttributes("id", "txtAccessGroupName").CustomAttributes((Model.ADM_AccessGroupMasterId > 0) ? "readonly" : "", (Model.ADM_AccessGroupMasterId > 0) ? "true" : "").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAmpersandAndSpaces, "Access Group Name").StringMaxLength(200, "Access Group Name").CustomAttributes("maxlength", "200").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Role<span class="mandatory">*</span></label>
+                            @Html.DropDownListFor(model => model.RoleLkup, new SelectList(ViewBag.RoleList, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue,
+                           new CustomValidation().CustomAttributes("OldValue", "").CustomAttributes("onfocus", "this.setAttribute('OldValue', this.value);").Required("Role is required.").AddCssClass("form-control").CustomAttributes("id", "ddlRole").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Work Basket<span class="mandatory">*</span></label>
+                            @Html.DropDownListFor(model => model.WorkBasketLkup, new SelectList(ViewBag.WorkBasketList, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue,
+                           new CustomValidation().CustomAttributes("OldValue", "").CustomAttributes("onfocus", "this.setAttribute('OldValue', this.value);").Required("Work Basket is required.").AddCssClass("form-control").CustomAttributes("id", "ddlWorkBasket").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.IsActive, "Is Active")
+                            @Html.CheckBoxFor(m => m.IsActive, (Model.ADM_AccessGroupMasterId > 0) ? new { @class = "form-control" } : new { @checked = "checked", @class = "form-control" } as object)
+                        </div>
+                        <div class="form-group textarea col-md-12">
+                            <label>Description</label>
+                            @Html.TextAreaFor(model => model.AccessGroupDescription, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtAccessGroupDescription").CustomAttributes("maxlength", "500").StringMaxLength(500, "Description").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAmpersandAndSpaces, "Description").validationAttributes)
+                        </div>
+                    </div>
+                </div>
+                <div class="wdgt-wrapper">
+                    <div class="wdgt-hdr">
+                        <img src="~/Images/list-icon.png" /><h4>Skills</h4>
+                    </div>
+                    <div class="wdgt-add-btn clearfix">
+                        <button type="button" id="btnAddNewSkill" class="btn btn-primary"><img src="~/Images/add-icon.png" title="Click here to add new skill" /></button>
+                        <label class="validation-summary-errors" id="txtNoSkillErrorMsg" hidden="hidden">No more Skills for selected Work Basket and Role.</label>
+                    </div>
+                    <div class="wdgt-body clearfix" id="divSkillsPartialView">
+                        @Html.Partial("_Skills", Model.lstDOADM_AccessGroupSkillsCorrelation)
+                    </div>
+                </div>
+                <div class="wdgt-wrapper">
+                    <div class="wdgt-hdr">
+                        <img src="~/Images/list-icon.png" /><h4>Reports</h4>
+                    </div>
+                    <div class="wdgt-add-btn clearfix">
+                        <button type="button" id="btnAddNewReport" class="btn btn-primary"><img src="~/Images/add-icon.png" title="Click here to add new skill" /></button>
+                        <label class="validation-summary-errors" id="txtNoReportErrorMsg" hidden="hidden">No more Reports.</label>
+                    </div>
+                    <div class="wdgt-body clearfix" id="divReportsPartialView">
+                        @Html.Partial("_Reports", Model.lstDOADM_AccessGroupReportCorrelation)
+                    </div>
+                </div>
+                <div class="btn-group clearfix">
+                    <button type="button" id="btnSubmit" class="btn btn-primary"><img src="~/Images/save-icon.png" /><span>Save</span></button>
+                    <button type="button" id="btnReset" class="btn btn-primary"><img src="~/Images/reset-icon.png" /><span>Reset</span></button>
+                    <button type="button" id="btnCancel" class="btn btn-primary" onclick="fnCancel();"><img src="~/Images/cancle-icon.png" /><span>Cancel</span></button>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+@section scripts{
+    <script type="text/javascript">
+        var submitUrl = '@Url.Action("Save", "AccessGroup")';
+        var recordId = '@Model.ADM_AccessGroupMasterId';
+        var cancelUrl = '@Url.Action("Search", "AccessGroup")';
+        var urlForUnlock = '@Url.Action("UnlockRecord", "RecordsLocked")';
+        var urlCheckAccessGroupName = '@Url.Action("CheckExistsAccessGroup", "AccessGroup")';
+        var urlAddSkillsToSession = '@Url.Action("AddSkillsToSession", "AccessGroup")';
+        var urlAddReportsToSession = '@Url.Action("AddReportsToSession", "AccessGroup")';
+        var urlGetSkillsBasedOnRoleAndWB = '@Url.Action("GetSkillsBasedOnRoleAndWB", "AccessGroup")';
+        var dropdownDefaultValue = '@ConstantTexts.dropdownDefaultValue';
+        var WorkBasket = '@Model.WorkBasketLkup';
+        var Role = '@Model.RoleLkup';
+
+
+        var Skills = [];//fix array of all the Skills in slected Work basket and Role
+        var AddedAccessGroupSkills = [];//temp added skills
+        var ToBeAddedAccessGroupSkills = [];//skills that can be added from this category
+        var oldSkillRowData = {};//to save old skill value while editing
+        oldSkillRowData.ADM_SkillsMasterRef = 0;
+
+        var Reports = @Html.Raw(Json.Encode(ViewBag.Reports));//fix array of all the Reports in slected Work basket and Role
+        var AddedAccessGroupReports = [];//temp added Reports
+        var ToBeAddedAccessGroupReports = [];//Reports that can be added from this category
+        var oldReport = 0;//to save old Report value while editing
+
+        //---parameters in edit mode----//
+        var PrevoiuslyAddedAccessGroupSkills = @Html.Raw(Json.Encode(Model.lstDOADM_AccessGroupSkillsCorrelation));
+        var ViewBagSkills = @Html.Raw(Json.Encode(ViewBag.Skills));
+
+        var PrevoiuslyAddedAccessGroupReports = @Html.Raw(Json.Encode(Model.lstDOADM_AccessGroupReportCorrelation));
+        var ViewBagReports = @Html.Raw(Json.Encode(ViewBag.Reports));
+
+        $myForm = $('#frmAddAccessGroup');
+        origForm = $myForm.serialize();
+
+        $(document).ready(function () {
+            if (recordId != 0) {
+                $('#ddlWorkBasket').val(WorkBasket);
+                $('#ddlRole').val(Role);
+                //populate values for previusly added skills in access group
+                if (PrevoiuslyAddedAccessGroupSkills.length > 0) {
+                    $.each(ViewBagSkills, function (index, item) {
+                        if (item != undefined) {
+                            if ($.grep(PrevoiuslyAddedAccessGroupSkills, function (x) { return x.ADM_SkillsMasterRef == item.ADM_SkillsMasterId }).length > 0)
+                                AddedAccessGroupSkills.push(item);
+                            else
+                                ToBeAddedAccessGroupSkills.push(item);
+                        }
+                    });
+                    Skills = ViewBagSkills;
+                } else {
+                    $('#ddlWorkBasket').trigger('change');
+                }
+
+                //set report table values
+                if (PrevoiuslyAddedAccessGroupReports.length > 0) {
+                    $.each(ViewBagReports, function (index, item) {
+                        if (item != undefined) {
+                            if ($.grep(PrevoiuslyAddedAccessGroupReports, function (x) { return x.RPT_ReportsMasterRef == item.RPT_ReportsMasterId }).length > 0)
+                                AddedAccessGroupReports.push(item);
+                            else
+                                ToBeAddedAccessGroupReports.push(item);
+                        }
+                    });
+                    Reports = ViewBagReports;
+                } else {
+                    AddedAccessGroupReports = [];
+                    ToBeAddedAccessGroupReports = Reports;
+                }
+            }
+            else {
+                $("#btnAddNewSkill").attr("disabled", "disabled");
+                ToBeAddedAccessGroupReports = Reports;
+            }
+            fnDisableControls(false);
+        });
+
+
+        ///Unlock Logic///
+        function fnCancel() {
+            fnUnlockRecord(urlForUnlock, recordId, enums.ScreenType.AccessGroup, cancelUrl);
+        }
+
+        function fnDisableControls(disable) {
+            if (disable) {
+                $('#ddlWorkBasket, #ddlRole,#btnSubmit, #btnReset, #btnCancel, #btnAddNewSkill, #btnAddNewReport,.input-sm').attr('disabled', 'disabled');
+                $('.paginate_button').addClass('disabled');
+                $('.edit-queue').hide();
+            } else {
+                $('#ddlWorkBasket, #ddlRole ,#btnSubmit, #btnReset, #btnCancel,.input-sm').removeAttr('disabled');
+                $('.paginate_button').removeClass('disabled');
+                $('.edit-queue').show();
+                if (ToBeAddedAccessGroupSkills.length <= 0) {
+                    $('#btnAddNewSkill').attr('disabled', 'disabled');
+                    $('#txtNoSkillErrorMsg').show();
+                } else {
+                    $('#btnAddNewSkill').removeAttr('disabled');
+                    $('#txtNoSkillErrorMsg').hide();
+                }
+
+                if ($('#ddlWorkBasket').val() == "" || $('#ddlRole').val() == "") {
+                    $('#txtNoSkillErrorMsg').hide();
+                }
+
+                if (ToBeAddedAccessGroupReports.length <= 0) {
+                    $('#btnAddNewReport').attr('disabled', 'disabled');
+                    $('#txtNoReportErrorMsg').show();
+                } else {
+                    $('#btnAddNewReport').removeAttr('disabled');
+                    $('#txtNoReportErrorMsg').hide();
+                }
+            }
+        }
+
+        function fnCheckAccessGroupExistsUsingAccessGroupName() {
+            var AccessGroup = $("#txtAccessGroupName").val();
+            var AccessGroupResult = { isValid: true };
+            if (recordId == '0') {
+                if (AccessGroup != '') {
+                    AccessGroupResult.isValid = false;
+                    $.ajax({
+                        url: urlCheckAccessGroupName,
+                        type: 'POST',
+                        cache: false,
+                        async: false,
+                        data: { accessGroupsName: AccessGroup },
+                        dataType: "json",
+                        success: function (result) {
+                            AccessGroupResult.isValid = !result.accessGroupExists;
+                        },
+                        error: function (data) {
+                            MainLayout.fnAlertMessege("Alert", data);
+                        }
+                    })
+                }
+                return AccessGroupResult;
+            }
+            return AccessGroupResult;
+        };
+
+        function fnGetSkillsBasedOnWorkBasketandRole() {
+            Skills = [];
+            AddedAccessGroupSkills = [];
+            ToBeAddedAccessGroupSkills = [];
+            var ddlWorkBasket = $('#ddlWorkBasket').val();
+            var ddlRole = $('#ddlRole').val();
+            if (ddlWorkBasket == "" || ddlRole == "") {
+                fnDisableControls(false);
+                return
+            }
+            $.ajax({
+                data: JSON.stringify({ lWorkBasketLkup: ddlWorkBasket, lRoleLkup: ddlRole }),
+                url: urlGetSkillsBasedOnRoleAndWB,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                type: "POST",
+                success: function (data) {
+                    if (data != null) {
+                        Skills = data;
+                        ToBeAddedAccessGroupSkills = data;
+                        fnDisableControls(false);
+                    }
+                    else {
+                        $("#btnAddNewSkill").attr("disabled", "disabled")
+                        MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                    }
+                },
+                error: function (x) {
+                    $("#btnAddNewSkill").attr("disabled", "disabled")
+                    MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                }
+            });
+        }
+
+        function fnPerformSkillOperation(mode, newSkillRowData) {
+            try {
+
+                var ddlRole = $('#ddlRole').val();
+                var ddlWorkBasket = $('#ddlWorkBasket').val();
+                var selectedSkill = newSkillRowData.ADM_SkillsMasterRef;
+                newSkillRowData.ADM_AccessGroupMasterRef = recordId;
+
+                $.ajax({
+                    data: { objDOADM_AccessGroupSkillsCorrelation: newSkillRowData, lWorkBasketLkup: ddlWorkBasket, lRoleLkup: ddlRole, lPreviousSkill: oldSkillRowData.ADM_SkillsMasterRef, mode: mode },
+                    url: urlAddSkillsToSession,
+                    type: "POST",
+                    success: function (data) {
+
+                        if (data != "") {
+                            $('#divSkillsPartialView').empty().html(data);
+                            if (mode == 3) {//remove all the Skills
+                                fnGetSkillsBasedOnWorkBasketandRole();
+                            } else if (mode == 2) {//update Skill
+                                //select 1st object with mathced condition and add it to selecetd Skill array
+                                AddedAccessGroupSkills.push($.grep(ToBeAddedAccessGroupSkills, function (e) { return e.ADM_SkillsMasterId == selectedSkill; })[0]);
+                                //remove same object from pending Skill list array
+                                ToBeAddedAccessGroupSkills = $.grep(ToBeAddedAccessGroupSkills, function (e) { return e.ADM_SkillsMasterId != selectedSkill; });
+                            }
+                            else if (mode == 1) {//delete Skill
+                                //select 1st object with mathced condition and add it to pending Skill array
+                                ToBeAddedAccessGroupSkills.push($.grep(AddedAccessGroupSkills, function (e) { return e.ADM_SkillsMasterId == selectedSkill; })[0]);
+                                //remove same object from selecetd Skill list array
+                                AddedAccessGroupSkills = $.grep(AddedAccessGroupSkills, function (e) { return e.ADM_SkillsMasterId != selectedSkill; });
+                            } else {//add new work queue
+                                //select 1st object with mathced condition and add it to selecetd SKill array
+                                AddedAccessGroupSkills.push($.grep(ToBeAddedAccessGroupSkills, function (e) { return e.ADM_SkillsMasterId == selectedSkill; })[0]);
+                                //remove same object from pending queues Skill array
+                                ToBeAddedAccessGroupSkills = $.grep(ToBeAddedAccessGroupSkills, function (e) { return e.ADM_SkillsMasterId != selectedSkill; });
+                            }
+                            fnDisableControls(false);
+                            MainLayout.fnInitialiseDataTable($('#tblAccessGroupSkill'));
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Alert!", "An error occoured contact administrator!");
+                        }
+                    },
+                    error: function (x) {
+                        MainLayout.fnAlertMessege("Alert!", "An error occoured contact administrator!");
+                    }
+                });
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured contact administrator!");
+            }
+        }
+
+        //custom validations
+        function validateCustom() {
+
+            var errorList = "";
+            var isValid = true;
+            var result = fnCheckAccessGroupExistsUsingAccessGroupName();
+
+            if ($("#txtSkillName").val() != "" && !result.isValid) {
+                $('#txtSkillName').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>' + "Access Group Name already exists." + '</li>';
+                isValid = false;
+            }
+
+            if (AddedAccessGroupSkills.length == 0) {
+                errorList = errorList + '<li>' + "Minimum One Skill is required." + '</li>';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                if ($('.validation-summary-errors').length != 0) {
+                    //if validion errors div is present add errors to list
+                    $('.validation-summary-errors ul').append(errorList);
+                } else {
+                    //if validion errors div is not present update validation-summary-valid div and add errors to list
+                    $('.validation-summary-valid').addClass('validation-summary-errors').removeClass('validation-summary-valid');
+                    $('.validation-summary-errors ul').append(errorList);
+                }
+            }
+            return isValid;
+        };
+
+        $("#btnSubmit").on("click", function () {
+
+            MainLayout.fnResetValidationSummary();
+
+            var $form = $('#frmAddAccessGroup'),
+                frmData = $form.serialize();
+            var formValid = $form.valid(); //validate form
+            var isCustomValid = validateCustom();// custom validations
+            if (!formValid || !isCustomValid)
+                return;
+            if (origForm != $form.serialize()) {
+                try {
+                    $.ajax({
+                        data: $form.serialize(),
+                        url: submitUrl,
+                        type: "POST",
+                        success: function (data) {
+                            if (data.ID > 0) {
+                                MainLayout.fnAlertMessege("Error!", data.Message);
+                            }
+                            else {
+                                MainLayout.fnAlertMessege("Alert!", 'Record saved successfully.', function () {
+                                    window.location.href = cancelUrl;
+                                });
+                            }
+                        },
+                        error: function (x) {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                        }
+                    });
+                }
+                catch (e) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                }
+            } else {
+                MainLayout.fnAlertMessege("Alert!", "There is no change in the form to update.");
+            }
+        });
+
+        $("#ddlWorkBasket, #ddlRole").change(function (e) {
+            var ddlWorkBasket = $("#ddlWorkBasket").val();
+            var ddlRole = $("#ddlRole").val();
+            if (AddedAccessGroupSkills.length > 0) {
+                MainLayout.fnConfirmDialogbox("Confirmation", "All the currently added Skills will be removed. Do you wish to continue ?",
+                    function (isTrue) {
+                        if (isTrue) {
+                            fnPerformSkillOperation(3, 0);//remove all the added Skills from session
+                        }
+                        else {
+                            if (e.target.id == "ddlWorkBasket")
+                                $("#ddlWorkBasket").val($('#ddlWorkBasket').attr('OldValue'));
+                            else
+                                $("#ddlRole").val($('#ddlRole').attr('OldValue'));
+                            return;
+                        }
+                    });
+            }
+            else {
+                fnGetSkillsBasedOnWorkBasketandRole();
+            }
+        });
+
+        $('#btnReset').click(function () {
+            window.location.reload();
+        });
+
+        //add new skill in table
+        $(document).on("click", '#btnAddNewSkill', function () {
+            if (AddedAccessGroupSkills.length == 0) {
+                $('#tblAccessGroupSkill tbody').empty();
+            }
+
+            var newRow = "<tr role='row'><td style='padding-left:20px'><a id='btnSaveNewSkill' ><img src='/Images/save-img.png' alt= 'Save' /></a>";
+            newRow = newRow + "&nbsp;<a id='btnCancelNewSkill' ><img src='/Images/cancle-icon.png' alt='Cancel'/></a></td>";
+            newRow = newRow + "<td><select class='form-control' id='ddlSkills'></select></td>";
+            newRow = newRow + "<td><input name='chkCanCreate'   class='form-control' id='chkCanCreate'  type='checkbox' value='false'></td>";
+            newRow = newRow + "<td><input name='chkCanSearch'   class='form-control' id='chkCanSearch'  type='checkbox' value='false'></td>";
+            newRow = newRow + "<td><input name='chkCanHistory'  class='form-control' id='chkCanHistory' type='checkbox' value='false'></td>";
+            newRow = newRow + "<td><input name='chkCanReassign' class='form-control' id='chkCanReassign'type='checkbox' value='false'></td>";
+            newRow = newRow + "<td><input name='chkCanUnlock'   class='form-control' id='chkCanUnlock'  type='checkbox' value='false'></td>";
+            newRow = newRow + "<td><input name='chkCanModify'   class='form-control' id='chkCanModify'  type='checkbox' value='false'></td>";
+            newRow = newRow + "<td><input name='chkCanView'     class='form-control' id='chkCanView'  type='checkbox' value='false'></td>";
+            newRow = newRow + "<td><input name='chkCanMassUpdate'class='form-control' id='chkCanMassUpdate'  type='checkbox' value='false'></td>";
+            newRow = newRow + "<td><input name='chkCanUpload'   class='form-control' id='chkCanUpload'  type='checkbox' value='false'></td>";
+            newRow = newRow + "<td><input name='chkCanClone'   class='form-control' id='chkCanClone'  type='checkbox' value='false'></td>";
+            newRow = newRow + "<td><input name='chkCanReopen'   class='form-control' id='chkCanReopen'  type='checkbox' value='false'></td>";
+            newRow = newRow + "<td></td><td></td></tr>";
+            $('#tblAccessGroupSkill tbody:last').append(newRow);
+            $('#tblAccessGroupSkill th').unbind('click.DT');//to stop the sorting buttons in header
+
+            MainLayout.getDropDownList('#ddlSkills', ToBeAddedAccessGroupSkills, dropdownDefaultValue, 'SkillsName', 'ADM_SkillsMasterId');
+            fnDisableControls(true);
+        });
+
+        //Cancel current editing Skill
+        $(document).on("click", "#btnCancelNewSkill", function () {
+            try {
+                var tr = $(this).parents('tr');
+                MainLayout.fnConfirmDialogbox("Confirmation", "Do you wish to remove the Skill ?", function (isTrue) {
+                    if (isTrue) {
+                        if (AddedAccessGroupSkills.length == 0)
+                            tr.empty().html('<td class="dataTables_empty" valign="top" colspan="15">No data available</td>');
+                        else
+                            tr.remove();
+                        fnDisableControls(false);
+                    }
+                    else {
+                        return;
+                    }
+                });
+            }
+            catch (e) {
+            }
+        });
+
+        //save currently editing Skill
+        $(document).on("click", "#btnSaveNewSkill", function () {
+            var tr = $(this).parents('tr');
+            var isvalid = false;
+            tr.children('td').each(function (e) {
+                if ($(this).children("input").is(":checked")) {
+                    isvalid = true;
+                }
+            });//check if at least one check box is checked
+
+            if (isvalid) {
+                var ddlSkill = $('#ddlSkills').val();
+                var newSkillRowData = {};
+                newSkillRowData.ADM_SkillsMasterRef = ddlSkill;
+                newSkillRowData.CanCreate = tr.find('#chkCanCreate').is(":checked");
+                newSkillRowData.CanSearch = tr.find('#chkCanSearch').is(":checked");
+                newSkillRowData.CanHistory = tr.find('#chkCanHistory').is(":checked");
+                newSkillRowData.CanReassign = tr.find('#chkCanReassign').is(":checked");
+                newSkillRowData.CanUnlock = tr.find('#chkCanUnlock').is(":checked");
+                newSkillRowData.CanModify = tr.find('#chkCanModify').is(":checked");
+                newSkillRowData.CanView = tr.find('#chkCanView').is(":checked");
+                newSkillRowData.CanMassUpdate = tr.find('#chkCanMassUpdate').is(":checked");
+                newSkillRowData.CanUpload = tr.find('#chkCanUpload').is(":checked");
+                newSkillRowData.CanClone = tr.find('#chkCanClone').is(":checked");
+                newSkillRowData.CanReopen = tr.find('#chkCanReopen').is(":checked");
+
+
+                if (ddlSkill != "")
+                    fnPerformSkillOperation(0, newSkillRowData);//0 for save new Skill
+                else
+                    MainLayout.fnAlertMessege("Alert!", "Please select Skill !");
+            }
+            else
+            {
+                MainLayout.fnAlertMessege("Alert!", "Please select at least one action !");
+            }
+
+        });
+
+        //delete prevoiusly added skill
+        $(document).on("click", "#btnDeleteSkill", function () {
+            var ddlSkill = $(this).parents('tr').attr('SkillId');
+            MainLayout.fnConfirmDialogbox("Confirmation", "Do you wish to delete selected Skill ?", function (isTrue) {
+                if (isTrue) {
+                    var newSkillRowData = {};
+                    newSkillRowData.ADM_SkillsMasterRef = ddlSkill;
+                    fnPerformSkillOperation(1, newSkillRowData);//1 for delete skill action
+                } else {
+                    return;
+                }
+            });
+        });
+
+        //edit prevoiusly added Skill
+        $(document).on("click", "#btnEditSkill", function () {
+            var row = $(this).parents('tr');
+
+            oldSkillRowData = {};
+            oldSkillRowData.ADM_SkillsMasterRef = row.attr('SkillId');;
+            oldSkillRowData.CanCreate = row.find('#chkCanCreate').is(":checked");
+            oldSkillRowData.CanSearch = row.find('#chkCanSearch').is(":checked");
+            oldSkillRowData.CanHistory = row.find('#chkCanHistory').is(":checked");
+            oldSkillRowData.CanReassign = row.find('#chkCanReassign').is(":checked");
+            oldSkillRowData.CanUnlock = row.find('#chkCanUnlock').is(":checked");
+            oldSkillRowData.CanModify = row.find('#chkCanModify').is(":checked");
+            oldSkillRowData.CanView = row.find('#chkCanView').is(":checked");
+            oldSkillRowData.CanMassUpdate = row.find('#chkCanMassUpdate').is(":checked");
+            oldSkillRowData.CanUpload = row.find('#chkCanUpload').is(":checked");
+            oldSkillRowData.CanClone = row.find('#chkCanClone').is(":checked");
+            oldSkillRowData.CanReopen = row.find('#chkCanReopen').is(":checked");
+
+            //select 1st object with mathced condition and add it to pending Skills array
+            ToBeAddedAccessGroupSkills.push($.grep(AddedAccessGroupSkills, function (e) { return e.ADM_SkillsMasterId == oldSkillRowData.ADM_SkillsMasterRef; })[0]);
+            //remove same object from selecetd Skills list array
+            AddedAccessGroupSkills = $.grep(AddedAccessGroupSkills, function (e) { return e.ADM_SkillsMasterId != oldSkillRowData.ADM_SkillsMasterRef; });
+
+            var newRow = "<td style='padding-left:20px'><a id='btnUpdateSkill' ><img src='/Images/save-img.png' alt='Update' /></a>";
+            newRow = newRow + "&nbsp;<a id='btnCancelOldSkill' ><img src='/Images/cancle-icon.png' alt='Cancel'/></a></td>";
+            newRow = newRow + "<td><select class='form-control' id='ddlSkills'></select></td>";
+            newRow = newRow + "<td>" + row.children('td')[2].innerHTML + "</td><td>" + row.children('td')[3].innerHTML + "</td>";
+            newRow = newRow + "<td>" + row.children('td')[4].innerHTML + "</td><td>" + row.children('td')[5].innerHTML + "</td>";
+            newRow = newRow + "<td>" + row.children('td')[6].innerHTML + "</td><td>" + row.children('td')[7].innerHTML + "</td>";
+            newRow = newRow + "<td>" + row.children('td')[8].innerHTML + "</td><td>" + row.children('td')[9].innerHTML + "</td>";
+            newRow = newRow + "<td>" + row.children('td')[10].innerHTML + "</td><td>" + row.children('td')[11].innerHTML + "</td>";
+            newRow = newRow + "<td>" + row.children('td')[12].innerHTML + "</td>";
+
+            newRow = newRow + "<td></td><td></td>";
+            row.empty().html(newRow);
+            row.children('td').each(function (e) { $(this).children("input").removeAttr("disabled") });//enable check boxes
+
+            MainLayout.getDropDownList('#ddlSkills', ToBeAddedAccessGroupSkills, dropdownDefaultValue, 'SkillsName', 'ADM_SkillsMasterId');
+            $('#ddlSkills').val(oldSkillRowData.ADM_SkillsMasterRef);
+            fnDisableControls(true);
+        });
+
+        //Cancel current editing already added Skill
+        $(document).on("click", "#btnCancelOldSkill", function () {
+            try {
+                var tr = $(this).parents('tr');
+                MainLayout.fnConfirmDialogbox("Confirmation", "Do you wish to discard the changes ?", function (isTrue) {
+                    if (isTrue) {
+                        fnPerformSkillOperation(0, oldSkillRowData);// reset the queue value to old value by performing save on previous value
+                        oldSkillRowData = {};//reset old work queue
+                        oldSkillRowData.ADM_SkillsMasterRef = 0;
+                        fnDisableControls(false);
+                    }
+                    else {
+                        return;
+                    }
+                });
+            }
+            catch (e) {
+            }
+        });
+
+        //update currently editing Skill
+        $(document).on("click", "#btnUpdateSkill", function () {
+
+            var tr = $(this).parents('tr');
+            var isvalid = false;
+            tr.children('td').each(function (e) {
+                if ($(this).children("input").is(":checked")) {
+                    isvalid = true;
+                }
+            });//check if at least one check box is checked
+
+            if (isvalid) {
+                var ddlSkill = $('#ddlSkills').val();
+                var newSkillRowData = {};
+                newSkillRowData.ADM_SkillsMasterRef = ddlSkill;
+                newSkillRowData.CanCreate = tr.find('#chkCanCreate').is(":checked");
+                newSkillRowData.CanSearch = tr.find('#chkCanSearch').is(":checked");
+                newSkillRowData.CanHistory = tr.find('#chkCanHistory').is(":checked");
+                newSkillRowData.CanReassign = tr.find('#chkCanReassign').is(":checked");
+                newSkillRowData.CanUnlock = tr.find('#chkCanUnlock').is(":checked");
+                newSkillRowData.CanModify = tr.find('#chkCanModify').is(":checked");
+                newSkillRowData.CanView = tr.find('#chkCanView').is(":checked");
+                newSkillRowData.CanMassUpdate = tr.find('#chkCanMassUpdate').is(":checked");
+                newSkillRowData.CanUpload = tr.find('#chkCanUpload').is(":checked");
+                newSkillRowData.CanClone = tr.find('#chkCanClone').is(":checked");
+                newSkillRowData.CanReopen = tr.find('#chkCanReopen').is(":checked");
+                if (ddlSkill != "")
+                    fnPerformSkillOperation(2, newSkillRowData);//0 for save WQ action
+                else
+                    MainLayout.fnAlertMessege("Alert!", "Please Select Skill !");
+            }
+            else
+            {
+                MainLayout.fnAlertMessege("Alert!", "Please select at least one action !");
+            }
+        });
+
+
+
+        //=====================Events and fuction realted to Reports part=================================
+
+        function fnPerformReportOperation(mode, ddlReport) {
+            try {
+
+                var newReportRowData = {
+                    ADM_AccessGroupMasterRef: recordId,
+                    RPT_ReportsMasterRef: ddlReport,
+                }
+
+                $.ajax({
+                    data: { objDOADM_AccessGroupReportCorrelation: newReportRowData, lPreviousReport: oldReport, mode: mode },
+                    url: urlAddReportsToSession,
+                    type: "POST",
+                    success: function (data) {
+
+                        if (data != "") {
+                            $('#divReportsPartialView').empty().html(data);
+                            if (mode == 3) {//remove all the Reports
+                                ToBeAddedAccessGroupReports = Reports;
+                                AddedAccessGroupReports = [];
+                            } else if (mode == 2) {//update work queue
+                                //select 1st object with mathced condition and add it to selecetd Reports array
+                                AddedAccessGroupReports.push($.grep(ToBeAddedAccessGroupReports, function (e) { return e.RPT_ReportsMasterId == ddlReport; })[0]);
+                                //remove same object from pending Reports list array
+                                ToBeAddedAccessGroupReports = $.grep(ToBeAddedAccessGroupReports, function (e) { return e.RPT_ReportsMasterId != ddlReport; });
+                            }
+                            else if (mode == 1) {//delete Report
+                                //select 1st object with mathced condition and add it to pending report array
+                                ToBeAddedAccessGroupReports.push($.grep(AddedAccessGroupReports, function (e) { return e.RPT_ReportsMasterId == ddlReport; })[0]);
+                                //remove same object from selecetd report list array
+                                AddedAccessGroupReports = $.grep(AddedAccessGroupReports, function (e) { return e.RPT_ReportsMasterId != ddlReport; });
+                            } else {//add new report
+                                //select 1st object with mathced condition and add it to selecetd report array
+                                AddedAccessGroupReports.push($.grep(ToBeAddedAccessGroupReports, function (e) { return e.RPT_ReportsMasterId == ddlReport; })[0]);
+                                //remove same object from pending report list array
+                                ToBeAddedAccessGroupReports = $.grep(ToBeAddedAccessGroupReports, function (e) { return e.RPT_ReportsMasterId != ddlReport; });
+                            }
+                            fnDisableControls(false);
+                            MainLayout.fnInitialiseDataTable($('#tblAccessGroupReport'));
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Alert!", "An error occoured contact administrator!");
+                        }
+                    },
+                    error: function (x) {
+                        MainLayout.fnAlertMessege("Alert!", "An error occoured contact administrator!");
+                    }
+                });
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured contact administrator!");
+            }
+        }
+
+        //add new Report in table
+        $(document).on("click", '#btnAddNewReport', function () {
+            if (AddedAccessGroupReports.length == 0) {
+                $('#tblAccessGroupReport tbody').empty();
+            }
+
+            var newRow = "<tr role='row'><td style='padding-left:20px'><a id='btnSaveNewReport' ><img src='/Images/save-img.png' alt= 'Save' /></a>";
+            newRow = newRow + "&nbsp;<a id='btnCancelNewReport' ><img src='/Images/cancle-icon.png' alt='Cancel'/></a></td>";
+            newRow = newRow + "<td><select class='form-control' id='ddlReports'></select></td>";
+            newRow = newRow + "<td></td><td></td><td></td><td></td></tr>";
+            $('#tblAccessGroupReport tbody:last').append(newRow);
+            $('#tblAccessGroupReport th').unbind('click.DT');//to stop the sorting buttons in header
+
+            MainLayout.getDropDownList('#ddlReports', ToBeAddedAccessGroupReports, dropdownDefaultValue, 'ReportName', 'RPT_ReportsMasterId');
+            fnDisableControls(true);
+        });
+
+        //Cancel current editing Report
+        $(document).on("click", "#btnCancelNewReport", function () {
+            try {
+                var tr = $(this).parents('tr');
+                MainLayout.fnConfirmDialogbox("Confirmation", "Do you wish to remove the Report ?", function (isTrue) {
+                    if (isTrue) {
+                        if (AddedAccessGroupReports.length == 0)
+                            tr.empty().html('<td class="dataTables_empty" valign="top" colspan="6">No data available</td>');
+                        else
+                            tr.remove();
+                        fnDisableControls(false);
+                    }
+                    else {
+                        return;
+                    }
+                });
+            }
+            catch (e) {
+            }
+        });
+
+        //save currently editing Report
+        $(document).on("click", "#btnSaveNewReport", function () {
+            var ddlReport = $('#ddlReports').val();
+
+            if (ddlReport != "")
+                fnPerformReportOperation(0, ddlReport);//0 for save new Report
+            else
+                MainLayout.fnAlertMessege("Alert!", "Please Select Report !");
+        });
+
+        //delete prevoiusly added report
+        $(document).on("click", "#btnDeleteReport", function () {
+            var ddlReport = $(this).parents('tr').attr('ReportId');
+            MainLayout.fnConfirmDialogbox("Confirmation", "Do you wish to delete selected Report ?", function (isTrue) {
+                if (isTrue) {
+                    fnPerformReportOperation(1, ddlReport);//1 for delete report action
+                } else {
+                    return;
+                }
+            });
+        });
+
+        //edit prevoiusly added Report
+        $(document).on("click", "#btnEditReport", function () {
+            var row = $(this).parents('tr');
+            oldReport = row.attr('ReportId');
+            //select 1st object with mathced condition and add it to pending queues array
+            ToBeAddedAccessGroupReports.push($.grep(AddedAccessGroupReports, function (e) { return e.RPT_ReportsMasterId == oldReport; })[0]);
+            //remove same object from selecetd queues list array
+            AddedAccessGroupReports = $.grep(ToBeAddedAccessGroupReports, function (e) { return e.RPT_ReportsMasterId != oldReport; });
+
+            var newRow = "<td style='padding-left:20px'><a id='btnUpdateReport' ><img src='/Images/save-img.png' alt='Update' /></a>";
+            newRow = newRow + "&nbsp;<a id='btnCancelOldReport' ><img src='/Images/cancle-icon.png' alt='Cancel'/></a></td>";
+            newRow = newRow + "<td><select class='form-control' id='ddlReports'></select></td>";
+            newRow = newRow + "<td>" + row.children('td')[2].innerHTML + "</td><td>" + row.children('td')[3].innerHTML + "</td>";
+            newRow = newRow + "<td></td><td></td>";
+            row.empty().html(newRow);
+
+            MainLayout.getDropDownList('#ddlReports', ToBeAddedAccessGroupReports, dropdownDefaultValue, 'ReportName', 'RPT_ReportsMasterId');
+            $('#ddlReports').val(oldReport);
+            fnDisableControls(true);
+        });
+
+        //Cancel current editing already added Report
+        $(document).on("click", "#btnCancelOldReport", function () {
+            try {
+                var tr = $(this).parents('tr');
+                MainLayout.fnConfirmDialogbox("Confirmation", "Do you wish to discard the changes ?", function (isTrue) {
+                    if (isTrue) {
+                        fnPerformReportOperation(0, oldReport);// reset the queue value to old value by performing save on previous value
+                        oldReport = 0;//reset old work queue
+                        fnDisableControls(false);
+                    }
+                    else {
+                        return;
+                    }
+                });
+            }
+            catch (e) {
+            }
+        });
+
+        //update currently editing Report
+        $(document).on("click", "#btnUpdateReport", function () {
+            var ddlReports = $('#ddlReports').val();
+            if (ddlReports != "")
+                fnPerformReportOperation(2, ddlReports);//0 for save WQ action
+            else
+                MainLayout.fnAlertMessege("Alert!", "Please Select Report !");
+        });
+
+        MainLayout.fnInitialiseDataTable($('#tblAccessGroupSkill'));
+        MainLayout.fnInitialiseDataTable($('#tblAccessGroupReport'));
+
+    </script>
+}
+

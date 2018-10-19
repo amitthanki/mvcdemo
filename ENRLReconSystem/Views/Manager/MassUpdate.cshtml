@@ -1,0 +1,1265 @@
+﻿@using ENRLReconSystem.DO
+@using ENRLReconSystem.Utility
+@model ENRLReconSystem.DO.UISearch
+@{
+    ViewBag.Title = "Mass Update";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    int searchRangeInDays = ConstantTexts.DefaultSearchRangeInDays;
+    if (!CacheUtility.GetMasterConfigurationByName(ConstantTexts.GetSearchRangeInDays).IsNullOrEmpty())
+    {
+        searchRangeInDays = CacheUtility.GetMasterConfigurationByName(ConstantTexts.GetSearchRangeInDays).ToInt32();
+    }
+}
+
+
+<style>
+
+
+    #tblSearchResult tbody tr td {
+        white-space: nowrap;
+    }
+</style>
+
+<section class="container main-body-wrpr">
+    @Html.Hidden("hdnWorkbasketId",Model.workBasketLkup)
+    <form id="frmSearch">
+        @Html.Partial("~/Views/Shared/_SearchFilterPanel.cshtml", (SearchCriteria)Model.SearchCriteria)
+    </form>
+    <div id="divSearchResults">
+        @Html.Partial("_MassUpdateSearchResultsPanel", Model.SearchPanel)
+    </div>
+
+</section>
+
+
+
+
+@*--------------------------Popup--------------------------*@
+
+<div id="myMassUpdateModalView" class="modal fade">
+    <div class="modal-dialog" id="divDialog">
+        <div class="modal-content" id="divMyModalViewForMassUpdate">
+
+        </div>
+    </div>
+</div>
+
+@*--------------------------Popup--------------------------*@
+@section scripts{
+    <script type="text/javascript">
+        /////////////Variables/////////
+        var dataTable,discCatId,queueId,origForm;
+        var urlMassUpdateSearchResult = '@Url.Action("MassUpdate", "Manager")'
+            , urlLoadQueue = '@Url.Action("LoadQueue", "Manager")'
+            , urlLoadActionsBasedOnQueue = '@Url.Action("LoadActionsBasedOnQueue", "Manager")'
+            , urlGetActionsByActionID = '@Url.Action("GetActionsByActionID", "Manager")'
+            , urlGetOSTActionsByActionID = '@Url.Action("GetActionsByActionID", "OST")'
+            , urlGetEligibilityActionsByActionID = '@Url.Action("GetActionsByActionID", "Eligibility")'
+            , urlGetRPRActionsByActionID = '@Url.Action("GetActionsFormByActionID", "RPR")'
+            , urlOSTActionUpdate = '@Url.Action("OSTActionUpdate", "Manager")'             //OST Action Bulk Update
+            , urlEligibilityActionUpdate = '@Url.Action("EligibilityActionUpdate", "Manager")'     //Eligibility Action Bulk Update
+            , urlRPRActionUpdate = '@Url.Action("RPRActionUpdate", "Manager")'   //RPR Action Bulk Update
+            , urlCheckUserMassUpdatePermission = '@Url.Action("CheckUserMassUpdatePermission", "Manager")'
+            , workBasket='@Model.SearchCriteria.WorkBasketLkup';
+
+
+
+
+        ////////////////Events///////////////
+         ///////////To clear all form controls/////////
+         $("#btnReset").on("click", function (event) {
+             try {
+                 MainLayout.fnResetValidationSummary();
+                 document.getElementById("frmSearch").reset();
+             } catch (e) {
+                 MainLayout.fnAlertMessege("Error!", "An error occoured!");
+             }
+         });
+        //////////To cancel this page and redirect to home//////////
+         $("#btnSearchCancel").on("click", function (event) {
+             try {
+                 window.location = '@Url.Action("Home","Home")';
+             } catch (e) {
+                 MainLayout.fnAlertMessege("Error!", "An error occoured!");
+             }
+
+         });
+
+         $(document).on("change", "#ddlQueue", function () {
+             try {
+                 $("#divMassUpdateResult").empty().html('<div style="text-align:center;color: red; ">No Records Found</div >');
+             } catch (e) {
+
+             }
+         });
+
+        /////Search Result for MassUpdate//////////
+        $("#btnSearch").on("click", function (event) {
+            try {
+                fnProcessSearch();
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+         });
+        fnProcessSearch = function () {
+            try {
+                ///need to check for permission
+                if (fnValidateSearch()) {
+                    discCatId = $('#ddlDiscrepancyCat').val();
+                    queueId = $('#ddlQueue').val();
+                    fnSearchResult();
+                }
+
+            } catch (e) {
+                throw ex;
+
+            }
+        };
+        $(document).on("click", "#btnOpenMassUpdatePopup", function (event) {
+            try {
+                ///need to check user permission///
+                if (fnValidateBeforeMassUpdate())
+                {
+                    $.ajax({
+                        url: urlLoadActionsBasedOnQueue,
+                        data: { lQueueLkup: queueId},
+                        type: "POST",
+                        success: function (data) {
+                            if (data != null && data != "") {
+                                $('#divMyModalViewForMassUpdate').empty().html(data);
+                                origForm = $("#frmSaveMassUpdateActions").serialize();
+                                $("#myMassUpdateModalView").modal('show');
+                            }
+                        },
+                        error: function (x) {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                        },
+                    });
+
+                }
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+        $(document).on("change", "#ddlDiscrepancyCat", function (event) {
+            try {
+
+                ///need to check user permission///
+                var categoryID = $(this).val();
+                //queueId = "";
+                $("#divMassUpdateResult").empty().html('<div style="text-align:center;color: red; ">No Records Found</div >');
+                $("#ddlQueue").empty().append($("<option></option>").val("0").html(enums.DropdownDefaultValue));
+                if (categoryID != "" && categoryID!="0")
+                {
+                    discCatId=categoryID;
+                    fnLoadQueue(categoryID);
+                }
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+
+         $(document).on("change", "#ddlActions", function (event) {
+            try {
+                MainLayout.fnResetValidationSummary();
+                $("#divMassUpdateActions").empty();
+                var actionID = $(this).val();
+                var dataArray,url;
+                if (actionID != "")
+                {
+                   var workbasketId=$("#hdnWorkbasketId").val();
+                   switch(workbasketId){
+                      case enums.WorkBasket.OST:
+                           dataArray = { "actionID": actionID, "discipancyCategory": discCatId,"source":"MassUpdate" };
+                          url=urlGetOSTActionsByActionID;
+                      break;
+                      case enums.WorkBasket.Eligibility:
+                          dataArray={ "actionID": actionID, "DisCategory": discCatId };
+                          url=urlGetEligibilityActionsByActionID;
+                      break;
+                      case enums.WorkBasket.RPR:
+                         dataArray={ "actionID": actionID };
+                         url=urlGetRPRActionsByActionID;
+                      break;
+                  }
+                 ///Call Actions based on ActionID///
+                 fnLoadActions(dataArray,url);
+                }
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+        //Update Action/////
+         $(document).on("click", "#btnUpdateActions", function () {
+             try {
+                 var url;
+                 var GPSHouseHoldIdNotInGrid=fnValidateGPSHouseholdIds();
+                 var workbasketId = $("#hdnWorkbasketId").val();
+                 switch (workbasketId) {
+                     case enums.WorkBasket.OST:
+                         url = urlOSTActionUpdate;
+                         break;
+                     case enums.WorkBasket.Eligibility:
+                         url = urlEligibilityActionUpdate;
+                         break;
+                     case enums.WorkBasket.RPR:
+                         url = urlRPRActionUpdate;
+                         break;
+                 }
+                 if (GPSHouseHoldIdNotInGrid > 0) {
+                     MainLayout.fnConfirmDialogbox("Confirm?", "Mass update request cannot be placed for " + GPSHouseHoldIdNotInGrid + " case(s) as they do not have GPS Household Id.</br>Those case(s) can be updated from Process Work screen.</br>Click Yes to continue with remaining cases, Click No to stop the process.", function (isTrue) {
+                         if (isTrue) {
+                             fnUpdateAction(url);
+                         }
+                     });
+                 }
+                 else
+                 {
+                     fnUpdateAction(url);
+                 }
+
+             } catch (e) {
+                 MainLayout.fnAlertMessege("Error!", "An error occoured!");
+             }
+         });
+
+
+
+
+
+
+
+
+        ///Select/DeSelect All////////
+        $(document).on("click", "#chkAll", function (e) {
+            try {
+                var rows = dataTable.rows({ 'search': 'applied' }).nodes();
+                if ($(this).is(":checked")) {
+                    $('input[type="checkbox"]', rows).prop('checked', true);
+                }
+                else {
+                    $('input[type="checkbox"]', rows).prop('checked', false);
+                }
+            } catch (e) {
+
+            }
+        });
+        //
+        $(document).on('change', '#tblSearchResult tbody input[type="checkbox"]', function () {
+            try {
+                var total = dataTable.rows({ 'search': 'applied' }).nodes().length;
+                var checked = $(dataTable.rows({ 'search': 'applied' }).nodes()).find('input[type="checkbox"]:checked').length;
+                if (total == checked) {
+                    $('#chkAll').prop('checked', true);
+                    $('#chkAll').prop('indeterminate', false);
+                } else if (checked == 0) {
+                    $('#chkAll').prop('checked', false);
+                    $('#chkAll').prop('indeterminate', false);
+                } else {
+                    $('#chkAll').prop('indeterminate', true);
+                }
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+
+        });
+        ///Reset Search//////
+       $(document).on("click","#btnActionReset",function(){
+            try {
+                MainLayout.fnResetValidationSummary();
+                $("#frmSaveMassUpdateActions").deserialize(origForm);
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+
+
+        ///////////////////////////////////OST Actions/////////////////////////////////////
+
+        $(document).on("change", "#divMassUpdateActions #ddlResolution", function () {
+            try {
+                $("#divInArea,#divMemberResponseOOATerm,#divNoResponseFTTerm").hide();
+                $("#txtReasonCloseCase").val("");
+                var resolutionID = parseInt($(this).val());
+
+                switch (resolutionID)
+                {
+                    case enums.OSTResolutionLkup.IA:
+                        $("#divInArea").show();
+                        break;
+                    case enums.OSTResolutionLkup.MemberResponseOOATerm:
+                        $("#divMemberResponseOOATerm").show();
+                        break;
+                    case enums.OSTResolutionLkup.FalseDiscrepancy:
+                        $("#txtReasonCloseCase").val("Previous IA");
+                        break;
+                    case enums.OSTResolutionLkup.NoResponseFTTerm:
+                        $("#divNoResponseFTTerm").show();
+                        break;
+                    default:
+                        $("#divInArea,#divMemberResponseOOATerm,#divNoResponseFTTerm").hide();
+                        break;
+                }
+
+            } catch(e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+
+        $(document).on("click", "#divMassUpdateActions #chkResidentialDocumentationRequired", function () {
+            try {
+                if ($(this).is(':checked')) {
+                    $("#divMassUpdateActions #chkCountryAttestationRequired").prop('checked', false);
+                }
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+
+        $(document).on("click", "#divMassUpdateActions #chkCountryAttestationRequired", function () {
+            try {
+                if ($(this).is(':checked')) {
+                    $("#divMassUpdateActions #chkResidentialDocumentationRequired").prop('checked', false);
+                }
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+
+        ///////////////SCC RPR Actions/////////
+        //enabale and Disable CTM number depending upon CTM Member check box
+        $(document).on("change", "#divMassUpdateActions #cbxCTMMember", function () {
+            var value = $('#divMassUpdateActions #cbxCTMMember').prop("checked")
+            if (value) {
+                $('#divMassUpdateActions #txtCTMNumber').removeAttr("disabled")
+            } else {
+                $('#divMassUpdateActions #txtCTMNumber').val("");
+                $('#divMassUpdateActions #txtCTMNumber').removeClass("input-validation-error").addClass("valid")
+                $('#divMassUpdateActions #txtCTMNumber').attr("disabled", "disabled")
+            }
+        });
+
+        //enabale and Disable Employer Id depending upon EGHP Member check box
+        $(document).on("change", "#divMassUpdateActions #cbxEGHPMember", function () {
+            var value = $('#divMassUpdateActions #cbxEGHPMember').prop("checked")
+            if (value) {
+                $('#divMassUpdateActions #txtEmployerId').removeAttr("disabled")
+            } else {
+                $('#divMassUpdateActions #txtEmployerId').val("");
+                $('#divMassUpdateActions #txtEmployerId').removeClass("input-validation-error").addClass("valid")
+                $('#divMassUpdateActions #txtEmployerId').attr("disabled", "disabled")
+            }
+        });
+
+        //Reason for Request extra field control for Other option
+        $(document).on("change", "#divMassUpdateActions #ddlTaskPerformedLkup", function () {
+            var value = $('#divMassUpdateActions #ddlTaskPerformedLkup').val();
+            if (value == 15015) {
+                $('#divMassUpdateActions #divOtherTaskType').removeAttr("hidden")
+                $('#divMassUpdateActions #divOtherTaskType :input').removeAttr("disabled");
+            } else {
+                $('#divMassUpdateActions #divOtherTaskType :input').val("")
+                $('#divMassUpdateActions #divOtherTaskType :input').removeClass("input-validation-error").addClass("valid")
+                $('#divMassUpdateActions #divOtherTaskType').attr("hidden", "hidden")
+                $('#divMassUpdateActions #divOtherTaskType :input').attr("disabled", "disabled")
+            }
+        });
+
+        //Action Requested extra field control for Other option
+        $(document).on("change", "#divMassUpdateActions #ddlActionRequestedLkup", function () {
+            var value = $('#divMassUpdateActions #ddlActionRequestedLkup').val();
+            if (value == 14008) {
+                $('#divMassUpdateActions #divOtherAction').removeAttr("hidden")
+                $('#divMassUpdateActions #divOtherAction :input').removeAttr("disabled");
+            } else {
+                $('#divMassUpdateActions #divOtherAction :input').val("")
+                $('#divMassUpdateActions #divOtherAction :input').removeClass("input-validation-error").addClass("valid")
+                $('#divMassUpdateActions #divOtherAction').attr("hidden", "hidden")
+                $('#divMassUpdateActions #divOtherAction :input').attr("disabled", "disabled")
+            }
+        });
+        ///RPR Cases///
+        $(document).on('change', '#frmSaveMassUpdateActions #AdjustedCreateDate_DPart', function () {
+            var date = $('#frmSaveMassUpdateActions #AdjustedCreateDate_DPart').val();
+            if (date != null && date != '') {
+                $('#frmSaveMassUpdateActions #ddlAdjustedCreateDateReasonLkup').removeAttr("disabled");
+            } else {
+                $('#frmSaveMassUpdateActions #ddlAdjustedCreateDateReasonLkup').val("");
+                $('#frmSaveMassUpdateActions #ddlAdjustedCreateDateReasonLkup').attr("disabled", "disabled");
+                $('#frmSaveMassUpdateActions #txtOtherAdjustedCreateDateReason').val("");
+                $('#frmSaveMassUpdateActions #divOtherAdjustedCreateDateReason').attr("hidden", "hidden");
+                $('#frmSaveMassUpdateActions #txtOtherAdjustedCreateDateReason').attr("disabled", "disabled");
+            }
+        });
+
+        $(document).on('change', '#frmSaveMassUpdateActions #ActualSubmissionDate_DPart', function () {
+            var date = $('#frmSaveMassUpdateActions #ActualSubmissionDate_DPart').val();
+            if (date != null && date != '') {
+                $('#frmSaveMassUpdateActions #txtReasonSubmissionRejected').val("");
+                $('#frmSaveMassUpdateActions #txtReasonSubmissionRejected').attr("disabled", "disabled");
+            } else {
+                $('#frmSaveMassUpdateActions #txtReasonSubmissionRejected').removeAttr("disabled");
+            }
+        });
+
+        $(document).on('change', '#frmSaveMassUpdateActions #txtReasonSubmissionRejected', function () {
+            var val = $('#frmSaveMassUpdateActions #txtReasonSubmissionRejected').val();
+            if (val != '') {
+                $('#frmSaveMassUpdateActions #ActualSubmissionDate_DPart').val("");
+                $('#frmSaveMassUpdateActions #ActualSubmissionDate_DPart').attr("disabled", "disabled");
+                $('#frmSaveMassUpdateActions #ActualSubmissionDate_CurrentDate').attr("disabled", "disabled");
+
+            } else {
+                $('#frmSaveMassUpdateActions #ActualSubmissionDate_DPart').removeAttr("disabled");
+                $('#frmSaveMassUpdateActions #ActualSubmissionDate_CurrentDate').removeAttr("disabled");
+            }
+        });
+
+        $(document).on('change', '#frmSaveMassUpdateActions #ddlAdjustedCreateDateReasonLkup', function () {
+            var val = $('#frmSaveMassUpdateActions #ddlAdjustedCreateDateReasonLkup').val();
+            if (val == 32006) {//value for other
+                $('#frmSaveMassUpdateActions #divOtherAdjustedCreateDateReason').removeAttr("hidden");
+                $('#frmSaveMassUpdateActions #txtOtherAdjustedCreateDateReason').removeAttr("disabled");
+            } else {
+                $('#frmSaveMassUpdateActions #txtOtherAdjustedCreateDateReason').val("");
+                $('#frmSaveMassUpdateActions #frmSaveMassUpdateActions #divOtherAdjustedCreateDateReason').attr("hidden", "hidden");
+                $('#frmSaveMassUpdateActions #txtOtherAdjustedCreateDateReason').attr("disabled", "disabled");
+            }
+        });
+
+        $(document).on('change', '#frmSaveMassUpdateActions #ddlFDRStatusLkup', function () {
+            var val = $('#frmSaveMassUpdateActions #ddlFDRStatusLkup').val();
+            if (val == 26005) {//value for other
+                $('#frmSaveMassUpdateActions #divOtherFDRStatus').removeAttr("hidden");
+                $('#frmSaveMassUpdateActions #txtOtherFDRStatus').removeAttr("disabled");
+                $('#frmSaveMassUpdateActions #ddlFDRRejectionTypeLkup').val("");
+                $('#frmSaveMassUpdateActions #ddlFDRRejectionTypeLkup').attr("disabled", "disabled");
+            } else if (val == 26002) {//value for Rejected
+                $('#frmSaveMassUpdateActions #txtOtherFDRStatus').val("");
+                $('#frmSaveMassUpdateActions #divOtherFDRStatus').attr("hidden", "hidden");
+                $('#frmSaveMassUpdateActions #txtOtherFDRStatus').attr("disabled", "disabled");
+                $('#frmSaveMassUpdateActions #ddlFDRRejectionTypeLkup').removeAttr("disabled");
+            } else {
+                $('#frmSaveMassUpdateActions #txtOtherFDRStatus').val("");
+                $('#frmSaveMassUpdateActions #divOtherFDRStatus').attr("hidden", "hidden");
+                $('#frmSaveMassUpdateActions #txtOtherFDRStatus').attr("disabled", "disabled");
+                $('#frmSaveMassUpdateActions #ddlFDRRejectionTypeLkup').val("");
+                $('#frmSaveMassUpdateActions #ddlFDRRejectionTypeLkup').attr("disabled", "disabled");
+            }
+        });
+
+
+        // Root Cause extra field control for other option
+        $(document).on("change", "#ddlRootCause", function () {
+            var value = $('#ddlRootCause').val();
+            if (value == 24038) {//24038 value for Root Cause - other
+                $('#divOtherRootCause').removeAttr("hidden")
+                $('#divOtherRootCause :input').removeAttr("disabled");
+            } else {
+                $('#divOtherRootCause :input').val("")
+                $('#divOtherRootCause :input').removeClass("input-validation-error").addClass("valid")
+                $('#divOtherRootCause').attr("hidden", "hidden")
+                $('#divOtherRootCause :input').attr("disabled", "disabled")
+            }
+        });
+        /////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+     ////////////////////Methods/////////////////////
+
+      fnSearchResult=function(){
+            try{
+                 $.ajax({
+                        url: urlMassUpdateSearchResult,
+                        data: $("#frmSearch").serialize(),
+                        type: "POST",
+                        success: function (data) {
+                            if (data != null && data != "") {
+                                $('#divSearchResults').empty().html(data);
+                                dataTable=MainLayout.fnInitialiseDataTable($("#tblSearchResult"));
+                            }
+                        },
+                        error: function (x) {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                        },
+                    });
+
+            }
+            catch(e){
+                throw e;
+            }
+        };
+        /////////////////////////////////
+       fnUpdateAction=function(url){
+            try{
+               var queueId="";
+               if($(dataTable.rows({ 'search': 'applied' }).nodes()).find('input[type="checkbox"]:checked').length>0)
+               {
+                    $(dataTable.rows({ 'search': 'applied' }).nodes()).find('input[type="checkbox"]:checked').each(function(i,val){
+                         queueId=queueId +((queueId=="")?"":",")+val.id;
+                    });
+               }
+               fnAssignDateToModel();
+               $("#Gen_QueueIds").val(queueId);///updating model
+               $("#hdnQueueLkup").val($("#ddlQueue").val());
+               $("#hdnddlDiscrepancycategary").val($("#ddlDiscrepancyCat").val());
+
+                 var $form = $("#frmSaveMassUpdateActions"),
+                    frmData = $form.serialize();
+                 if (fnValidateSaveActions($form)) {
+                     $.ajax({
+                         data: frmData,
+                         url: url,
+                         type: "POST",
+                         success: function (data) {
+                             if (data.ID > 0) {
+                                 MainLayout.fnAlertMessege("Error!", data.Message);
+
+                             }
+                             else {
+                                 $("#myMassUpdateModalView").modal('hide');
+                                 MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                                     fnSearchResult();
+                                 });
+                             }
+                         },
+                         error: function (x) {
+                             MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                         }
+                     });
+                 }
+            }
+            catch(e){
+                 throw e;
+            }
+       };
+        //////////////////////////////////
+        /////////////////////
+       fnLoadActions = function (dataArray,url) {
+            try {
+                $.ajax({
+                    data: dataArray,
+                    url: url,
+                    type: "POST",
+                    success: function (data) {
+                        if (data != "") {
+                            $("#divMassUpdateActions").empty().html(data);
+                            $("#divInArea,#divMemberResponseOOATerm,#divNoResponseFTTerm").hide();
+                             MainLayout.fnLoadDateTimePicker();
+                             origForm = $("#frmSaveMassUpdateActions").serialize();
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                        }
+                    },
+                    error: function (x) {
+                        $("#divMassUpdateActionsActions").empty();
+                        MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                    }
+                });
+
+            } catch (e) {
+                throw e;
+            }
+        };
+        ///////////////////
+        fnLoadQueue = function (categoryID) {
+            try {
+                $.ajax({
+                    url: urlLoadQueue,
+                    data: JSON.stringify({ "categoryID": categoryID }),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        if (data != null && data != "") {
+                            $.each(data, function (i, val) {
+                                $("#ddlQueue").append($("<option></option>").val(val.CMN_LookupMasterChildRef).html(val.LookupMasterChildValue));
+                            });
+
+                        }
+                    },
+                    error: function (x) {
+                        MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                    },
+                });
+
+            } catch (e) {
+                throw ex;
+            }
+        };
+        fnCheckMassUpdatePermission = function () {
+            var DisCat = $("#ddlDiscrepancyCat").val();
+            try {
+                var ret = true;
+                $.ajax({
+                    url: urlCheckUserMassUpdatePermission,
+                    data: { "DisCat": DisCat},
+                    type: "POST",
+                    async: false,
+                    success: function (data) {
+                        //debugger
+                        if (data == false) {
+                            ret = false;
+                        }
+                    },
+                    error: function (x) {
+                    },
+                });
+                return ret;
+
+            } catch (e) {
+
+            }
+
+        };
+
+        //////////////////////
+        fnValidateBeforeMassUpdate = function () {
+            try {
+                ///need to check for permission///
+                if (!fnCheckMassUpdatePermission())
+                {
+                    MainLayout.fnAlertMessege("Alert!", "You don't have sufficient permission to perform Mass Update.");
+                    return false;
+                }
+                if (queueId == "" || queueId == "0" || $("#ddlQueue").val() == "" || $("#ddlQueue").val() == "0") {
+                    $("#ddlQueue").focus();
+                    MainLayout.fnAlertMessege("Alert!", "Please select a queue.");
+                    return false;
+                }
+
+                if ($(dataTable.rows({ 'search': 'applied' }).nodes()).find('input[type="checkbox"]:checked').length == 0)
+                {
+                    MainLayout.fnAlertMessege("Alert!", "Please select a record for Mass Update.");
+                    return false;
+                }
+
+                return true;
+
+
+            } catch (e) {
+
+            }
+        };
+        ////////////////////////////////
+        //Validate Save Action
+        fnValidateSaveActions = function ($form) {
+            try {
+                $form.removeData('validator');
+                $form.removeData('unobtrusiveValidation');
+                $.validator.unobtrusive.parse($form);
+
+                var errorList = []
+                    , $summary = $form.find("[data-valmsg-summary=true]")
+                    , $ul = $summary.find("ul");
+                if ($form.valid()) {
+                    ////custom validation///
+                    if ($("#chkResidentialDocumentationRequired").length > 0 && $("#chkCountryAttestationRequired").length > 0 && !($("#chkResidentialDocumentationRequired").is(":checked")) && !($("#chkCountryAttestationRequired").is(":checked"))) {
+                        $('#chkResidentialDocumentationRequired,#chkCountryAttestationRequired').removeClass("valid").addClass("input-validation-error");
+                        errorList.push("Residential Documentation or County Attestation is required.");
+                    }
+
+                    ////
+                    if (errorList.length == 0) {
+                        return true;
+                    }
+                    $ul.empty();
+                    // Add all errors to the list
+                    $.each(errorList, function (index, message) {
+                        $("<li />").html(message).appendTo($ul);
+                    });
+                    // Add the appropriate class to the summary div
+                    $summary.removeClass("validation-summary-valid")
+                        .addClass("validation-summary-errors");
+                    return false;
+                }
+                return false; // Block the submit
+
+
+            } catch (ex) {
+                throw ex;
+            }
+        };
+        fnValidateGPSHouseholdIds = function () {
+            var count = 0;
+            try {
+                if ($("#ddlActions").length > 0 && $("#ddlActions").val() == enums.SendOOALetterLkup.SendOOALetter) {
+                    if ($(dataTable.rows({ 'search': 'applied' }).nodes()).find('input[type="checkbox"]:checked').length > 0) {
+                        $(dataTable.rows({ 'search': 'applied' }).nodes()).find('input[type="checkbox"]:checked').each(function (i, val) {
+                            if ($(val).attr("gpsHouseHoldId") == "") {
+                                count++;
+                            }
+                        });
+                    }
+                }
+                return count;
+            } catch (e) {
+                return count;
+            }
+        };
+
+        //function to set model date time values from date time picker
+        function fnGetDateIntoHdnFields() {
+            var date = $('#DiscrepancyStartDate_DPart').val();
+            if (date != null && date != '') {
+                $('#DiscrepancyStartDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#DiscrepancyStartDate').val(null);
+            }
+            date = $('#DiscrepancyEndDate_DPart').val();
+            if (date != null && date != '') {
+                $('#DiscrepancyEndDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#DiscrepancyEndDate').val(null);
+            }
+            date = $('#DOB_DPart').val();
+            if (date != null && date != '') {
+                $('#DOB').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#DOB').val(null);
+            }
+            date = $('#FirstLetterMailStartDate_DPart').val();
+            if (date != null && date != '') {
+                $('#FirstLetterMailStartDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#FirstLetterMailStartDate').val(null);
+            }
+            date = $('#FirstLetterMailEndDate_DPart').val();
+            if (date != null && date != '') {
+                $('#FirstLetterMailEndDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#FirstLetterMailEndDate').val(null);
+            }
+            date = $('#SecondLetterMailStartDate_DPart').val();
+            if (date != null && date != '') {
+                $('#SecondLetterMailStartDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#SecondLetterMailStartDate').val(null);
+            }
+            date = $('#SecondLetterMailEndDate_DPart').val();
+            if (date != null && date != '') {
+                $('#SecondLetterMailEndDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#SecondLetterMailEndDate').val(null);
+            }
+            date = $('#ComplianceStartDate_DPart').val();
+            if (date != null && date != '') {
+                $('#ComplianceStartDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#ComplianceStartDate').val(null);
+            }
+            date = $('#ComplianceEndDate_DPart').val();
+            if (date != null && date != '') {
+                $('#ComplianceEndDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#ComplianceEndDate').val(null);
+            }
+            date = $('#CaseCreationStartDate_DPart').val();
+            if (date != null && date != '') {
+                $('#CaseCreationStartDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#CaseCreationStartDate').val(null);
+            }
+            date = $('#CaseCreationEndDate_DPart').val();
+            if (date != null && date != '') {
+                $('#CaseCreationEndDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#CaseCreationEndDate').val(null);
+            }
+            date = $('#MemberResponseVerificationStartDate_DPart').val();
+            if (date != null && date != '') {
+                $('#MemberResponseVerificationStartDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#MemberResponseVerificationStartDate').val(null);
+            }
+            date = $('#MemberResponseVerificationEndDate_DPart').val();
+            if (date != null && date != '') {
+                $('#MemberResponseVerificationEndDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#MemberResponseVerificationEndDate').val(null);
+            }
+            date = $('#RequestedEffectiveStartDate_DPart').val();
+            if (date != null && date != '') {
+                $('#RequestedEffectiveStartDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#RequestedEffectiveStartDate').val(null);
+            }
+            date = $('#RequestedEffectiveEndDate_DPart').val();
+            if (date != null && date != '') {
+                $('#RequestedEffectiveEndDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#RequestedEffectiveEndDate').val(null);
+            }
+            date = $('#AdjustedCreateStartDate_DPart').val();
+            if (date != null && date != '') {
+                $('#AdjustedCreateStartDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#AdjustedCreateStartDate').val(null);
+            }
+            date = $('#AdjustedCreateEndDate_DPart').val();
+            if (date != null && date != '') {
+                $('#AdjustedCreateEndDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#AdjustedCreateEndDate').val(null);
+            }
+            date = $('#RPCSubmissionStartDate_DPart').val();
+            if (date != null && date != '') {
+                $('#RPCSubmissionStartDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#RPCSubmissionStartDate').val(null);
+            }
+            date = $('#RPCSubmissionEndDate_DPart').val();
+            if (date != null && date != '') {
+                $('#RPCSubmissionEndDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#RPCSubmissionEndDate').val(null);
+            }
+            date = $('#CMSAccountManagerApprovalStartDate_DPart').val();
+            if (date != null && date != '') {
+                $('#CMSAccountManagerApprovalStartDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#CMSAccountManagerApprovalStartDate').val(null);
+            }
+            date = $('#CMSAccountManagerApprovalEndDate_DPart').val();
+            if (date != null && date != '') {
+                $('#CMSAccountManagerApprovalEndDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#CMSAccountManagerApprovalEndDate').val(null);
+            }
+            date = $('#FDRReceivedStartDate_DPart').val();
+            if (date != null && date != '') {
+                $('#FDRReceivedStartDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#FDRReceivedStartDate').val(null);
+            }
+            date = $('#FDRReceivedEndDate_DPart').val();
+            if (date != null && date != '') {
+                $('#FDRReceivedEndDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#FDRReceivedEndDate').val(null);
+            }
+            date = $('#PeerAuditCompletionStartDate_DPart').val();
+            if (date != null && date != '') {
+                $('#PeerAuditCompletionStartDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#PeerAuditCompletionStartDate').val(null);
+            }
+            date = $('#PeerAuditCompletionEndDate_DPart').val();
+            if (date != null && date != '') {
+                $('#PeerAuditCompletionEndDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#PeerAuditCompletionEndDate').val(null);
+            }
+            date = $('#DisenrollmentFromDate_DPart').val();
+            if (date != null && date != '') {
+                $('#DisenrollmentFromDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#DisenrollmentFromDate').val(null);
+            }
+            date = $('#DisenrollmentToDate_DPart').val();
+            if (date != null && date != '') {
+                $('#DisenrollmentToDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#DisenrollmentToDate').val(null);
+            }
+        };
+        ///
+        window.onload = function () {
+            if ($('#DiscrepancyStartDate').val() != null && $('#DiscrepancyStartDate').val() != "") {
+                $('#DiscrepancyStartDate_DPart').val(getDateTimeInMMDDYYYY($('#DiscrepancyStartDate').val()));
+            }
+            if ($('#DiscrepancyEndDate').val() != null && $('#DiscrepancyEndDate').val() != "") {
+                $('#DiscrepancyEndDate_DPart').val(getDateTimeInMMDDYYYY($('#DiscrepancyEndDate').val()));
+            }
+            if ($('#DOB').val() != null && $('#DOB').val() != "") {
+                $('#DOB_DPart').val(getDateTimeInMMDDYYYY($('#DOB').val()));
+            }
+            if ($('#FirstLetterMailStartDate').val() != null && $('#FirstLetterMailStartDate').val() != "") {
+                $('#FirstLetterMailStartDate_DPart').val(getDateTimeInMMDDYYYY($('#FirstLetterMailStartDate').val()));
+            }
+            if ($('#FirstLetterMailEndDate').val() != null && $('#FirstLetterMailEndDate').val() != "") {
+                $('#FirstLetterMailEndDate_DPart').val(getDateTimeInMMDDYYYY($('#FirstLetterMailEndDate').val()));
+            }
+            if ($('#SecondLetterMailStartDate').val() != null && $('#SecondLetterMailStartDate').val() != "") {
+                $('#SecondLetterMailStartDate_DPart').val(getDateTimeInMMDDYYYY($('#SecondLetterMailStartDate').val()));
+            }
+            if ($('#SecondLetterMailEndDate').val() != null && $('#SecondLetterMailEndDate').val() != "") {
+                $('#SecondLetterMailEndDate_DPart').val(getDateTimeInMMDDYYYY($('#SecondLetterMailEndDate').val()));
+            }
+            if ($('#ComplianceStartDate').val() != null && $('#ComplianceStartDate').val() != "") {
+                $('#ComplianceStartDate_DPart').val(getDateTimeInMMDDYYYY($('#ComplianceStartDate').val()));
+            }
+            if ($('#ComplianceEndDate').val() != null && $('#ComplianceEndDate').val() != "") {
+                $('#ComplianceEndDate_DPart').val(getDateTimeInMMDDYYYY($('#ComplianceEndDate').val()));
+            }
+            if ($('#CaseCreationStartDate').val() != null && $('#CaseCreationStartDate').val() != "") {
+                $('#CaseCreationStartDate_DPart').val(getDateTimeInMMDDYYYY($('#CaseCreationStartDate').val()));
+            }
+            if ($('#CaseCreationEndDate').val() != null && $('#CaseCreationEndDate').val() != "") {
+                $('#CaseCreationEndDate_DPart').val(getDateTimeInMMDDYYYY($('#CaseCreationEndDate').val()));
+            }
+            if ($('#MemberResponseVerificationStartDate').val() != null && $('#MemberResponseVerificationStartDate').val() != "") {
+                $('#MemberResponseVerificationStartDate_DPart').val(getDateTimeInMMDDYYYY($('#MemberResponseVerificationStartDate').val()));
+            }
+            if ($('#MemberResponseVerificationEndDate').val() != null && $('#MemberResponseVerificationEndDate').val() != "") {
+                $('#MemberResponseVerificationEndDate_DPart').val(getDateTimeInMMDDYYYY($('#MemberResponseVerificationEndDate').val()));
+            }
+            if ($('#RequestedEffectiveStartDate').val() != null && $('#RequestedEffectiveStartDate').val() != "") {
+                $('#RequestedEffectiveStartDate_DPart').val(getDateTimeInMMDDYYYY($('#RequestedEffectiveStartDate').val()));
+            }
+            if ($('#RequestedEffectiveEndDate').val() != null && $('#RequestedEffectiveEndDate').val() != "") {
+                $('#RequestedEffectiveEndDate_DPart').val(getDateTimeInMMDDYYYY($('#RequestedEffectiveEndDate').val()));
+            }
+            if ($('#AdjustedCreateStartDate').val() != null && $('#AdjustedCreateStartDate').val() != "") {
+                $('#AdjustedCreateStartDate_DPart').val(getDateTimeInMMDDYYYY($('#AdjustedCreateStartDate').val()));
+            }
+            if ($('#AdjustedCreateEndDate').val() != null && $('#AdjustedCreateEndDate').val() != "") {
+                $('#AdjustedCreateEndDate_DPart').val(getDateTimeInMMDDYYYY($('#AdjustedCreateEndDate').val()));
+            }
+            if ($('#RPCSubmissionStartDate').val() != null && $('#RPCSubmissionStartDate').val() != "") {
+                $('#RPCSubmissionStartDate_DPart').val(getDateTimeInMMDDYYYY($('#RPCSubmissionStartDate').val()));
+            }
+            if ($('#RPCSubmissionEndDate').val() != null && $('#RPCSubmissionEndDate').val() != "") {
+                $('#RPCSubmissionEndDate_DPart').val(getDateTimeInMMDDYYYY($('#RPCSubmissionEndDate').val()));
+            }
+            if ($('#CMSAccountManagerApprovalStartDate').val() != null && $('#CMSAccountManagerApprovalStartDate').val() != "") {
+                $('#CMSAccountManagerApprovalStartDate_DPart').val(getDateTimeInMMDDYYYY($('#CMSAccountManagerApprovalStartDate').val()));
+            }
+            if ($('#CMSAccountManagerApprovalEndDate').val() != null && $('#CMSAccountManagerApprovalEndDate').val() != "") {
+                $('#CMSAccountManagerApprovalEndDate_DPart').val(getDateTimeInMMDDYYYY($('#CMSAccountManagerApprovalEndDate').val()));
+            }
+            if ($('#FDRReceivedStartDate').val() != null && $('#FDRReceivedStartDate').val() != "") {
+                $('#FDRReceivedStartDate_DPart').val(getDateTimeInMMDDYYYY($('#FDRReceivedStartDate').val()));
+            }
+            if ($('#FDRReceivedEndDate').val() != null && $('#FDRReceivedEndDate').val() != "") {
+                $('#FDRReceivedEndDate_DPart').val(getDateTimeInMMDDYYYY($('#FDRReceivedEndDate').val()));
+            }
+            if ($('#PeerAuditCompletionStartDate').val() != null && $('#PeerAuditCompletionStartDate').val() != "") {
+                $('#PeerAuditCompletionStartDate_DPart').val(getDateTimeInMMDDYYYY($('#PeerAuditCompletionStartDate').val()));
+            }
+            if ($('#PeerAuditCompletionEndDate').val() != null && $('#PeerAuditCompletionEndDate').val() != "") {
+                $('#PeerAuditCompletionEndDate_DPart').val(getDateTimeInMMDDYYYY($('#PeerAuditCompletionEndDate').val()));
+            }
+            if ($('#DisenrollmentFromDate').length > 0 && $('#DisenrollmentFromDate').val() != null && $('#DisenrollmentFromDate').val() != "") {
+                $('#DisenrollmentFromDate_DPart').val(getDateTimeInMMDDYYYY($('#DisenrollmentFromDate').val()));
+            }
+            if ($('#DisenrollmentToDate').length > 0 && $('#DisenrollmentToDate').val() != null && $('#DisenrollmentToDate').val() != "") {
+                $('#DisenrollmentToDate_DPart').val(getDateTimeInMMDDYYYY($('#DisenrollmentToDate').val()));
+            }
+        };
+        //////////////////////////////
+
+        ///Validate before Search/////
+        fnValidateSearch = function () {
+            try {
+             fnGetDateIntoHdnFields();
+             MainLayout.fnResetValidationSummary();
+             var StartDate = ($("#CaseCreationStartDate_DPart").val() != "") ? new Date($('#CaseCreationStartDate').val()) : null;
+             var EndDate = ($("#CaseCreationEndDate_DPart").val() != "") ? new Date($('#CaseCreationEndDate').val()) : null;
+             var LastUpdatedOnStartDate = ($("#LastUpdatedStartDate_DPart").val() != "") ? new Date($('#LastUpdatedStartDate').val()) : null;
+             var LastUpdatedOnEndDate = ($("#LastUpdatedEndDate_DPart").val() != "") ? new Date($('#LastUpdatedEndDate').val()) : null;
+             var ComplianceStartDate = ($("#ComplianceStartDate_DPart").val() != "") ? new Date($('#ComplianceStartDate').val()) : null;
+             var ComplianceEndDate = ($("#ComplianceEndDate_DPart").val() != "") ? new Date($('#ComplianceEndDate').val()) : null;
+
+            var today = new Date();
+            var errorList = "";
+            var isValid = true;
+            today.setHours(0, 0, 0, 0);
+
+            if (($('#ddlDiscrepancyCat').val() == "" || $('#ddlDiscrepancyCat').val() == "0" ) || ($('#ddlQueue').val() == "" || $('#ddlQueue').val() == "0")) {
+                errorList = errorList + "To perform a Mass Update search, you must enter the following: Discrepancy Category, Queue";
+                isValid = false;
+            }
+            else {
+                if (((StartDate == null || StartDate == '') && (EndDate != null && EndDate != '')) || ((StartDate != null && StartDate != '') && (EndDate == null || EndDate == ''))) {
+                    if (StartDate == null || StartDate == '') {
+                        $('#CaseCreationStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        errorList = errorList + '<li>Created Date(From) must be provided when Created Date(To) is present</li>';
+                        isValid = false;
+                    }
+                    else if (EndDate == null || EndDate == '') {
+                        $('#CaseCreationEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        errorList = errorList + '<li>Created Date(To) must be provided when Start Date is present</li>';
+                        isValid = false;
+                    }
+                }
+                else if (EndDate > today) {
+                    $('#CaseCreationEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Created Date(To) cannot be future Date.</li>';
+                    isValid = false;
+                } else {
+                    if (StartDate > EndDate) {
+                        $('#CaseCreationStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        errorList = errorList + '<li>Created Date(From) must be less than  End Date.</li>';
+                        isValid = false;
+                    } else if (StartDate != null && EndDate != null) {
+                        var diff = daysBetween(EndDate, StartDate);
+                        if (diff > @searchRangeInDays) {
+                            $('#CaseCreationStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                            $('#CaseCreationEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                            errorList = errorList + '<li>Created Date(From) and Created Date(To) range cannot be greater than '+ @searchRangeInDays +'days</li>';
+                            isValid = false;
+                        }
+                    }
+                }
+                if (StartDate > today) {
+                    $('#CaseCreationStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Created Date(From) cannot be future Date.</li>';
+                    isValid = false;
+                }
+
+                if (((LastUpdatedOnStartDate == null || LastUpdatedOnStartDate == '') && (LastUpdatedOnEndDate != null && LastUpdatedOnEndDate != '')) || ((LastUpdatedOnStartDate != null && LastUpdatedOnStartDate != '') && (LastUpdatedOnEndDate == null || LastUpdatedOnEndDate == ''))) {
+                    if (LastUpdatedOnStartDate == null || LastUpdatedOnStartDate == '') {
+                        $('#LastUpdatedStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        errorList = errorList + '<li>Last Updated On(From) must be provided when Last Updated On(To) is present</li>';
+                        isValid = false;
+                    }
+                    else if (LastUpdatedOnEndDate == null || LastUpdatedOnEndDate == '') {
+                        $('#LastUpdatedEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        errorList = errorList + '<li>Last Updated On(To) must be provided when Last Updated On(From) is present</li>';
+                        isValid = false;
+                    }
+                }
+                else if (LastUpdatedOnEndDate > today) {
+                    $('#LastUpdatedEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Last Updated On(To) cannot be future Date.</li>';
+                    isValid = false;
+                } else {
+                    if (LastUpdatedOnStartDate > LastUpdatedOnEndDate) {
+                        $('#LastUpdatedStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        errorList = errorList + '<li>Last Updated On(From) must be less than  Last Updated On(To).</li>';
+                        isValid = false;
+                    } else if (LastUpdatedOnStartDate != null && LastUpdatedOnEndDate != null) {
+                        var diff = daysBetween(LastUpdatedOnEndDate, LastUpdatedOnStartDate);
+                        if (diff > @searchRangeInDays) {
+                            $('#LastUpdatedStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                            $('#LastUpdatedEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                            errorList = errorList + '<li>Last Updated On(From) and Last Updated On(To) range cannot be greater than ' + @searchRangeInDays+' days</li>';
+                            isValid = false;
+                        }
+                    }
+                }
+                if (LastUpdatedOnStartDate > today) {
+                    $('#LastUpdatedStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Last Updated On(From) cannot be future Date.</li>';
+                    isValid = false;
+                }
+
+                if (((ComplianceStartDate == null || ComplianceStartDate == '') && (ComplianceEndDate != null && ComplianceEndDate != '')) || ((ComplianceStartDate != null && ComplianceStartDate != '') && (ComplianceEndDate == null || ComplianceEndDate == ''))) {
+                    if (ComplianceStartDate == null || ComplianceStartDate == '') {
+                        $('#ComplianceStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        errorList = errorList + '<li>Compliance Start Date(From) must be provided when Compliance Start Date(To) is present</li>';
+                        isValid = false;
+                    }
+                    else if (LastUpdatedOnEndDate == null || LastUpdatedOnEndDate == '') {
+                        $('#ComplianceEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        errorList = errorList + '<li>Compliance Start Date(To) must be provided when Compliance Start Date(From) is present</li>';
+                        isValid = false;
+                    }
+                }
+                else if (ComplianceEndDate > today) {
+                    $('#ComplianceEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Compliance Start Date(To) cannot be future Date.</li>';
+                    isValid = false;
+                } else {
+                    if (ComplianceStartDate > ComplianceEndDate) {
+                        $('#ComplianceStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        errorList = errorList + '<li>Compliance Start Date(From) must be less than  Compliance Start Date(To).</li>';
+                        isValid = false;
+                    } else if (ComplianceStartDate != null && ComplianceEndDate != null) {
+                        var diff = daysBetween(ComplianceEndDate, ComplianceStartDate);
+                        if (diff > @searchRangeInDays) {
+                            $('#ComplianceStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                            $('#ComplianceEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                            errorList = errorList + '<li>Compliance Start Date(From) and Compliance Start Date(To) range cannot be greater than '+ @searchRangeInDays +' days</li>';
+                            isValid = false;
+                        }
+                    }
+                }
+                if (ComplianceStartDate > today) {
+                    $('#ComplianceStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Compliance Start Date(From) cannot be future Date.</li>';
+                    isValid = false;
+                }
+
+                ///////////
+                if ($("#txtWorkItemID").val() == "" && $("#txtCurrentHICN").val() == "" && $("#txtGPSHouseholdIDSearch").val() == "") {
+                    if (workBasket == "3001") {
+                        if ($('#ComplianceStartDate_DPart').val() == "" && $('#ComplianceEndDate_DPart').val() == "") {
+                            errorList = errorList + "Compliance Start Date(From)  and Compliance Start Date(To) is required.";
+                            isValid = false;
+                        }
+                    }
+                    else {
+                        if ($('#CaseCreationStartDate_DPart').val() == "" && $('#CaseCreationEndDate_DPart').val() == "") {
+                            errorList = errorList + "Created Date(From)  and Created Date(To) is required.";
+                            isValid = false;
+                        }
+                    }
+                }
+               //////////
+
+            }
+
+            if (!isValid) {
+                if ($('.validation-summary-errors').length != 0) {
+                    //if validion errors div is present add errors to list
+                    $('.validation-summary-errors ul').append(errorList);
+                } else {
+                    //if validion errors div is not present update validation-summary-valid div and add errors to list
+                    $('.validation-summary-valid').addClass('validation-summary-errors').removeClass('validation-summary-valid');
+                    $('.validation-summary-errors ul').append(errorList);
+                }
+            }
+            return isValid;
+            } catch (e) {
+                throw e;
+            }
+        };
+        $(document).on("change", "#RPRRequestedEffectiveDate_DPart", function (e) {
+            var RPRRequestedEffectiveDate = $('#RPRRequestedEffectiveDate_DPart').val() != "" ? new Date($('#RPRRequestedEffectiveDate_DPart').val()) : $('#RPRRequestedEffectiveDate_DPart').val();
+            if (RPRRequestedEffectiveDate != "" && RPRRequestedEffectiveDate.getDate() != 1) {
+                RPRRequestedEffectiveDate.setDate(1);
+                var strDate = Get2DigitText((RPRRequestedEffectiveDate.getMonth() + 1)) + "/" + Get2DigitText(RPRRequestedEffectiveDate.getDate()) + "/" + RPRRequestedEffectiveDate.getFullYear();
+                $('#RPRRequestedEffectiveDate_DPart').val(strDate);
+            }
+        });
+
+        ///Load All Date Time Hidden Field Before Submit///
+        fnAssignDateToModel = function () {
+            try {
+                var date = ($("#FirstLetterMailDate_DPart").length > 0) ? $("#FirstLetterMailDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#FirstLetterMailDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#InitialAddressVerificationDate_DPart").length > 0) ? $("#InitialAddressVerificationDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#InitialAddressVerificationDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#MemberResponseVerificationDate_DPart").length > 0) ? $("#MemberResponseVerificationDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#MemberResponseVerificationDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#MemberVerifiedState_DPart").length > 0) ? $("#MemberVerifiedState_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#MemberVerifiedState').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#FirstLetterMailDate_DPart").length > 0) ? $("#FirstLetterMailDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#hdnFirstLetterMailDateNoResponce').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#SecondLetterMailDate_DPart").length > 0) ? $("#SecondLetterMailDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#SecondLetterMailDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#EffectiveDate_DPart").length > 0) ? $("#EffectiveDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#EffectiveDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#EndDate_DPart").length > 0) ? $("#EndDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#EndDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#SCCLetterMailDate_DPart").length > 0) ? $("#SCCLetterMailDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#SCCLetterMailDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = ($("#FirstLetterMailDateNoResponseTerm_DPart").length > 0) ? $("#FirstLetterMailDateNoResponseTerm_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#hdnFirstLetterMailDateNoResponce').val(getDateTimeInMMDDYYYY(date));
+                }
+
+                date = ($("#ApplicationDate_DPart").length > 0) ? $("#ApplicationDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#ApplicationDate').val(getDateTimeInMMDDYYYY(date));
+                }
+
+                date = ($("#DateofBirth_DPart").length > 0) ? $("#DateofBirth_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#DateofBirth').val(getDateTimeInMMDDYYYY(date));
+                }
+
+                date = ($("#RPRRequestedEffectiveDate_DPart").length > 0) ? $("#RPRRequestedEffectiveDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#RPRRequestedEffectiveDate').val(getDateTimeInMMDDYYYY(date));
+                }
+
+                date = ($("#SCCRPRRequstedSubmissionDate_DPart").length > 0) ? $("#SCCRPRRequstedSubmissionDate_DPart").val() : "";
+                if (date != null && date != '') {
+                    $('#SCCRPRRequstedSubmissionDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                ////////////RPR Dates////////////////////////
+                date = $('#AdjustedCreateDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#AdjustedCreateDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#EffectiveDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#EffectiveDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#RPCSubmissionDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#RPCSubmissionDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#EndDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#EndDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#ApplicationDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#ApplicationDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#CMSAccountManagerSubmissionDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#CMSAccountManagerSubmissionDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#FDRReceivedDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#FDRReceivedDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#ActualSubmissionDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#ActualSubmissionDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#ResubmissionDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#ResubmissionDate').val(getDateTimeInMMDDYYYY(date));
+                }
+                date = $('#PotentialSubmissionDate_DPart').val();
+                if (date != null && date != '') {
+                    $('#PotentialSubmissionDate').val(getDateTimeInMMDDYYYY(date));
+                }
+               ////////////RPR Dates END////////////////////////
+            } catch (ex) {
+                throw ex;
+            }
+        }
+        //////////////////////////
+        $(document).on("keypress", function (e) {
+            try {
+                if (e.which == 13 && !$(e.target).is("textarea") && $("#btnSearch").is(":visible") && $("#btnSearch").length > 0) {
+                    fnProcessSearch();
+                }
+
+            } catch (e) {
+
+            }
+        });
+
+
+
+        //////////////////////Initialise Datatable///////////////////
+        dataTable=MainLayout.fnInitialiseDataTable($("#tblSearchResult"));
+
+    </script>
+}

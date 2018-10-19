@@ -1,0 +1,62 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@model ENRLReconSystem.DO.DOGEN_Queue
+
+<div class="wdgt-wrapper">
+    <div class="wdgt-hdr">
+        <img src="~/Images/list-icon.png"><h4>Work Item - @ViewBag.Name</h4>
+    </div>
+    @if (Model.GEN_QueueId > 0)
+        
+    {
+        <div class="wdgt-body clearfix" id="divGetEligWorkItem">
+            @using (Html.BeginForm())
+            {
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">ERS Case ID</label>
+                    @Html.Hidden("hdnGEN_QueueId", URLEncoderDecoder.Encode(Model.GEN_QueueId.ToString()))
+                    @Html.TextBoxFor(m => m.GEN_QueueId, new CustomValidation().AddCssClass("form-control").CustomAttributes("readonly", "true").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">Medicare ID</label>
+                    @Html.TextBoxFor(m => m.MemberCurrentHICN, new CustomValidation().AddCssClass("form-control").CustomAttributes("readonly", "true").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">Discrepancy Start Date</label>
+                    @Html.TextBoxFor(m => m.DiscrepancyStartDate, "{0:MM/dd/yyyy}", new CustomValidation().AddCssClass("form-control").CustomAttributes("readonly", "true").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">Compliance Start Date</label>
+                    @Html.TextBoxFor(m => m.ComplianceStartDate, "{0:MM/dd/yyyy}", new CustomValidation().AddCssClass("form-control").CustomAttributes("readonly", "true").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">First Name</label>
+                    @Html.TextBoxFor(m => m.MemberFirstName, new CustomValidation().AddCssClass("form-control").CustomAttributes("readonly", "true").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">Last Name</label>
+                    @Html.TextBoxFor(m => m.MemberLastName, new CustomValidation().AddCssClass("form-control").CustomAttributes("readonly", "true").validationAttributes)
+                </div>
+                <div class="btn-group clearfix">
+                    @if (Model.GEN_QueueId > 0)
+                    {
+                        <button class="btn btn-primary" id="btnStartProcessing" type="button"><img src="~/Images/configuration-icon.png"><span>Start Processing</span></button>
+                        <button class="btn btn-primary" id="btnGetNext" type="button"><img src="~/Images/get-next-icon.png"><span>Get Next</span></button>
+                    }
+                    <button class="btn btn-primary" id="btnCancel" type="button"><img src="~/Images/cancle-icon.png"><span>Cancel</span></button>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="wdgt-body clearfix">
+            <div class="clearfix">
+                <h4>There are no more work items available in this Queue.</h4>
+                <div class="btn-group clearfix">
+                    <button class="btn btn-primary" id="btnCancel" type="button"><img src="~/Images/list-icon.png"><span>Queue Summary</span></button>
+                </div>
+            </div>
+        </div>
+    }
+</div>

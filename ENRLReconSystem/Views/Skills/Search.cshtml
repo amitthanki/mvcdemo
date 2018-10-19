@@ -1,0 +1,163 @@
+﻿@using ENRLReconSystem.DO
+@using ENRLReconSystem.Utility
+@model DOADM_SkillMasterExtended
+@{
+    ViewBag.Title = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/Images/search-icon.png" /><h4>Skills</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            @using (Html.BeginForm("Search", "Skills", FormMethod.Post))
+            {
+                <div class="form-group col-md-3">
+                    @Html.Label("Skills Name")
+                    @Html.TextBox("SkillsName", "", new { @id = "txtSkillName", @class = "form-control", @onkeypress = "fnAvoidSpecialChar(event);" })
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.Label("Business Segment")
+                    @Html.DropDownList("BusinessSegment", new SelectList(Model.lstBusinessSegment, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new { @id = "ddlBusinessSegment", @class = "form-control" })
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.Label("WorkBasket")
+                    @Html.DropDownList("WorkBasketLkup", new SelectList(Model.lstWorkBasket, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new { @id = "ddlWorkBasket", @class = "form-control" })
+                </div>
+                    <div class="form-group col-md-3">
+                        @Html.Label("Role")
+                        @Html.DropDownList("Role", new SelectList(Model.lstRoles, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new { @id = "ddlRoles", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.Label("ERS Department")
+                        @Html.DropDownList("ERSDepartment", new SelectList(Model.lstDepartment, "CMN_DepartmentId", "ERSDepartmentName"), ConstantTexts.dropdownDefaultValue, new { @id = "ddlERSDepartment", @class = "form-control" })
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>Is Active</label>
+                        <input type="checkbox" name="IsActive" checked="checked" id="cbxIsActive" class="form-control"><br>
+                    </div>
+                    <div class="btn-group clearfix">
+                        <button type="button" id="btnSearch" class="btn btn-primary"><img src='@Url.Content("/images/search-icon.png")' /><span>Search</span></button>
+                        <button type="button" id="btnReset" class="btn btn-primary"><img src='@Url.Content("/images/reset-icon.png")' /><span>Reset</span></button>
+                        <button type="button" id="btnCancel" class="btn btn-primary"><img src='@Url.Content("/images/cancle-icon.png")' /><span>Cancel</span></button>
+                        <button type="button" id="btnAdd" class="btn btn-primary"><img src='@Url.Content("/images/add-icon.png")' /><span>Add New</span></button>
+                    </div>
+            }
+        </div>
+    </div>
+
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src='@Url.Content("/images/list-icon.png")' /><h4>Search Results</h4>
+        </div>
+        <div class="wdgt-body clearfix" id="divSearchResult">
+            @Html.Partial("_SearchResults", Model)
+        </div>
+    </div>
+</section>
+@section scripts{
+    <script type="text/javascript">
+       //Variables//
+       var urlGetSkills = '@Url.Action("Search", "Skills")';
+       var ReportsUrl = '@Url.Action("GetSkillsReportURL", "Skills")';
+        var urlForLock = '@Url.Action("GetLockedRecordOrLockRecord", "RecordsLocked")';
+        var addSkillUrl = '@Url.Action("Add", "Skills")'
+        var winHistoryReport;
+
+        //function to lock record when user is starts editing any record
+        fnLockAndEdit = function (id, isActive) {
+            var urlToNavigate = addSkillUrl + "?lSkillsID=" + id + "&isActive=" + isActive;
+            fnLockRecord(urlForLock, id, enums.ScreenType.Skills, urlToNavigate);
+        };
+
+        $('#btnAdd').click(function () {
+            window.location.href = addSkillUrl;
+        });
+
+        $('#btnCancel').click(function () {
+                window.location.href = '@Url.Action("Home","Home")';
+        });
+
+        //Methods//
+
+        fnLoadSkillsSearchResult = function () {
+            var varData = {
+                SkillsName: $("#txtSkillName").val(),
+                RoleLkup: $("#ddlRoles").val(),
+                BusinessSegmentLkup: $("#ddlBusinessSegment").val(),
+                CMN_DepartmentRef: $("#ddlERSDepartment").val(),
+                WorkBasketLkup: $("#ddlWorkBasket").val(),
+                isActive: ($('#cbxIsActive').is(":checked") ? true : false)
+            };
+
+            $.ajax({
+                type: "POST",
+                url: urlGetSkills,
+                data: varData,
+                success: function (data) {
+                    if (data != null) {
+                        $("#divSearchResult").empty().html(data);
+                        MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+                    }
+                    else {
+                        alert("An error occoured contact administrator!");
+                    }
+                },
+                error: function (x) {
+                    alert("An error occoured contact administrator!");
+                }
+            });
+
+        }
+
+        $("#btnSearch").on("click", function () {
+            fnLoadSkillsSearchResult();
+
+        });
+
+        $('#btnReset').click(function () {
+            $('#txtSkillName').val('');
+            $('#ddlRoles').val('');
+            $('#ddlBusinessSegment').val('');
+            $('#ddlERSDepartment').val('');
+            $('#ddlWorkBasket').val('');
+            $("#cbxIsActive").prop('checked', true);
+        });
+
+        // function to access history report
+        fnAccessReport = function (id) {
+            //debugger
+            var urlToNavigate = ReportsUrl;
+            $.ajax({
+                url: urlToNavigate,
+                type: "POST",
+                cache: false,
+                success: function (data) {
+                    if (data != "") {
+                        // debugger
+                        var Data = data.Data;
+                        var reportUrl = Data + "&ADM_SkillsMasterId=" + id;
+
+                        var strWindowFeatures = "location=yes,height=580,width=1000,scrollbars=no,resizable=yes,toolbar=no,status=no,menu=no, directories=no,titlebar=no,location=no,addressbar=no,top=100,left=100";
+                        winHistoryReport = MainLayout.fnMyOpenWindow(reportUrl, "_blank", strWindowFeatures, winHistoryReport);
+
+                        //debugger
+
+                        // window.open(Data + "?&ADM_SkillsMasterId=" + id);
+
+                    }
+                },
+                error: function (x) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                }
+            });
+        }
+
+   
+
+        MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+
+    </script>
+}

@@ -1,0 +1,55 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.DO
+@model List<DOCMN_LookupType>
+
+
+
+
+<div class="table-responsive">
+
+    <div class="table-responsive">
+        <table id="tblSearchResult" class="table table-bordered" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th class="no-sort actions">Actions</th>
+                    <th>Description</th>
+                    <th style="width:7%;">Is Active</th>
+                    <th>Created By</th>
+                    <th>Created On</th>
+                    <th>Last Updated By</th>    
+                    <th>Last Updated On</th>
+                    <th>LockedBy</th>
+                    <th>Locked On</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class='@((item.LockedByRef>0)?"alert-danger" : "")'>
+                    <td align="center">
+                        @if (item.CMN_LookupTypeId > 999)
+                        {
+                            <a onclick="fnLockAndEdit(@item.CMN_LookupTypeId);" title="Edit Lookup Type"><img alt="Edit" src="~/images/edit-img.png"></a>
+                        }
+                        else
+                        {
+                            <a class="inAccessible" title="Edit Lookup Type"><img alt="Edit" src="~/images/disable-edit-img.png"></a>
+                        }
+                        <a onclick="fnViewOrLockEdit(@item.CMN_LookupTypeId);" title="View Lookup Master"><img alt="LM" src="~/images/view-img.png"></a>
+                        <a onclick="fnAccessReport(@item.CMN_LookupTypeId);" title="History Lookup"><img alt="Edit" src="~/images/history-img.png"></a>
+                    </td>
+                    <td>@item.LookupTypeDescription</td>
+                    <td align="center">@(item.IsActive?"Yes":"No")</td>
+                    <td>@item.CreatedByName</td>
+                    <td>@item.UTCCreatedOn.ToDateTime().ToString("MM/dd/yyyy hh:mm tt")</td>
+                    <td>@item.LastUpdatedByName</td>
+                    <td>@item.UTCLastUpdatedOn.ToDateTime().ToString("MM/dd/yyyy hh:mm tt")</td>
+                    <td>@item.LockedByName</td>
+                    <td>@item.UTCLockedOn</td>
+                </tr>
+            }
+
+            </tbody>
+        </table>
+    </div>
+</div>

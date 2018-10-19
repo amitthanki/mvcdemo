@@ -1,0 +1,146 @@
+﻿@model IEnumerable<ENRLReconSystem.DO.DOADM_AccessGroupMaster>
+@{
+    ViewBag.Title = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .emptyGrid {
+        color: red;
+        text-align: center;
+        font-weight: bold;
+    }
+</style>
+<section class="container main-body-wrpr">
+    <form>
+        <div class="wdgt-wrapper">
+            <div class="wdgt-body clearfix">
+                <div class="wdgt-hdr">
+                    <img src="~/Images/search-icon.png" /><h4>Access Group</h4>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">Access Group Name</label>
+                    @Html.TextBox("AccessGroupName", null, new { @id = "txtAccessGroupName", @class = "form-control", @onkeypress = "fnAvoidSpecialCharandAllowDase(event);" })
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.Label("Is Active")
+                    <input type="checkbox" name="IsActive" value="true" checked="checked" id="chkIsActive" class="form-control"><br>
+                </div>
+                <div class="btn-group clearfix">
+                    <button type="button" id="btnSearch" class="btn btn-primary"><img src="~/Images/search-icon.png" /><span>Search</span></button>
+                    <button type="button" id="btnReset" class="btn btn-primary"><img src="~/Images/reset-icon.png" /><span>Reset</span></button>
+                    <button type="button" id="btnCancel" class="btn btn-primary"><img src="~/Images/cancle-icon.png" /><span>Cancel</span></button>
+                    <button type="button" id="btnAdd" class="btn btn-primary"><img src="~/Images/add-icon.png" /><span>Add New</span></button>
+                </div>
+            </div>
+
+        </div>
+        <div class="wdgt-wrapper">
+            <div class="wdgt-hdr">
+                <img src="~/Images/list-icon.png" /><h4>Search Results</h4>
+            </div>
+            <div class="wdgt-body clearfix" id="divSearchResult">
+                @Html.Partial("_SearchResults", Model)
+            </div>
+        </div>
+    </form>
+</section>
+@section Scripts {
+    <script type="text/javascript">
+        var searchUrl = '@Url.Action("Search", "AccessGroup")';
+        var addUrl = '@Url.Action("Add", "AccessGroup")';
+        var homeUrl = '@Url.Action("Home", "Home")';
+        var urlForLock = '@Url.Action("GetLockedRecordOrLockRecord", "RecordsLocked")';
+        var ReportsUrl = '@Url.Action("GetAccessGroupReportURL", "AccessGroup")';
+        var editUrl = '@Url.Action("Add", "AccessGroup")'
+        var winHistoryReport;
+
+        $("#btnSearch").on("click", function (event) {
+            event.preventDefault();
+            try
+            {
+                fnLoadSearchResult();
+            }
+            catch (e)
+            {
+
+            }
+        });
+        $("#btnAdd").on("click", function (event) {
+            try
+            {
+                window.location = addUrl;
+            }
+            catch (e)
+            {
+            }
+        });
+        $("#btnCancel").on("click", function (event) {
+            event.preventDefault();
+            try
+            {
+                window.location = homeUrl;
+            }
+            catch (e)
+            {
+            }
+        });
+        $("#btnReset").on("click", function (event) {
+            try {
+                $("#txtAccessGroupName").val('');
+                $("#chkIsActive").prop("checked", true);
+            } catch (e) {
+            }
+        });
+        fnLoadSearchResult = function () {
+            try {
+                var Name = $("#txtAccessGroupName").val();
+                $.ajax({
+                    data: { AccessGroupName: Name, IsActive: $("#chkIsActive").is(":checked") ? true : false },
+                    url: searchUrl,
+                    type: "POST",
+                    success: function (data) {
+                        if (data != "") {
+                            $("#divSearchResult").empty().html(data);
+                            MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+                        }
+                        else {
+                            alert("Alert!", "An error occoured contact administrator!");
+                        }
+                    },
+                    error: function (x) {
+                        alert("An error occoured contact administrator!");
+                    }
+                });
+            } catch (e) {
+            }
+        }
+        fnLockAndEdit = function (id, isActive) {
+            var urlToNavigate = editUrl + '?ADM_AccessGroupMasterId=' + id + "&isActive=" + isActive;
+            var isLocked = fnLockRecord(urlForLock, id, enums.ScreenType.AccessGroup, urlToNavigate);
+        };
+     
+        // function to access history report
+        fnAccessReport = function (id) {
+            $.ajax({
+                url: ReportsUrl,
+                type: "POST",
+                success: function (data) {
+                    if (data != "") {
+                        var Data = data.Data;
+                        var reportUrl = Data + "&AccessGroupMasterRef=" + id;
+                        var strWindowFeatures = "location=yes,height=580,width=1000,scrollbars=no,resizable=yes,toolbar=no,status=no,menu=no, directories=no,titlebar=no,location=no,addressbar=no,top=100,left=100";
+                        winHistoryReport = MainLayout.fnMyOpenWindow(reportUrl, "_blank", strWindowFeatures, winHistoryReport);
+
+
+                    }
+                },
+                error: function (x) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                }
+            });
+        }
+        MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+    </script>
+
+}
+

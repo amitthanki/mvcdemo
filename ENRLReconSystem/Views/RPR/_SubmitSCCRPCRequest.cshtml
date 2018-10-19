@@ -1,0 +1,24 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@model DOGEN_RPRActions
+
+<div class="clearfix">
+    @Html.HiddenFor(m => m.ActualSubmissionDate)
+    <div class="form-group date-group col-md-3">
+        @Html.LabelFor(m => m.ActualSubmissionDate, "Actual Submission Date", new { @class = "required" })
+        @Html.DateTimeFor(m => m.ActualSubmissionDate, false, new CustomValidation().CustomAttributes("id", "dtpActualSubmissionDate").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group col-md-3">
+        @Html.LabelFor(m => m.ReasonSubmissionRejected, "Reason Submission Rejected", new { @class = "required" })
+        @Html.TextBoxFor(m => m.ReasonSubmissionRejected, new CustomValidation().CustomAttributes("id", "txtReasonSubmissionRejected").RegularExpression(RegexType.AlphabetsWithNumericSpacesAndAmpersand, "Reason Submission Rejected").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Reason Submission Rejected").AddCssClass("form-control").validationAttributes)
+    </div>
+    @*<div class="form-group date-group col-md-3">
+        @Html.LabelFor(m => m.IncludeInTodaysSubmission, "Include In Today's Submission")
+        @Html.CheckBoxFor(m => m.IncludeInTodaysSubmission, new { @class = "form-control", @id = "cbxIncludeInTodaysSubmission" })
+    </div>*@
+    <div class="form-group textarea col-md-12">
+        @Html.LabelFor(m => m.Comments, "Comments", new { @class = "required" })
+        @Html.TextAreaFor(m => m.Comments, new CustomValidation().Required("Comments are Required").AddCssClass("form-control").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+    </div>
+</div>
+

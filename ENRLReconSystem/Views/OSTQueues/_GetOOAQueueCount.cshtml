@@ -1,0 +1,220 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.DO
+@model QueueSummary
+
+@functions {
+    public IHtmlString QueueActions(long queueId, long count, bool showGetQueue = true)
+    {
+        string strTag = "";
+        if (count > 0 && Model.lstUserAccessQueueLkups.Contains(queueId))
+        {
+            var discCat = (long)DiscripancyCategory.OOA;
+            var href = Url.Action("SearchFromHome", "Common", new { @ComplianceStartDate = Model.StartDate, @ComplianceEndDate = Model.EndDate, @Queue = queueId, @data = discCat, @screenType = 37010 });
+            var reportHref = ViewBag.ReportUrl + "&FromDate=" + Model.StartDate.ToString("MM/dd/yyyy") + "&ToDate=" + Model.EndDate.ToString("MM/dd/yyyy") + "&WorkQueueLkup=" + queueId + "&BusinessSegmentLkup=" + Model.BusinessSegment;
+            if (showGetQueue)
+                strTag = "<a id = '" + queueId + "' class='getQueue' href='#' title='Get Queue'><img src = '/Images/get-queue-img.png' ></a>";//get queue link
+            strTag = strTag + "<a href='" + href + "'><img src = '/Images/view-img.png' title='View Queue' ></a>";//View Queue link
+            strTag = strTag + "<a href='"+ reportHref+ "' target ='_blank' title='View Report'><img src='/Images/report-img.png'></a>";//Report link
+        }
+        else
+        {
+            if (showGetQueue)
+                strTag = "<a  class='inAccessible' href='#'><img src = '/Images/disable-get-queue-img.png' ></ a >";//get queue link disabled
+            strTag = strTag + "<a  class='inAccessible' href='#'><img src = '/Images/disable-view-img.png' title='View Queue' ></a>";//View Queue link disabled
+            strTag = strTag + "<a class='inAccessible' href='#' title='View Report'><img src='/Images/disable-report-img.png'></a>";//Report link disabled
+        }
+        return new HtmlString(strTag);
+    }
+
+}
+
+<div class="queue-smry-wdgt">
+    <div class="processing-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Processing Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>New Case</td>
+                    <td>@Model.objOOAQueueSummary.OOANewCase</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOANewCase.ToInt64(), Model.objOOAQueueSummary.OOANewCase)
+                    </td>
+                </tr>
+                <tr>
+                    <td>MIIM Updated</td>
+                    <td>@Model.objOOAQueueSummary.OOAMIIMUpdated</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOAMIIMUpdated.ToInt64(), Model.objOOAQueueSummary.OOAMIIMUpdated)
+                    </td>
+                </tr>            
+                <tr>
+                    <td>Needs EGHP Review</td>
+                    <td>@Model.objOOAQueueSummary.OOANeedEGHPReview</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOANeedsEGHPReview.ToInt64(), Model.objOOAQueueSummary.OOANeedEGHPReview)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Open NOT</td>
+                    <td>@Model.objOOAQueueSummary.OOAOpenNOT</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOAOpenNOT.ToInt64(), Model.objOOAQueueSummary.OOAOpenNOT)
+                    </td>
+               </tr>
+                <tr>
+                    <td>Open Disenroll</td>
+                    <td>@Model.objOOAQueueSummary.OOAOpenDisenroll</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOAOpenDisenroll.ToInt64(), Model.objOOAQueueSummary.OOAOpenDisenroll)
+                    </td>
+                </tr>
+                <tr>
+                    <td>MARx Address Letter</td>
+                    <td>@Model.objOOAQueueSummary.OOAMARxAddressLetter</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOAMARxAddressLetter.ToInt64(), Model.objOOAQueueSummary.OOAMARxAddressLetter)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Address Scrub</td>
+                    <td>@Model.objOOAQueueSummary.OOAAddressScrub</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOAAddressScrub.ToInt64(), Model.objOOAQueueSummary.OOAAddressScrub)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Open NOT (Macro)</td>
+                    <td>@Model.objOOAQueueSummary.OOAOpenNOTMacro</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOAOpenNOTMacro.ToInt64(), Model.objOOAQueueSummary.OOAOpenNOTMacro)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Open Disenroll (Macro)</td>
+                    <td>@Model.objOOAQueueSummary.OOAOpenDisenrollMacro</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOAOpenDisenrollMacro.ToInt64(), Model.objOOAQueueSummary.OOAOpenDisenrollMacro)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Update Sent to CMS(Failed)</td>
+                    <td>@Model.objOOAQueueSummary.OOAUpdateSenttoCMSFAILED</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOAUpdateSentoCMSFAILED.ToInt64(), Model.objOOAQueueSummary.OOAUpdateSenttoCMSFAILED)
+                    </td>
+                </tr>
+                <tr>
+                    <td>OOA Letter Sent(Failed)</td>
+                    <td>@Model.objOOAQueueSummary.OOALetterSentFAILED</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOALetterSentFAILED.ToInt64(), Model.objOOAQueueSummary.OOALetterSentFAILED)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pending Audit</td>
+                    <td>@Model.objOOAQueueSummary.OOAPendingAudit</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOAPendingAudit.ToInt64(), Model.objOOAQueueSummary.OOAPendingAudit)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pended</td>
+                    <td>@Model.objOOAQueueSummary.OOAPended</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOAPended.ToInt64(), Model.objOOAQueueSummary.OOAPended)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Peer Audit Failed</td>
+                    <td>@Model.objOOAQueueSummary.OOAPeerAuditFailed</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOAPeerAuditFailed.ToInt64(), Model.objOOAQueueSummary.OOAPeerAuditFailed)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="queue-smry-wdgt">
+    <div class="holding-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Holding Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Pending FTT</td>
+                    <td>@Model.objOOAQueueSummary.OOAPendingFTT</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOAPendingFTT.ToInt64(), Model.objOOAQueueSummary.OOAPendingFTT, false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pending NOT</td>
+                    <td>@Model.objOOAQueueSummary.OOAPendingNOT</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOAPendingNOT.ToInt64(), Model.objOOAQueueSummary.OOAPendingNOT, false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pending SCC RPR</td>
+                    <td>@Model.objOOAQueueSummary.OOAPendingSCCRPR</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOAPendingSCCRPR.ToInt64(), Model.objOOAQueueSummary.OOAPendingSCCRPR, false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Submit to CMS</td>
+                    <td>@Model.objOOAQueueSummary.OOASubmitToCMS</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOASubmitToCMS.ToInt64(), Model.objOOAQueueSummary.OOASubmitToCMS, false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Update Sent to CMS</td>
+                    <td>@Model.objOOAQueueSummary.OOAUpdateSentToCMS</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOAUpdateSentToCMS.ToInt64(), Model.objOOAQueueSummary.OOAUpdateSentToCMS, false)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="completed-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Completed Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Completed</td>
+                    <td>@Model.objOOAQueueSummary.OOACompleted</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOACompleted.ToInt64(), Model.objOOAQueueSummary.OOACompleted, false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>CMS Accepted</td>
+                    <td>@Model.objOOAQueueSummary.OOACMSAccepted</td>
+                    <td>
+                        @QueueActions(OOAQueue.OOACMSAccepted.ToInt64(), Model.objOOAQueueSummary.OOACMSAccepted,false)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

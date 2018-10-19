@@ -1,0 +1,17 @@
+﻿
+@{
+    ViewBag.Title = "Maintenance";
+    Layout = "~/Views/Error/_Layout.cshtml";
+}
+<h2>
+    Maintenance
+</h2>
+<div style="text-align: center;">
+    Page is under maintainance.Please Contact your Administrator for assistance.
+    <br />
+    Please @Html.ActionLink("click here", "Home", "Home") to go to home page.
+    <br />
+    <img style="border-right-width: 0px; border-top-width: 0px; border-bottom-width: 0px;
+        border-left-width: 0px" id="Image1" src="~/Images/Maintaince.jpg">
+    <div style="text-align:center"><label style="color: #ffffff; background-color: #ffffff; ">@ViewBag.ErrorMessage</label></div>
+</div>

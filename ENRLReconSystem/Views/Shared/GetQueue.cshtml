@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "GetQueue";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<div id="div1">
+    @Html.Partial("~/Views/OST/_OOAQueue.cshtml")
+</div>
+<div id="div2" style="display: none;">
+    @Html.Partial("_WorkItems")
+
+    @Html.Partial("_PendingWorkItems")
+
+</div>
+
+
+
+<script language="javascript">
+    $(document).ready(function () {
+
+        $("#A1").click(function () {
+
+            $("#div2").show();
+
+        });
+
+        $("#btnCancel").click(function () {
+            $("#div2").hide();
+        });
+    });
+</script>

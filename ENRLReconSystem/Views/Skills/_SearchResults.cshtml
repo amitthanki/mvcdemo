@@ -1,0 +1,60 @@
+﻿@model DOADM_SkillMasterExtended
+@using ENRLReconSystem.DO
+
+<div class="table-responsive">
+
+    @*@if (Model != null && Model.lstSkillsMaster.Count > 0)
+    {*@
+        <table id="tblSearchResult" class="table table-bordered" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Actions</th>
+                    <th>Skills Name</th>
+                    <th>Business Segment</th>
+                    <th>Department</th>
+                    <th>Work Basket</th>
+                    <th>Role</th>
+                    <th>Created By</th>
+                    <th>Created On</th>
+                    <th>Last Updated By</th>
+                    <th>Last Updated On</th>
+                    <th>LockedBy</th>
+                    <th>LockedOn</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.lstSkillsMaster)
+                {
+                    string lockedClass = item.LockedByRef != null ? "alert-danger" : "";
+                    <tr class="@lockedClass">                        
+                        <td>
+                            <div class="divDataTableActions">
+                                <a href ="#" onclick="fnLockAndEdit('@item.ADM_SkillsMasterId','@item.IsActive.ToString()');" title="Edit Skills"><div class='divDataTableActions'></div><img alt="Edit" src="~/images/edit-img.png"></a>
+                                <a href ="#" onclick="fnAccessReport(@item.ADM_SkillsMasterId);" title="View History"><div class='divDataTableActions'></div><img src="~/images/history-img.png" alt="Edit" /></a>
+                            </div>
+                        </td>
+                        <td>@item.SkillsName</td>
+                        <td>@item.BusinessSegmentValue</td>
+                        <td>@item.DepartmentName</td>
+                        <td>@item.WorkBasketValue</td>
+                        <td>@item.RoleValue</td>
+                        <td>@item.CreatedByName</td>
+                        <td>@item.UTCCreatedOn.ToString("MM/dd/yyyy hh:mm tt")</td>
+                        <td>@item.LastUpdatedByName</td>
+                        <td>@item.UTCLastUpdatedOn.ToString("MM/dd/yyyy hh:mm tt")</td>
+                        <td>@item.LockedByName</td>
+                        <td>@item.UTCLockedOn</td>
+                    </tr>
+                }
+
+            </tbody>
+        </table>
+    @*}
+    else
+    {
+        <div style="text-align:center;color:red;">
+            No Records Found
+        </div>
+    }*@
+</div>

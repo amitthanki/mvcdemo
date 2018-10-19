@@ -1,0 +1,61 @@
+Creating JMS(Java messaging service) factory ...
+Creating JMS connection factory...
+Setting WMQ properties and SSL properties...
+Creating Queue Manager connection...
+JMS Error code: JMSWMQ0018
+JMS Explanation: null
+JMS Explanation: Check the queue manager is started and if running in client mode, check there is a listener running. Please see the linked exception for more information.
+WMQ Completion code: 2
+WMQ Reason code: 2397
+WMQ Log Message: 3/30/18 5:39:09 PM - User(athanki) Program(java)
+AMQ9204: Connection to host 'quesvc8e5(2246)' rejected.
+
+EXPLANATION:
+Connection to host 'quesvc8e5(2246)' over '?' was rejected.
+ACTION:
+The remote system may not be configured to allow connections from this host.
+Check the '?' listener program has been started on host 'quesvc8e5(2246)'. 
+If the conversation uses LU 6.2, it is possible that either the User ID or
+Password supplied to the remote host is incorrect. 
+If the conversation uses TCP/IP, it is possible that the remote host does not
+recognize the local host as a valid host. 
+The return code from the '?''RemoteTCPConnection.protocolConnect' call was
+'com.ibm.mq.jmqi.JmqiException[CC=2;RC=2397;AMQ9771: SSL handshake failed.
+[1=javax.net.ssl.SSLHandshakeException[No appropriate protocol (protocol is
+disabled or cipher suites are inappropriate)],3=quesvc8e5/10.174.11.44:2246
+(quesvc8e5),4=SSLSocket.startHandshake,5=default]]' X('?'). 
+Record the error values and tell the systems administrator.
+---- RemoteFAP.java : 2091 -----------------------------------------------------
+
+WMQ Explanation: Connection to host 'quesvc8e5(2246)' over '?' was rejected.
+WMQ Msg Summary: AMQ9204: Connection to host 'quesvc8e5(2246)' rejected.
+WMQ Msg User Response: The remote system may not be configured to allow connections from this host. Check the '?' listener program has been started on host 'quesvc8e5(2246)'. 
+ If the conversation uses LU 6.2, it is possible that either the User ID or Password supplied to the remote host is incorrect. 
+ If the conversation uses TCP/IP, it is possible that the remote host does not recognize the local host as a valid host. 
+ The return code from the '?''RemoteTCPConnection.protocolConnect' call was 'com.ibm.mq.jmqi.JmqiException[CC=2;RC=2397;AMQ9771: SSL handshake failed. [1=javax.net.ssl.SSLHandshakeException[No appropriate protocol (protocol is disabled or cipher suites are inappropriate)],3=quesvc8e5/10.174.11.44:2246 (quesvc8e5),4=SSLSocket.startHandshake,5=default]]' X('?'). 
+ Record the error values and tell the systems administrator.
+WMQ Msg Severity: 30
+WMQ Log Message: 3/30/18 5:39:09 PM - User(athanki) Program(java)
+AMQ9771: SSL handshake failed.
+
+EXPLANATION:
+The SSL handshake with host 'quesvc8e5/10.174.11.44:2246 (quesvc8e5)' failed.
+The SSL handshake was performed using the Java Secure Socket Extension (JSSE).
+ACTION:
+The SSLSocketFactory used was 'default', where 'default' indicates that the
+JVM's default SSLSocketFactory was used. 
+The exception thrown by the 'SSLSocket.startHandshake' call was
+'javax.net.ssl.SSLHandshakeException[No appropriate protocol (protocol is
+disabled or cipher suites are inappropriate)]'. Review the exception message
+for a description of the failure. 
+Also examine the error logs at the remote end of the channel. These may contain
+additional information on why the SSL handshake failed.
+---- RemoteTCPConnection.java : 1349 -------------------------------------------
+
+WMQ Explanation: The SSL handshake with host 'quesvc8e5/10.174.11.44:2246 (quesvc8e5)' failed. The SSL handshake was performed using the Java Secure Socket Extension (JSSE).
+WMQ Msg Summary: AMQ9771: SSL handshake failed.
+WMQ Msg User Response: The SSLSocketFactory used was 'default', where 'default' indicates that the JVM's default SSLSocketFactory was used. 
+ The exception thrown by the 'SSLSocket.startHandshake' call was 'javax.net.ssl.SSLHandshakeException[No appropriate protocol (protocol is disabled or cipher suites are inappropriate)]'. Review the exception message for a description of the failure. 
+ Also examine the error logs at the remote end of the channel. These may contain additional information on why the SSL handshake failed.
+WMQ Msg Severity: 30
+Exception : javax.net.ssl.SSLHandshakeException: No appropriate protocol (protocol is disabled or cipher suites are inappropriate)

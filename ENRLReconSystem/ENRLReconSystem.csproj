@@ -1,0 +1,888 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FB6A53EA-1E27-4685-BD5D-CFCC8047A732}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ENRLReconSystem</RootNamespace>
+    <AssemblyName>ENRLReconSystem</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication>disabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>enabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <Use64BitIISExpress />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.7.2.0, Culture=neutral, PublicKeyToken=8fb06cb64d019a17, processorArchitecture=MSIL">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.7.2\lib\net40\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.Agent.Intercept, Version=2.0.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.Agent.Intercept.2.0.7\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.DependencyCollector, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.3.0\lib\net45\Microsoft.AI.DependencyCollector.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.PerfCounterCollector, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.PerfCounterCollector.2.3.0\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.ServerTelemetryChannel, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.2.3.0\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.Web, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.Web.2.3.0\lib\net45\Microsoft.AI.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AI.WindowsServer, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.WindowsServer.2.3.0\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationInsights, Version=2.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.ApplicationInsights.2.3.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=1.1.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.1.1.4\lib\net451\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.1.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.1.4\lib\net451\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Services, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\packages\Microsoft.Web.Services.1.0.2312.88\lib\Microsoft.Web.Services.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel.Tokens.ValidatingIssuerNameRegistry, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.ValidatingIssuerNameRegistry.4.5.1\lib\net45\System.IdentityModel.Tokens.ValidatingIssuerNameRegistry.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http">
+      <HintPath>..\packages\System.Net.Http.2.0.20126.16343\lib\net40\System.Net.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Http.Formatting.Extension.5.2.3.0\lib\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Http.Formatting.Extension.5.2.3.0\lib\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives, Version=4.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Http.Formatting.Extension.5.2.3.0\lib\System.Net.Http.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+      <HintPath>..\packages\System.Net.Http.2.0.20126.16343\lib\net40\System.Net.Http.WebRequest.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Web.Http.WebHost, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="SystemSecurity, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SystemSecurity.1.0.1.0\lib\net45\SystemSecurity.dll</HintPath>
+    </Reference>
+    <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Common\EDMSWebService.cs" />
+    <Compile Include="Common\EncryptDecrypt.cs" />
+    <Compile Include="Common\Filter.cs" />
+    <Compile Include="Common\GPSHeaderService.cs" />
+    <Compile Include="Common\CacheUtility.cs" />
+    <Compile Include="Common\CustomControllerFactory.cs" />
+    <Compile Include="Common\ErrorHandlerAttribute.cs" />
+    <Compile Include="Common\ERSAuthenticationAttribute.cs" />
+    <Compile Include="Common\ERSRoleAuthorizeAttribute.cs" />
+    <Compile Include="Common\ERSRoleProvider.cs" />
+    <Compile Include="Common\GPSServiceGetMethods.cs" />
+    <Compile Include="Common\SessionControllerHandler.cs" />
+    <Compile Include="Common\USPSService.cs" />
+    <Compile Include="Connected Services\srvAECMSTransaction\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Connected Services\srvAEEmployerSummary\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Connected Services\srvAEMemberEligibility\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Connected Services\srvAEOutOfAreaOption\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Connected Services\srvAETrrDetails\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Connected Services\srvAEMemberDemographics\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Connected Services\srvAETrrSummary\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\AccessGroupController.cs" />
+    <Compile Include="Controllers\AlertsController.cs" />
+    <Compile Include="Controllers\AttachmentController.cs" />
+    <Compile Include="Controllers\AuthController.cs" />
+    <Compile Include="Controllers\BulkUploadController.cs" />
+    <Compile Include="Controllers\CommonController.cs" />
+    <Compile Include="Controllers\ConfigurationsController.cs" />
+    <Compile Include="Controllers\DepartmentController.cs" />
+    <Compile Include="Controllers\EligibilityController.cs" />
+    <Compile Include="Controllers\EligibilityQueuesController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\ERSAdminController.cs" />
+    <Compile Include="Controllers\HelpController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
+    <Compile Include="Controllers\LookupCorrelationController.cs" />
+    <Compile Include="Controllers\LookupsController.cs" />
+    <Compile Include="Controllers\ManagerController.cs" />
+    <Compile Include="Controllers\MassUpdateTemplateController.cs" />
+    <Compile Include="Controllers\MIIMConnectorController.cs" />
+    <Compile Include="Controllers\OSTController.cs" />
+    <Compile Include="Controllers\OSTQueuesController.cs" />
+    <Compile Include="Controllers\RecordsLockedController.cs" />
+    <Compile Include="Controllers\ReportsController.cs" />
+    <Compile Include="Controllers\ResourcesController.cs" />
+    <Compile Include="Controllers\RPRController.cs" />
+    <Compile Include="Controllers\RPRQueuesController.cs" />
+    <Compile Include="Controllers\SkillsController.cs" />
+    <Compile Include="Controllers\UserAdminstrationController.cs" />
+    <Compile Include="Controllers\UserPreferenceController.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\AttachmentHelper.cs" />
+    <Compile Include="Helpers\CustomValidation.cs" />
+    <Compile Include="Helpers\DateTimeHelper.cs" />
+    <Compile Include="Helpers\HtmlHelperExtender.cs" />
+    <Compile Include="Models\UIExtensions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\srvAECMSTransaction\configuration91.svcinfo" />
+    <None Include="Connected Services\srvAECMSTransaction\configuration.svcinfo" />
+    <Content Include="Connected Services\srvAECMSTransaction\ENRLReconSystem.srvAECMSTransaction.invokePingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAECMSTransaction\ENRLReconSystem.srvAECMSTransaction.invokeServiceResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAECMSTransaction\ENRLReconSystem.srvAECMSTransaction.pingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAECMSTransaction\ENRLReconSystem.srvAECMSTransaction.postCmstransactionResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <None Include="Connected Services\srvAECMSTransaction\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Connected Services\srvAEEmployerSummary\configuration91.svcinfo" />
+    <None Include="Connected Services\srvAEEmployerSummary\configuration.svcinfo" />
+    <Content Include="Connected Services\srvAEEmployerSummary\ENRLReconSystem.srvAEEmployerSummary.invokePingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAEEmployerSummary\ENRLReconSystem.srvAEEmployerSummary.invokeServiceResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAEEmployerSummary\ENRLReconSystem.srvAEEmployerSummary.pingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAEEmployerSummary\ENRLReconSystem.srvAEEmployerSummary.readEmployerResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <None Include="Connected Services\srvAEEmployerSummary\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <Content Include="Connected Services\srvAEMemberEligibility\ENRLReconSystem.srvAEMemberEligibility.invokePingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAEMemberEligibility\ENRLReconSystem.srvAEMemberEligibility.invokeServiceResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAEMemberEligibility\ENRLReconSystem.srvAEMemberEligibility.pingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAEMemberEligibility\ENRLReconSystem.srvAEMemberEligibility.readOvationsMemberEligibilityResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAEMemberDemographics\ENRLReconSystem.srvAEMemberDemographics.invokePingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAEMemberDemographics\ENRLReconSystem.srvAEMemberDemographics.invokeServiceResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAEMemberDemographics\ENRLReconSystem.srvAEMemberDemographics.pingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAEMemberDemographics\ENRLReconSystem.srvAEMemberDemographics.retrieveDemographicsResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <None Include="Connected Services\srvAEEmployerSummary\ReadEmployerSoapServiceV1Service.wsdl" />
+    <None Include="Connected Services\srvAEMemberEligibility\ReadOvationsMemberEligibilityServiceV8Service.wsdl" />
+    <None Include="Connected Services\srvAEOutOfAreaOption\configuration91.svcinfo" />
+    <None Include="Connected Services\srvAEOutOfAreaOption\configuration.svcinfo" />
+    <None Include="Connected Services\srvAEMemberEligibility\configuration91.svcinfo" />
+    <None Include="Connected Services\srvAEMemberEligibility\configuration.svcinfo" />
+    <None Include="Connected Services\srvAEMemberEligibility\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <Content Include="Connected Services\srvAEOutOfAreaOption\ENRLReconSystem.srvAEOutOfAreaOption.invokePingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAEOutOfAreaOption\ENRLReconSystem.srvAEOutOfAreaOption.invokeServiceResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAEOutOfAreaOption\ENRLReconSystem.srvAEOutOfAreaOption.pingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAEOutOfAreaOption\ENRLReconSystem.srvAEOutOfAreaOption.putOutOfAreaOptionResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <None Include="Connected Services\srvAEOutOfAreaOption\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <Content Include="Connected Services\srvAETrrDetails\ENRLReconSystem.srvAETrrDetails.invokePingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAETrrDetails\ENRLReconSystem.srvAETrrDetails.invokeServiceResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAETrrDetails\ENRLReconSystem.srvAETrrDetails.pingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAETrrDetails\ENRLReconSystem.srvAETrrDetails.searchTrrDetailResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <None Include="Connected Services\srvAECMSTransaction\PostCmstransactionSoapServiceV1Service.wsdl" />
+    <None Include="Connected Services\srvAEOutOfAreaOption\PutOutOfAreaOptionSoapServiceV1Service.wsdl" />
+    <None Include="Connected Services\srvAETrrDetails\SearchTrrDetailSoapServiceV1Service.wsdl" />
+    <Content Include="Connected Services\srvAETrrSummary\ENRLReconSystem.srvAETrrSummary.invokePingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAETrrSummary\ENRLReconSystem.srvAETrrSummary.invokeServiceResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAETrrSummary\ENRLReconSystem.srvAETrrSummary.pingResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <Content Include="Connected Services\srvAETrrSummary\ENRLReconSystem.srvAETrrSummary.searchTrrSummaryResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Content>
+    <None Include="Connected Services\srvAETrrDetails\configuration91.svcinfo" />
+    <None Include="Connected Services\srvAETrrDetails\configuration.svcinfo" />
+    <None Include="Connected Services\srvAETrrDetails\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Connected Services\srvAEMemberDemographics\RetrieveDemographicsSoapServiceV1Service.wsdl" />
+    <None Include="Connected Services\srvAEMemberDemographics\configuration91.svcinfo" />
+    <None Include="Connected Services\srvAEMemberDemographics\configuration.svcinfo" />
+    <None Include="Connected Services\srvAEMemberDemographics\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Connected Services\srvAETrrSummary\configuration91.svcinfo" />
+    <None Include="Connected Services\srvAETrrSummary\configuration.svcinfo" />
+    <None Include="Connected Services\srvAETrrSummary\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\custom-style.css" />
+    <Content Include="Content\dataTables.bootstrap.min.css" />
+    <Content Include="Content\datepicker.css" />
+    <Content Include="Content\jquery-ui.css" />
+    <Content Include="Content\normalize.css" />
+    <Content Include="Content\themes\base\accordion.css" />
+    <Content Include="Content\themes\base\all.css" />
+    <Content Include="Content\themes\base\autocomplete.css" />
+    <Content Include="Content\themes\base\base.css" />
+    <Content Include="Content\themes\base\button.css" />
+    <Content Include="Content\themes\base\core.css" />
+    <Content Include="Content\themes\base\datepicker.css" />
+    <Content Include="Content\themes\base\dialog.css" />
+    <Content Include="Content\themes\base\draggable.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777777_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Content\themes\base\jquery-ui.min.css" />
+    <Content Include="Content\themes\base\menu.css" />
+    <Content Include="Content\themes\base\progressbar.css" />
+    <Content Include="Content\themes\base\resizable.css" />
+    <Content Include="Content\themes\base\selectable.css" />
+    <Content Include="Content\themes\base\selectmenu.css" />
+    <Content Include="Content\themes\base\slider.css" />
+    <Content Include="Content\themes\base\sortable.css" />
+    <Content Include="Content\themes\base\spinner.css" />
+    <Content Include="Content\themes\base\tabs.css" />
+    <Content Include="Content\themes\base\theme.css" />
+    <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="favicon.ico" />
+    <Content Include="font-awesome\css\font-awesome.css" />
+    <Content Include="font-awesome\css\font-awesome.min.css" />
+    <Content Include="font-awesome\fonts\fontawesome-webfont.svg" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Global.asax" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Images\about-image.png" />
+    <Content Include="Images\access-group-icon.png" />
+    <Content Include="Images\action-icon.png" />
+    <Content Include="Images\add-icon.png" />
+    <Content Include="Images\add-img.png" />
+    <Content Include="Images\alerts-icon.png" />
+    <Content Include="Images\calender-icon.png" />
+    <Content Include="Images\cancle-icon.png" />
+    <Content Include="Images\citi-zip-icon.png" />
+    <Content Include="Images\clear_date.png" />
+    <Content Include="Images\clone-icon.png" />
+    <Content Include="Images\clone.png" />
+    <Content Include="Images\configuration-icon.png" />
+    <Content Include="Images\create-icon.png" />
+    <Content Include="Images\deleteiconimg.png" />
+    <Content Include="Images\disable-add-img.png" />
+    <Content Include="Images\disable-cancle-icon.png" />
+    <Content Include="Images\disable-clone-icon.png" />
+    <Content Include="Images\disable-delete-img.png" />
+    <Content Include="Images\disable-edit-img.png" />
+    <Content Include="Images\disable-get-queue-img.png" />
+    <Content Include="Images\disable-history-img.png" />
+    <Content Include="Images\disable-maping-img.png" />
+    <Content Include="Images\disable-report-img.png" />
+    <Content Include="Images\disable-save-img.png" />
+    <Content Include="Images\disable-upload-img.png" />
+    <Content Include="Images\disable-view-img.png" />
+    <Content Include="Images\disabled-download-img.png" />
+    <Content Include="Images\download-img.png" />
+    <Content Include="Images\edit-img.png" />
+    <Content Include="Images\edit.png" />
+    <Content Include="Images\edit_disabled.png" />
+    <Content Include="Images\ERS-Logo.png" />
+    <Content Include="Images\excel-icon.png" />
+    <Content Include="Images\get-icon.png" />
+    <Content Include="Images\get-next-icon.png" />
+    <Content Include="Images\get-queue-img.png" />
+    <Content Include="Images\history-icon.png" />
+    <Content Include="Images\history-img.png" />
+    <Content Include="Images\History.png" />
+    <Content Include="Images\icon.png" />
+    <Content Include="Images\info-icon.png" />
+    <Content Include="Images\list-icon.png" />
+    <Content Include="Images\login-hdr-img.png" />
+    <Content Include="Images\login-icon.png" />
+    <Content Include="Images\logout-icon.png" />
+    <Content Include="Images\Logout.gif" />
+    <Content Include="Images\Maintaince.jpg" />
+    <Content Include="Images\manage-case-icon.png" />
+    <Content Include="Images\progress.gif" />
+    <Content Include="Images\reassign.jpg" />
+    <Content Include="Images\reopen-disable-icon.png" />
+    <Content Include="Images\reopen-icon.png" />
+    <Content Include="Images\report-img.png" />
+    <Content Include="Images\reports-icon.png" />
+    <Content Include="Images\reset-icon.png" />
+    <Content Include="Images\resource-icon.png" />
+    <Content Include="Images\roleicon.png" />
+    <Content Include="Images\save-icon.png" />
+    <Content Include="Images\save-img.png" />
+    <Content Include="Images\save-next-icon.png" />
+    <Content Include="Images\search-icon.png" />
+    <Content Include="Images\select-arrow.png" />
+    <Content Include="Images\select-icon.png" />
+    <Content Include="Images\setting-icon.png" />
+    <Content Include="Images\skills-icon.png" />
+    <Content Include="Images\spinner.gif" />
+    <Content Include="Images\template-icon.png" />
+    <Content Include="Images\todays.png" />
+    <Content Include="Images\UHC-Logo.png" />
+    <Content Include="Images\Unlocked.png" />
+    <Content Include="Images\upload-icon.png" />
+    <Content Include="Images\user-icon.png" />
+    <Content Include="Images\user-img.png" />
+    <Content Include="Images\validate-icon.png" />
+    <Content Include="Images\view-icon.png" />
+    <Content Include="Images\view-img.png" />
+    <Content Include="Images\View.png" />
+    <Content Include="Images\work-flow-icon.png" />
+    <Content Include="Scripts\bootstrap-datepicker.js" />
+    <Content Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="font-awesome\fonts\fontawesome-webfont.eot" />
+    <Content Include="font-awesome\fonts\fontawesome-webfont.ttf" />
+    <Content Include="font-awesome\fonts\fontawesome-webfont.woff" />
+    <Content Include="font-awesome\fonts\fontawesome-webfont.woff2" />
+    <Content Include="font-awesome\fonts\FontAwesome.otf" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\buttons.html5.min.js" />
+    <Content Include="Scripts\Common\scriptUtility.js" />
+    <Content Include="Scripts\custom-script.js" />
+    <Content Include="Content\bootstrap.min.css.map" />
+    <Content Include="Content\bootstrap.css.map" />
+    <Content Include="Content\bootstrap-theme.min.css.map" />
+    <Content Include="Content\bootstrap-theme.css.map" />
+    <None Include="Connected Services\srvAETrrSummary\SearchTrrSummarySoapServiceV1Service.wsdl" />
+    <Content Include="Help\UserManual.pdf" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Scripts\jquery-3.1.1.intellisense.js" />
+    <Content Include="Scripts\dataTables.bootstrap.min.js" />
+    <Content Include="Scripts\dataTables.buttons.min.js" />
+    <Content Include="Scripts\jquery-3.1.1.js" />
+    <Content Include="Scripts\jquery-3.1.1.slim.js" />
+    <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\jquery.dataTables.min.js" />
+    <Content Include="Scripts\jquery.maskedinput.js" />
+    <Content Include="Scripts\jquery.maskedinput.min.js" />
+    <Content Include="Scripts\jquery.validate.js" />
+    <Content Include="Scripts\jquery.validate.min.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.js" />
+    <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\jszip.min.js" />
+    <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\PWAttachment.js" />
+    <Content Include="Scripts\respond.js" />
+    <Content Include="Scripts\respond.matchmedia.addListener.js" />
+    <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
+    <Content Include="Scripts\respond.min.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Login\Login.cshtml" />
+    <Content Include="Views\Home\Home.cshtml" />
+    <Content Include="Views\Error\Maintenance.cshtml" />
+    <Content Include="Views\Error\Unauthenticated.cshtml" />
+    <Content Include="Views\Error\Unauthorized.cshtml" />
+    <Content Include="Views\Error\_Layout.cshtml" />
+    <Content Include="Views\UserAdminstration\Search.cshtml" />
+    <Content Include="Views\UserAdminstration\Add.cshtml" />
+    <Content Include="Views\Department\Search.cshtml" />
+    <Content Include="Views\Department\Add.cshtml" />
+    <Content Include="Views\Department\Edit.cshtml" />
+    <Content Include="Views\Skills\Search.cshtml" />
+    <Content Include="Views\Skills\Add.cshtml" />
+    <Content Include="Views\Configurations\Search.cshtml" />
+    <Content Include="Views\Configurations\Add.cshtml" />
+    <Content Include="Views\Alerts\Search.cshtml" />
+    <Content Include="Views\Alerts\Add.cshtml" />
+    <Content Include="Views\Resources\Search.cshtml" />
+    <Content Include="Views\Resources\Add.cshtml" />
+    <Content Include="Views\AccessGroup\Search.cshtml" />
+    <Content Include="Views\AccessGroup\Add.cshtml" />
+    <Content Include="Views\Lookups\Search.cshtml" />
+    <Content Include="Views\Lookups\Add.cshtml" />
+    <Content Include="Views\AccessGroup\_SearchResults.cshtml" />
+    <Content Include="Views\Department\_SearchResults.cshtml" />
+    <Content Include="Views\Lookups\_SearchResults.cshtml" />
+    <Content Include="Views\Skills\_SearchResults.cshtml" />
+    <Content Include="Views\Configurations\_SearchResults.cshtml" />
+    <Content Include="Views\UserAdminstration\_SearchResults.cshtml" />
+    <Content Include="Views\Shared\Search.cshtml" />
+    <Content Include="Views\Shared\GetQueue.cshtml" />
+    <Content Include="Views\Shared\_WorkItems.cshtml" />
+    <Content Include="Views\Shared\_PendingWorkItems.cshtml" />
+    <Content Include="Views\Lookups\_LookupMasterPopup.cshtml" />
+    <Content Include="Views\OST\Create.cshtml" />
+    <Content Include="Views\LookupCorrelation\Search.cshtml" />
+    <Content Include="Views\LookupCorrelation\Add.cshtml" />
+    <Content Include="Views\LookupCorrelation\_SearchResults.cshtml" />
+    <Content Include="Views\Resources\_SearchResults.cshtml" />
+    <Content Include="Views\Alerts\_SearchResults.cshtml" />
+    <Content Include="Views\LookupCorrelation\_LookupMasterCorrelationrPopup.cshtml" />
+    <Content Include="Views\AccessGroup\_Skills.cshtml" />
+    <Content Include="Views\AccessGroup\_Reports.cshtml" />
+    <Content Include="Views\RPR\Create.cshtml" />
+    <Content Include="Views\Eligibility\Create.cshtml" />
+    <Content Include="Views\OST\OOAProcessWork.cshtml" />
+    <Content Include="Views\OST\TRRProcessWork.cshtml" />
+    <Content Include="Views\OST\SCCProcessWork.cshtml" />
+    <Content Include="Views\OST\_AddComments.cshtml" />
+    <Content Include="Views\OST\_CloseCase.cshtml" />
+    <Content Include="Views\OST\_ExtendTracking.cshtml" />
+    <Content Include="Views\OST\_PeerAuditCompleted.cshtml" />
+    <Content Include="Views\OST\_PendCase.cshtml" />
+    <Content Include="Views\OST\_ResidentialDocRequired.cshtml" />
+    <Content Include="Views\OST\_SendNotificationTerminationLetter.cshtml" />
+    <Content Include="Views\OST\_SendOOALetter.cshtml" />
+    <Content Include="Views\OST\_SendSCCUpdateToCMS.cshtml" />
+    <Content Include="Views\OST\_SendToPeerAudit.cshtml" />
+    <Content Include="Views\OST\_SCCRPRRequest.cshtml" />
+    <Content Include="Views\OST\_SendSCCLetter.cshtml" />
+    <Content Include="Views\OST\_UpdateGPS.cshtml" />
+    <Content Include="Views\Skills\_WorkQueue.cshtml" />
+    <Content Include="Views\Shared\_UserPreference.cshtml" />
+    <Content Include="Views\UserAdminstration\_AccessGroup.cshtml" />
+    <Content Include="Views\Eligibility\_AddComments.cshtml" />
+    <Content Include="Views\Eligibility\_CloseCase.cshtml" />
+    <Content Include="Views\Eligibility\_PeerAuditCompleted.cshtml" />
+    <Content Include="Views\Eligibility\_PendCase.cshtml" />
+    <Content Include="Views\Eligibility\_SendToPeerAudit.cshtml" />
+    <Content Include="Views\Eligibility\_UpdateCMSEligibility.cshtml" />
+    <Content Include="Views\Eligibility\_UpdateGPS.cshtml" />
+    <Content Include="Views\Eligibility\_UpdatePlan.cshtml" />
+    <Content Include="Views\Eligibility\_UpdatePlanAndCreateRPR.cshtml" />
+    <Content Include="Views\RPR\_AddComments.cshtml" />
+    <Content Include="Views\RPR\_CloseCase.cshtml" />
+    <Content Include="Views\RPR\_FDRApproved.cshtml" />
+    <Content Include="Views\RPR\_IncorrectSCCInformation.cshtml" />
+    <Content Include="Views\RPR\_PeerAuditCompleted.cshtml" />
+    <Content Include="Views\RPR\_PendCase.cshtml" />
+    <Content Include="Views\RPR\_RPCRejected.cshtml" />
+    <Content Include="Views\RPR\_SCCRPRNotRequired.cshtml" />
+    <Content Include="Views\RPR\_SendToPeerAudit.cshtml" />
+    <Content Include="Views\RPR\_SubmitRPCRequest.cshtml" />
+    <Content Include="Views\RPR\_SubmitSCCRPCRequest.cshtml" />
+    <Content Include="Views\RPR\_SubmittedTransactionInquiry.cshtml" />
+    <Content Include="Views\RPR\_SubmitToAccountManager.cshtml" />
+    <Content Include="Views\RPR\_TransactionInquiryApproved.cshtml" />
+    <Content Include="Views\RPR\_TransactionInquiryRequired.cshtml" />
+    <Content Include="Views\RPR\_UpdatePlan.cshtml" />
+    <Content Include="Views\Shared\_UserAccess.cshtml" />
+    <Content Include="Views\UserPreference\UserPreference.cshtml" />
+    <Content Include="Views\Shared\_LayoutPopup.cshtml" />
+    <Content Include="Views\OSTQueues\OOAGetQueue.cshtml" />
+    <Content Include="Views\OSTQueues\SCCGetQueue.cshtml" />
+    <Content Include="Views\OSTQueues\TRRGetQueue.cshtml" />
+    <Content Include="Views\OSTQueues\_GetOOAQueueCount.cshtml" />
+    <Content Include="Views\OSTQueues\_GetSCCQueueCount.cshtml" />
+    <Content Include="Views\OSTQueues\_GetTRRQueueCount.cshtml" />
+    <Content Include="Views\OSTQueues\_GetOSTPendingWorkItem.cshtml" />
+    <Content Include="Views\RPR\_SCCRPRRequired.cshtml" />
+    <Content Include="Views\RPR\_ResubmitSCCRPCRequest.cshtml" />
+    <Content Include="Views\RPR\_SentSCCRPCResubmission.cshtml" />
+    <Content Include="Views\RPR\RPRProcessWork.cshtml" />
+    <Content Include="Views\Eligibility\EligibilityProcessWork.cshtml" />
+    <Content Include="Views\Eligibility\DOBProcessWork.cshtml" />
+    <Content Include="Views\Eligibility\GenderProcessWork.cshtml" />
+    <Content Include="Views\BulkUpload\BulkUpload.cshtml" />
+    <Content Include="Views\Manager\Unlock.cshtml" />
+    <Content Include="Views\Manager\Reassign.cshtml" />
+    <Content Include="Views\Login\Logout.cshtml" />
+    <Content Include="Views\OSTQueues\_GetOSTWorkItem.cshtml" />
+    <Content Include="Views\EligibilityQueues\EligibilityGetQueue.cshtml" />
+    <Content Include="Views\EligibilityQueues\DOBGetQueue.cshtml" />
+    <Content Include="Views\EligibilityQueues\GenderGetQueue.cshtml" />
+    <Content Include="Views\EligibilityQueues\_GetEligibilityQueueCount.cshtml" />
+    <Content Include="Views\EligibilityQueues\_GetEligibilityPendingWorkItem.cshtml" />
+    <Content Include="Views\EligibilityQueues\_GetEligibilityWorkItem.cshtml" />
+    <Content Include="Views\EligibilityQueues\_GetDOBQueueCount.cshtml" />
+    <Content Include="Views\EligibilityQueues\_GetGenderQueueCount.cshtml" />
+    <Content Include="Views\RPRQueues\RPRGetQueue.cshtml" />
+    <Content Include="Views\RPRQueues\_GetRPRPendingWorkItem.cshtml" />
+    <Content Include="Views\RPRQueues\_GetRPRQueueCount.cshtml" />
+    <Content Include="Views\RPRQueues\_GetRPRWorkItem.cshtml" />
+    <Content Include="Views\Shared\_SearchFilterPanel.cshtml" />
+    <Content Include="Views\Shared\_SearchResultsPanel.cshtml" />
+    <Content Include="Views\Shared\_PWComments.cshtml" />
+    <Content Include="Views\Shared\_RefferencedCases.cshtml" />
+    <Content Include="Views\Home\_QueueSummary.cshtml" />
+    <Content Include="Views\BulkUpload\_SearchResult.cshtml" />
+    <Content Include="Views\BulkUpload\_Upload.cshtml" />
+    <Content Include="Views\Shared\View.cshtml" />
+    <Content Include="Views\Shared\_WorkFlowLog.cshtml" />
+    <Content Include="Views\Home\_GetPendingWorkItem.cshtml" />
+    <Content Include="Views\OST\_MARxAddressCompleted.cshtml" />
+    <Content Include="Views\OST\_AddressScrubCompleted.cshtml" />
+    <Content Include="Views\Manager\_UnlockSearchResults.cshtml" />
+    <Content Include="Views\Manager\_ReAssignSearchResults.cshtml" />
+    <Content Include="Views\Shared\_Attachment.cshtml" />
+    <Content Include="Views\Shared\_UploadAttachment.cshtml" />
+    <Content Include="Views\Shared\_TRRDetails.cshtml" />
+    <Content Include="Views\Manager\MassUpdate.cshtml" />
+    <Content Include="Views\Manager\_MassUpdateSearchResultsPanel.cshtml" />
+    <Content Include="Views\Manager\_BulkAssignUsers.cshtml" />
+    <Content Include="Views\MIIMConnector\GetCaseDetails.cshtml" />
+    <Content Include="Views\Manager\_MassUpdateActions.cshtml" />
+    <Content Include="Views\Reports\Reports.cshtml" />
+    <Content Include="Views\OST\_CloseAndMailingAddressNotVerified.cshtml" />
+    <Content Include="Views\Home\_MostRecentCases.cshtml" />
+    <Content Include="Views\Eligibility\_EditAndInitiateWorkflow.cshtml" />
+    <Content Include="Views\OST\_EditAndInitiateWorkflow.cshtml" />
+    <Content Include="Views\RPR\_EditAndInitiateWorkflow.cshtml" />
+    <Content Include="Views\Help\About.cshtml" />
+    <Content Include="Views\Shared\_DiscrepancyData.cshtml" />
+    <Content Include="Views\Shared\_TRRData.cshtml" />
+    <Content Include="Views\Shared\_GPSHouseHoldIDPopUp.cshtml" />
+    <Content Include="Views\Alerts\_ReadAlert.cshtml" />
+    <Content Include="Views\Eligibility\_CloseCaseAndCreateRPR.cshtml" />
+    <Content Include="Views\RPR\_SendToCategory3.cshtml" />
+    <Content Include="Views\RPR\_SendToCategory2.cshtml" />
+    <Content Include="Views\OST\_NoOOALetter.cshtml" />
+    <Content Include="Views\OST\_KeepInTrackingNOT.cshtml" />
+    <Content Include="Views\OST\_KeepInTrackingFTT.cshtml" />
+    <Content Include="Views\RPR\_UpdateSubmissionType.cshtml" />
+    <Content Include="Views\OST\_ReOpenAddComments.cshtml" />
+    <Content Include="Views\RPR\_ReturnToRequestQueue.cshtml" />
+    <Content Include="Views\OST\_UpdatePDPAutoEnrolleeIndicator.cshtml" />
+    <Content Include="Views\OST\_UpdateOSTCaseInfo.cshtml" />
+    <Content Include="Views\Eligibility\_UpdateEligbilityCaseInfo.cshtml" />
+    <Content Include="Views\RPR\_UpadateRPRCaseInfo.cshtml" />
+    <Content Include="Views\OST\_PendingNOT.cshtml" />
+    <Content Include="Views\OST\_PendingFTT.cshtml" />
+    <Content Include="Views\OST\_OpenNOT.cshtml" />
+    <Content Include="Views\OST\_OpenDisenroll.cshtml" />
+    <Content Include="Views\OST\_RouteToNewSCCCase.cshtml" />
+    <Content Include="Views\OST\_ReviewandReturntoQueue.cshtml" />
+    <Content Include="Views\OST\_PotentialSCCRPRDay1.cshtml" />
+    <Content Include="Views\OST\_NeedsEGHPReview.cshtml" />
+    <Content Include="Views\OST\_SendSCCDeletiontoCMS.cshtml" />
+    <Content Include="Views\ERSAdmin\Index.cshtml" />
+    <Content Include="Views\OST\_UpdateComplianceStartDate.cshtml" />
+    <Content Include="Views\MassUpdateTemplate\Index.cshtml" />
+    <Content Include="Views\MassUpdateTemplate\_UploadMassUpdateTemplate.cshtml" />
+    <Content Include="Views\OST\_CancelPendCase.cshtml" />
+    <Content Include="Views\OST\_IncarceratedRPRRequested.cshtml" />
+    <Content Include="Views\RPR\_CancelPendCase.cshtml" />
+    <Content Include="Views\MassUpdateTemplate\_MassUpdateTemplateResult.cshtml" />
+    <Content Include="Views\Eligibility\_CancelPendCase.cshtml" />
+    <Content Include="Views\OST\_SendOOALetterandResDocCtyAttestRequired.cshtml" />
+    <Content Include="Views\RPR\_NeedTransactionInquiry.cshtml" />
+    <Content Include="Views\RPR\_Resubmission.cshtml" />
+    <Content Include="Views\RPR\_TrueRejection.cshtml" />
+    <Content Include="Views\RPR\_SubmitTransactionInquiry.cshtml" />
+    <Content Include="Views\RPR\_RejectionOverturned.cshtml" />
+    <Content Include="Views\RPR\_RejectionNotOverturned.cshtml" />
+    <Content Include="Views\RPR\_FDRRPRReceived.cshtml" />
+    <Content Include="Views\RPR\_SCCFDRRPRReceived.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+    <Folder Include="Temp\" />
+    <Folder Include="Views\Attachment\" />
+    <Folder Include="Views\Auth\" />
+    <Folder Include="Views\Common\" />
+    <Folder Include="Views\RecordsLocked\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ENRLReconSystem.BL\ENRLReconSystem.BL.csproj">
+      <Project>{53e6f5e5-8e6a-4ce3-9b52-221b00f380eb}</Project>
+      <Name>ENRLReconSystem.BL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ENRLReconSystem.DO\ENRLReconSystem.DO.csproj">
+      <Project>{d947b3c5-7b28-4728-9e66-80ef2c87de58}</Project>
+      <Name>ENRLReconSystem.DO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ENRLReconSystem.Utility\ENRLReconSystem.Utility.csproj">
+      <Project>{96cdee9a-901e-4c73-9397-23896f535918}</Project>
+      <Name>ENRLReconSystem.Utility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\jquery-3.1.1.slim.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\jquery-3.1.1.min.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Connected Services\srvAECMSTransaction\" />
+    <WCFMetadataStorage Include="Connected Services\srvAEEmployerSummary\" />
+    <WCFMetadataStorage Include="Connected Services\srvAEMemberEligibility\" />
+    <WCFMetadataStorage Include="Connected Services\srvAEOutOfAreaOption\" />
+    <WCFMetadataStorage Include="Connected Services\srvAETrrDetails\" />
+    <WCFMetadataStorage Include="Connected Services\srvAEMemberDemographics\" />
+    <WCFMetadataStorage Include="Connected Services\srvAETrrSummary\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>57506</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:57506/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

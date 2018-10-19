@@ -1,0 +1,85 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.6
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ENRLReconSystem", "ENRLReconSystem\ENRLReconSystem.csproj", "{FB6A53EA-1E27-4685-BD5D-CFCC8047A732}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ENRLReconSystem.DAL", "ENRLReconSystem.DAL\ENRLReconSystem.DAL.csproj", "{6F578629-789F-4422-BA64-5D292EFC1475}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ENRLReconSystem.Utility", "ENRLReconSystem.Utility\ENRLReconSystem.Utility.csproj", "{96CDEE9A-901E-4C73-9397-23896F535918}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ENRLReconSystem.BL", "ENRLReconSystem.BL\ENRLReconSystem.BL.csproj", "{53E6F5E5-8E6A-4CE3-9B52-221B00F380EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ENRLReconSystem.DO", "ENRLReconSystem.DO\ENRLReconSystem.DO.csproj", "{D947B3C5-7B28-4728-9E66-80EF2C87DE58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ENRLReconSystem.WebAPI", "ENRLReconSystem.WebAPI\ENRLReconSystem.WebAPI.csproj", "{D44EC05B-77EF-4944-8DC6-30C3B1713567}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ENRLReconSystem.ExtrenalServices", "ENRLReconSystem.ExtrenalServices\ENRLReconSystem.ExtrenalServices.csproj", "{97D05A4A-5AC2-4E8B-B7D1-6BD5777656C2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FB6A53EA-1E27-4685-BD5D-CFCC8047A732}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB6A53EA-1E27-4685-BD5D-CFCC8047A732}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB6A53EA-1E27-4685-BD5D-CFCC8047A732}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB6A53EA-1E27-4685-BD5D-CFCC8047A732}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F578629-789F-4422-BA64-5D292EFC1475}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F578629-789F-4422-BA64-5D292EFC1475}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F578629-789F-4422-BA64-5D292EFC1475}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F578629-789F-4422-BA64-5D292EFC1475}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96CDEE9A-901E-4C73-9397-23896F535918}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96CDEE9A-901E-4C73-9397-23896F535918}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96CDEE9A-901E-4C73-9397-23896F535918}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96CDEE9A-901E-4C73-9397-23896F535918}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53E6F5E5-8E6A-4CE3-9B52-221B00F380EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53E6F5E5-8E6A-4CE3-9B52-221B00F380EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53E6F5E5-8E6A-4CE3-9B52-221B00F380EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53E6F5E5-8E6A-4CE3-9B52-221B00F380EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D947B3C5-7B28-4728-9E66-80EF2C87DE58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D947B3C5-7B28-4728-9E66-80EF2C87DE58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D947B3C5-7B28-4728-9E66-80EF2C87DE58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D947B3C5-7B28-4728-9E66-80EF2C87DE58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D44EC05B-77EF-4944-8DC6-30C3B1713567}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D44EC05B-77EF-4944-8DC6-30C3B1713567}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D44EC05B-77EF-4944-8DC6-30C3B1713567}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D44EC05B-77EF-4944-8DC6-30C3B1713567}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97D05A4A-5AC2-4E8B-B7D1-6BD5777656C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97D05A4A-5AC2-4E8B-B7D1-6BD5777656C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97D05A4A-5AC2-4E8B-B7D1-6BD5777656C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97D05A4A-5AC2-4E8B-B7D1-6BD5777656C2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 8
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://tfs.uhc.com:8080/tfs/uhg
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = ENRLReconSystem.BL\\ENRLReconSystem.BL.csproj
+		SccProjectName1 = ENRLReconSystem.BL
+		SccLocalPath1 = ENRLReconSystem.BL
+		SccProjectUniqueName2 = ENRLReconSystem.DAL\\ENRLReconSystem.DAL.csproj
+		SccProjectName2 = ENRLReconSystem.DAL
+		SccLocalPath2 = ENRLReconSystem.DAL
+		SccProjectUniqueName3 = ENRLReconSystem.DO\\ENRLReconSystem.DO.csproj
+		SccProjectName3 = ENRLReconSystem.DO
+		SccLocalPath3 = ENRLReconSystem.DO
+		SccProjectUniqueName4 = ENRLReconSystem.Utility\\ENRLReconSystem.Utility.csproj
+		SccProjectName4 = ENRLReconSystem.Utility
+		SccLocalPath4 = ENRLReconSystem.Utility
+		SccProjectUniqueName5 = ENRLReconSystem\\ENRLReconSystem.csproj
+		SccProjectName5 = ENRLReconSystem
+		SccLocalPath5 = ENRLReconSystem
+		SccProjectUniqueName6 = ENRLReconSystem.WebAPI\\ENRLReconSystem.WebAPI.csproj
+		SccProjectName6 = ENRLReconSystem.WebAPI
+		SccLocalPath6 = ENRLReconSystem.WebAPI
+		SccProjectUniqueName7 = ENRLReconSystem.ExtrenalServices\\ENRLReconSystem.ExtrenalServices.csproj
+		SccProjectName7 = ENRLReconSystem.ExtrenalServices
+		SccLocalPath7 = ENRLReconSystem.ExtrenalServices
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,37 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.Utility
+@using ENRLReconSystem.DO
+@model DOGEN_RPRActions
+
+
+<div class="clearfix">
+    @Html.HiddenFor(m => m.AdjustedCreateDate)
+    <div class="form-group date-group col-md-3">
+        @Html.LabelFor(m => m.AdjustedCreateDate, "Adjusted Create Date")
+        @Html.DateTimeFor(m => m.AdjustedCreateDate, false, new CustomValidation().AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group col-md-3">
+        <label for="inputEmail">Adjusted Create Date Reason<span id="spanAdjCreate" style="color:red;">*</span></label>
+        @Html.DropDownListFor(m => m.AdjustedCreateDateReasonLkup, new SelectList(Model.lstAdjustedCreateDateReason, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("disabled", "disabled").CustomAttributes("id", "ddlAdjustedCreateDateReasonLkup").Required("Please select Adjusted Create Date Reason").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group col-md-3" id="divOtherAdjustedCreateDateReason" hidden="hidden">
+        @Html.LabelFor(m => m.OtherAdjustedCreateDateReason, "Other Adjusted Create Date Reason", new { @class = "required" })
+        @Html.TextBoxFor(m => m.OtherAdjustedCreateDateReason, new CustomValidation().Required("Other Adjusted Create Date Reason is required").CustomAttributes("id", "txtOtherAdjustedCreateDateReason").CustomAttributes("disabled", "disabled").RegularExpression(RegexType.AlphabetsWithNumericSpacesAndAmpersand, "Other Adjusted Create Date Reason").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group textarea col-md-12">
+        @Html.LabelFor(m => m.Comments, "Comments", new { @class = "required" })
+        @Html.TextAreaFor(m => m.Comments, new CustomValidation().Required("Comments are Required").AddCssClass("form-control").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+    </div>
+</div>
+<script>
+    //validate and create date time picker fields
+    if ('@Model.AdjustedCreateDate' != null && '@Model.AdjustedCreateDate' != '') {
+       // fnSetDateToField('@Model.AdjustedCreateDate', 'AdjustedCreateDate');
+        $('#AdjustedCreateDate_DPart').val(getDateTimeInMMDDYYYY('@Model.AdjustedCreateDate'));
+    }
+</script>
+
+
+
+
+

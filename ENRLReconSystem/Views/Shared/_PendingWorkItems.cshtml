@@ -1,0 +1,54 @@
+﻿@model IEnumerable<ENRLReconSystem.DO.DOGEN_Queue_Extended>
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/Images/list-icon.png" /><h4>Pending Work Item - OOA</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <div class="table-responsive">
+                @{
+                    if (Model != null && Model.Count() > 0)
+                    {
+                        var gridPendingWorkItem = new WebGrid(Model, rowsPerPage: 5, canPage: true);
+                        gridPendingWorkItem.GetHtml(tableStyle: "UltragridStyle",
+                                                    headerStyle: "table table-bordered",
+                                                    htmlAttributes: new { id = "SearchResults" },
+                                                    alternatingRowStyle: "UltragridAlternateRowStyle",
+                                                    rowStyle: "UltragridRowStyle",
+                                                    footerStyle: "UltragridPagerStyle",
+                                                    mode: WebGridPagerModes.All,
+                                                    firstText: "<<First",
+                                                    lastText: "Last>>",
+                                                    numericLinksCount: 5,
+                                                    columns: gridPendingWorkItem.Columns(
+                                                    gridPendingWorkItem.Column("Actions", style: "button", format:
+                                                    @<text>
+                                                        <span>
+                                                            style = "background: url('" + Url.Content("~/Images/edit-img.png") + "') no-repeat center right; display:block; height:22px;width:30px;",
+                                                            style = "background: url('" + Url.Content("~/Images/view-img.png") + "') no-repeat center right; display:block; height:22px;width:30px;"
+                                                        </span>
+                                                    </text>),
+                                                    gridPendingWorkItem.Column("GPSCurrentHICN", "Current HICN", canSort: true),
+                                                    gridPendingWorkItem.Column("GPSContractIDLkup", "Contract No.", canSort: true),
+                                                    gridPendingWorkItem.Column("GPSPBPLkup", "PBP", canSort: true),
+                                                    gridPendingWorkItem.Column("GPSMemberFirstName", "First Name", canSort: true),
+                                                    gridPendingWorkItem.Column("GPSMemberLastName", "Last Name", canSort: true),
+                                                    gridPendingWorkItem.Column("GPSUrgency", "Urgency", canSort: true),
+                                                    gridPendingWorkItem.Column("GEN_QueueId", "Work ItemID", canSort: true),
+                                                    gridPendingWorkItem.Column("DiscrepancyCategoryLkup", "Discrepancy Category", canSort: true),
+                                                    gridPendingWorkItem.Column("DiscrepancyTypeLkup", "Discrepancy Type", canSort: true),
+                                                    gridPendingWorkItem.Column("CaseAge", "Case Age", canSort: true),
+                                                    gridPendingWorkItem.Column("DiscrepancyStartDate", "Discrepancy Start Date", canSort: true),
+                                                    gridPendingWorkItem.Column("Reason", "Reason", canSort: true),
+                                                    gridPendingWorkItem.Column("PendReasonLkup", "PENd Reason", canSort: true),
+                                                    gridPendingWorkItem.Column("UserEscalationReason", "User Escalation Reason", canSort: true)));
+                    }
+                    else
+                    {
+                        @Html.Label("No Records Found", new { Id = "lbldataNotFound", @class = "emptyGrid" })
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</section>

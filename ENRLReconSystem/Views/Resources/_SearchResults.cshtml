@@ -1,0 +1,51 @@
+﻿@*partial page for table to show search results for Resources*@
+@model IEnumerable<ENRLReconSystem.DO.DOADM_ResourceDetails>
+<div class="table-responsive">
+    <table class="table table-bordered" id="tblSearchResult">
+        <thead>
+            <tr>
+                <th>Actions</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Is Active</th>
+                <th>Effective Date</th>
+                <th>Inactivation Date</th>
+                <th>Created On</th>   
+                <th>Created by</th>
+                <th>Last Updated On</th>
+                <th>Last Updated by</th>
+                <th>LockedBy</th>
+                <th>LockedOn</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Count() > 0)
+            {
+                foreach (var item in Model)
+                {
+                    //check locked by ref and set different class for locked records
+                    string lockedClass = item.LockedByRef != null ? "alert-danger" : "";
+                    <tr class="@lockedClass">
+                        <td>
+                            @*call fnLockAndEdit() on search page on click event to lock record before navigating to edit screen*@
+                            <a onclick="fnLockAndEdit(@item.ADM_ResourceDetailsId, '@item.IsActive.ToString()');" title="Edit Resource"><img src='@Url.Content("/images/edit-img.png")'></a>
+                            @*Alert history report URL is to be added*@
+                            <a onclick="fnAccessReport(@item.ADM_ResourceDetailsId);" title="Resource History"><img alt="Edit" src="~/images/history-img.png"></a>
+                        </td>
+                        <td>@item.ResourceName</td>
+                        <td>@item.ResourceDescription</td>
+                        <td>@(item.IsActive ? "Yes" : "No")</td>
+                        <td>@if (item.ResourceEffectiveDate.HasValue){@item.ResourceEffectiveDate.Value.ToString("MM/dd/yyyy hh:mm tt")}</td>
+                        <td>@if (item.ResourceInactivationDate.HasValue){@item.ResourceInactivationDate.Value.ToString("MM/dd/yyyy hh:mm tt")}</td>
+                        <td>@item.UTCCreatedOn.ToString("MM/dd/yyyy hh:mm tt")</td>
+                        <td>@item.CreatedByName</td>
+                        <td>@item.UTCLastUpdatedOn.ToString("MM/dd/yyyy hh:mm tt")</td>
+                        <td>@item.LastUpdatedByName</td>
+                        <td>@item.LockedByName</td>
+                        <td>@item.UTCLockedOn</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

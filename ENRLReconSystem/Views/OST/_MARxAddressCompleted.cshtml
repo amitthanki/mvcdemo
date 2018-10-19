@@ -1,0 +1,40 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@model DOGEN_OSTActions
+@if (ViewBag.FirstSecLetter != "FirstSecLetter")
+{
+<div class="clearfix">
+
+    <div class="form-group col-md-3">
+        <label>MARx Address Resolution </label>
+        @Html.DropDownListFor(m => m.MARxAddressCompletedLkup, new SelectList(Model.lstMarxAddresCompleted, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "ddlMARxAddressCompletedLkup").AddCssClass("form-control").validationAttributes)
+    </div>
+
+    <div class="form-group col-md-3">
+        <label>PDP Auto Enrollee Indicator</label>
+        @Html.DropDownListFor(m => m.PDPAutoEnrolleeInd, new SelectList(Model.lstPDPAutoEnrolleeInd, "LookupValue1", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "ddlPDPAutoEnrolleeIndMarx").validationAttributes)
+    </div>
+    <div class="form-group textarea col-md-12">
+        <label for="txtComments" class="required">Comments</label>
+        @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").Required("Please enter Comments.").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+    </div>
+</div>
+}
+else
+{
+    <script type="text/javascript">
+        MainLayout.fnAlertMessege("Error!", "First Letter and Second Letter Mail Date is Required.");
+        $("#ddlActions").val('');
+    </script>
+}
+
+<script type="text/javascript">
+    $(function () {
+        $("#ddlPDPAutoEnrolleeIndMarx").attr("disabled", "disabled");      
+        if ($("#txtMemberLob").val() == "PDP")
+        {
+            $("#ddlPDPAutoEnrolleeIndMarx").removeAttr("disabled");
+        }
+    })
+</script>

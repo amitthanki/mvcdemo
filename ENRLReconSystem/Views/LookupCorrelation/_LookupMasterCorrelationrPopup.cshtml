@@ -1,0 +1,74 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.DO
+@using ENRLReconSystem.Helpers
+@model DOCMN_LookupMasterCorrelationsExtended
+
+    @using (Html.BeginForm("SaveCorrelationMaster", "LookupCorrelation", FormMethod.Post, new { @id = "frmAddCorrelationMaster" }))
+    {
+        @Html.HiddenFor(xx => xx.objDOCMN_LookupTypeCorrelations.CMN_LookupTypeCorrelationsId)
+        @Html.HiddenFor(xx => xx.objDOCMN_LookupMasterCorrelations.CMN_LookupMasterCorrelationsId,new { @id= "hdnLookupMasterCorrelationsId" })
+        @Html.HiddenFor(xx => xx.objDOCMN_LookupMasterCorrelations.CMN_LookupTypeCorrelationsRef)
+
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/images/list-icon.png" /><h4>Add/Edit correlation value</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <div class="clearfix">
+                <div style="color:red;">
+                    @Html.ValidationSummary(false)
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="txtLkupDescriptionPopup" class="required">Correlation Group</label>
+                    @Html.TextBoxFor(xx => xx.objDOCMN_LookupMasterCorrelations.CorrelationDescription, new CustomValidation().Required("Correlation Group is required.").AddCssClass("form-control").CustomAttributes("id", "txtLkupDescriptionPopup").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAmpersandAndSpaces, "Description").StringMaxLength(200, "Description").CustomAttributes("maxlength", "200").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="ddlChildLookupMaster" class="required">Parent Lookup Master</label>
+                    @Html.DropDownListFor(xx => xx.objDOCMN_LookupMasterCorrelations.CMN_LookupMasterParentRef, new SelectList(Model.lstDOCMN_LookupMasterParent, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Parent Lookup Master is required.").AddCssClass("form-control").CustomAttributes("id", "ddlParentLookupMaster").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="ddlChildLookupMaster" class="required">Child Lookup Master</label>
+                    @Html.DropDownListFor(xx => xx.objDOCMN_LookupMasterCorrelations.CMN_LookupMasterChildRef, new SelectList(Model.lstDOCMN_LookupMasterChild, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Child Lookup Master is required.").AddCssClass("form-control").CustomAttributes("id", "ddlChildLookupMaster").validationAttributes)
+                </div>
+                @if (Model.objDOCMN_LookupMasterCorrelations.CMN_LookupMasterCorrelationsId > 0)
+                {
+                <div class="form-group col-md-3">
+                    <label>Is Active</label>
+                    @Html.CheckBoxFor(xx => xx.objDOCMN_LookupMasterCorrelations.IsActive, new { @id = "isActivePopup", @checked = "checked", @class = "form-control" })
+                </div>
+                }
+            </div>
+            <div class="btn-group clearfix">
+                <button type="button" id="btnCancelCorrelationMaster" class="btn btn-primary" data-dismiss="modal"><img src="~/images/cancle-icon.png" /><span>Cancel</span></button>
+                <button type="button" id="btnCorrelationReset" class="btn btn-primary"><img src="~/images/reset-icon.png" /><span>Reset</span></button>
+                <button type="submit" id="btnSaveCorrelationMaster" class="btn btn-primary"><img src="~/images/save-icon.png" /><span>Save</span></button>
+            </div>
+
+        </div>
+    </div>
+
+}
+@Scripts.Render("~/bundles/jqueryval")
+
+<script type="text/javascript">
+    fnClearLookupMasterCorrelationPopup = function () {
+        try {
+            MainLayout.fnResetValidationSummary();
+            $("#frmAddCorrelationMaster").deserialize(orgFrmCorelationMaster);
+        } catch (e) {
+
+        }
+
+
+    }
+</script>
+
+
+
+
+
+
+
+
+

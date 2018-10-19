@@ -1,0 +1,39 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.Utility
+@using ENRLReconSystem.DO
+@model UIMassUpdateExtended
+
+@using (Html.BeginForm("", "", FormMethod.Post, new { @id = "frmSaveMassUpdateActions" }))
+{
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <div class="wdgt-wrapper">
+        
+            
+
+            @Html.Hidden("Gen_QueueIds","",new { @name= "Gen_QueueIds" })
+            @Html.HiddenFor(m => m.QueueLkup, new { @id = "hdnQueueLkup" })
+            @Html.HiddenFor(m => m.DiscrepancyCategoryLkup, new { @id = "hdnddlDiscrepancycategary" })
+                <div class="wdgt-hdr clearfix">
+                    <h4><img src="~/images/action-icon.png"><span>Action</span></h4>
+                </div>
+                <div class="wdgt-body clearfix">
+                    @Html.ValidationSummary(false)
+                    <div class="clearfix">
+                        <div class="form-group col-md-3">
+                            <label class="required">Action</label>
+                            @Html.DropDownListFor(xx => xx.ActionLkup, new SelectList(Model.lstActions, "CMN_LookupMasterChildRef", "LookupMasterChildValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "ddlActions").CustomAttributes("onMouseWheel", "return false;").Required("Please select Action.").AddCssClass("form-control").validationAttributes)
+
+                        </div>
+                    </div>
+                    <div class="sub-inner-wrapper clearfix" id="divMassUpdateActions">
+
+                    </div>
+                    <div class="btn-group clearfix">
+                        <button type="button" id="btnUpdateActions" class="btn btn-primary divActionVisibility" title="Save"><img src="~/images/save-icon.png"><span>Save</span></button>
+                        <button type="button" id="btnActionReset" class="btn btn-primary divActionVisibility" title="Reset"><img src="~/images/reset-icon.png"><span>Reset</span></button>
+                        <button type="button" id="btnActionCancel" class="btn btn-primary" title="Cancel"  data-dismiss="modal"><img src="~/images/cancle-icon.png"><span>Cancel</span></button>
+                    </div>
+                </div>
+       
+        </div>
+}

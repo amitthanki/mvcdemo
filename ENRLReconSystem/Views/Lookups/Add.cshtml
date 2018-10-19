@@ -1,0 +1,428 @@
+﻿@using ENRLReconSystem.DO
+@using ENRLReconSystem.Helpers
+@model DOCMN_LookupType
+
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int flag = Convert.ToInt32(TempData["PageVisibility"]);
+    TempData.Keep("PageVisibility");
+}
+
+<section class="container main-body-wrpr">
+    @using (Html.BeginForm("SaveLookupType", "Lookups", FormMethod.Post, new { @id = "frmAddLookupType" }))
+    {
+        <div class="wdgt-wrapper">
+
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(xx => xx.CMN_LookupTypeId, new { @id = "hdnLookupTypeID" })
+            <div class="wdgt-hdr">
+                <img src="~/images/search-icon.png" /><h4>Lookup Type</h4>
+            </div>
+            <div class="wdgt-body clearfix">
+                <div style="color:red;">
+                    @Html.ValidationSummary()
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="txtDescription" class="required">Description</label>
+                    @Html.TextBoxFor(xx => xx.LookupTypeDescription, new CustomValidation().Required("Description is required.").AddCssClass("form-control").CustomAttributes("id", "txtLookupDesc").CustomAttributes((flag == 0) ? "readonly" : "", (flag == 0) ? "true" : "").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAmpersandAndSpaces, "Description").CustomAttributes("maxlength","75").StringMaxLength(75, "Description").validationAttributes)
+                </div>
+                @if (Model.CMN_LookupTypeId > 0)
+                {
+                <div class="form-group col-md-3" style="padding-left:15px;">
+                    <label>Is Active</label>
+                    @Html.CheckBoxFor(xx => xx.IsActive, (flag > 0) ? new { @id = "chkIsActive", @checked = "checked", @class = "form-control" } : new { @id = "chkIsActive", @checked = "checked", @class = "form-control", @disabled = "disabled" } as object)
+                </div>
+                }
+                @if (flag > 0)
+                {
+                    <div class="btn-group clearfix">
+                        <button type="submit" id="btnSave" title="Save" class="btn btn-primary"><img src='@Url.Content("~/images/save-icon.png")' /><span>Save</span></button>
+                        <button type="button" id="btnReset" title="Reset" class="btn btn-primary"><img src='@Url.Content("~/images/reset-icon.png")' /><span>Reset</span></button>
+                        <button type="button" id="btnCancel" title="Cancel" class="btn btn-primary"><img src='@Url.Content("~/images/cancle-icon.png")' /><span>Cancel</span></button>
+                    </div>
+                }
+
+            </div>
+        </div>
+    }
+    @if (Model.CMN_LookupTypeId > 0 && flag == 0)
+    {
+        <div class="wdgt-wrapper">
+            <div class="wdgt-hdr">
+                <img src="~/images/list-icon.png" /><h4>Lookup Master</h4>
+            </div>
+            <div class="wdgt-body clearfix">
+                <div class="table-responsive">
+                    <table id="tblSearchResult" class="table table-bordered" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th style="width:5%;">Actions</th>
+                                <th>Lookup Value</th>
+                                <th>Description</th>
+                                <th style="width:10%;">Sequence No.</th>
+                                <th style="width:5%;">Is Active</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.lstDOCMN_LookupMaster != null)
+                            {
+                                foreach (var item in Model.lstDOCMN_LookupMaster)
+                                {
+                                    <tr>
+                                        <td align="center">
+                                            @if (item.CMN_LookupMasterId > 1000000)
+                                            {
+                                                <a id="@item.CMN_LookupMasterId"  class="lnkEdit" title="Edit Lookup Master"><img src="~/images/edit-img.png" alt="Edit" /></a>
+                                            }
+                                            else
+                                            {
+                                                <a class="inAccessible" title="Edit Lookup Master"><img src="~/images/disable-edit-img.png" alt="Edit" /></a>
+                                            }
+                                        </td>
+                                        <td>@item.LookupValue</td>
+                                        <td>@item.LookupDescription</td>
+                                        <td>@item.DisplayOrder</td>
+                                        <td align="center">@(item.IsActive ? "Yes" : "No")</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="btn-group clearfix">
+
+            <button type="button" id="btnCancelLookupMaster" title="Cancel" class="btn btn-primary"><img src="~/images/cancle-icon.png" /><span>Cancel</span></button>
+            @if (Model.CMN_LookupTypeId > 999)
+            {
+                <button type="button" id="btnAddNew" class="btn btn-primary" title="Add New"><img src="~/images/add-icon.png" /><span>Add New</span></button>
+            }
+        </div>
+    }
+</section>
+
+
+@*PopUp*@
+
+<div id="myModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content" id="divAddLookUpMaster">
+
+        </div>
+    </div>
+</div>
+
+@*PopUp End*@
+
+
+
+@section scripts{
+
+    <script type="text/javascript">
+        //variables//
+
+        var urlSaveLookupType = '@Url.Action("SaveLookupType", "Lookups")',
+            urlGetLookupMaster = '@Url.Action("GetLookupMaster", "Lookups")',
+            urlValidateLookupType = '@Url.Action("ValidateLookupType", "Lookups")',
+            urlValidateLookupMaster = '@Url.Action("ValidateLookupMaster", "Lookups")';
+
+        var $myForm = $("#frmAddLookupType"), orgFrmAddLookupMaster,
+            origForm = $myForm.serialize();
+        //Events//
+
+        $("#btnCancel").on("click", function () {
+            try {
+                fnCancel();
+            } catch (e) {
+
+            }
+        });
+
+        $("#btnCancelLookupMaster").on("click", function () {
+            try {
+                fnCancel();
+            } catch (e) {
+
+            }
+        });
+
+        $("#btnReset").on("click", function () {
+            try {
+                    MainLayout.fnResetValidationSummary();
+                    $myForm.deserialize(origForm);
+            } catch (e) {
+
+            }
+        });
+
+        $(document).on("click", ".lnkEdit", function () {
+            try {
+                
+                fnOpenLookupMasterPopup(this.id, $("#hdnLookupTypeID").val());
+            } catch (e) {
+
+            }
+        });
+
+        $(document).on("click", "#btnLkupMasterReset", function () {
+            try {
+                fnClearLookupMasterPopup();
+            } catch (e) {
+
+            }
+        });
+        //Add Lookup Master Popup//
+        $("#btnAddNew").on("click", function () {
+            try {
+                    fnOpenLookupMasterPopup(0, $("#hdnLookupTypeID").val());
+            } catch (e) {
+
+            }
+        });
+        ///Save Edit Lookup Type////
+        $("#frmAddLookupType").on("submit", function (e) {
+            try {
+                e.preventDefault();
+                var $form = $(this),
+                    urlForm = $form.attr('action'),
+                    frmData = $form.serialize();
+
+                if (fnValidateLookupType($form)) {
+                    $.ajax({
+                        data: frmData,
+                        url: urlForm,
+                        type: "POST",
+                        success: function (data) {
+                            if (data.ID > 0) {
+                                MainLayout.fnAlertMessege("Error!", data.Message);
+                            }
+                            else {
+                                MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                                    fnLookupSearchPageRedirection();
+                                });
+                            }
+                        },
+                        error: function (x) {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                        }
+                    });
+                }
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured.");
+            }
+
+        });
+
+        ///Save Edit Lookup Type///
+        $(document).on("submit", "#frmAddLookupMaster", function (e) {
+            try {
+                try {
+                    e.preventDefault();
+                    var $form = $(this),
+                        urlForm = $form.attr('action'),
+                        frmData = $form.serialize();
+
+                    if (fnValidateLookupMaster($form)) {
+                        $.ajax({
+                            data: frmData,
+                            url: urlForm,
+                            type: "POST",
+                            success: function (data) {
+                                if (data.ID > 0) {
+                                    MainLayout.fnAlertMessege("Error!", data.Message);
+                                }
+                                else {
+                                    MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                                        fnRefreshLookupMasterPage(data.lookupTypeId);
+                                    });
+                                }
+                            },
+                            error: function (x) {
+                                MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                            }
+                        });
+                    }
+                } catch (e) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                }
+
+            } catch (e) {
+
+            }
+        });
+
+        //Methods//
+        fnOpenLookupMasterPopup = function (lookupMasterID,lkupTypeID) {
+            try {
+                $.ajax({
+                    data: { "lookupMasterID": lookupMasterID, "lookupTypeID": lkupTypeID},
+                    url: urlGetLookupMaster,
+                    type: "POST",
+                    success: function (data) {
+                        if (data != "") {
+                            $("#divAddLookUpMaster").empty().html(data);
+                            $("#myModal").modal('show');
+                            orgFrmAddLookupMaster = $("#frmAddLookupMaster").serialize();
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+                    },
+                    error: function (x) {
+                        MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                    }
+                });
+
+            } catch (e) {
+
+            }
+        };
+        fnLookupSearchPageRedirection = function () {
+              window.location.href = '@Url.Action("Search", "Lookups")';
+        };
+        fnRefreshLookupMasterPage = function () {
+            window.location.href = '@Url.Action("Add", "Lookups")?lookupTypeId=' + $("#hdnLookupTypeID").val();
+        };
+
+
+        fnValidateLookupType = function ($form) {
+            try {
+                var errorList = []
+                    , $summary = $form.find("[data-valmsg-summary=true]")
+                    , $ul = $summary.find("ul");
+                if ($form.valid()) {
+                    if (origForm != $form.serialize()) {
+
+                        ////custom validation///
+                        //Serverside validation to check duplicate Lookup description
+                        var resCheckDuplicateLookupType = fnCheckDuplicateLookupType();
+                        if (resCheckDuplicateLookupType != null && resCheckDuplicateLookupType != undefined && resCheckDuplicateLookupType.ID > 0) {
+                            errorList.push(resCheckDuplicateLookupType.Message)
+                        }
+                        if (errorList.length == 0) {
+                            return true;
+                        }
+                        ////////////////////////
+                        $ul.empty();
+                        // Add all errors to the list
+                        $.each(errorList, function (index, message) {
+                            $("<li />").html(message).appendTo($ul);
+                        });
+                        // Add the appropriate class to the summary div
+                        $summary.removeClass("validation-summary-valid")
+                            .addClass("validation-summary-errors");
+                        return false;
+                    }
+                    else {
+                        MainLayout.fnAlertMessege("Alert!", "There is no change in the form to update.");
+                        return false;
+                    }
+                }
+
+                return false; // Block the submit
+            } catch (e) {
+
+
+            }
+        };
+        fnCheckDuplicateLookupType = function () {
+            var ret = { "ID": 1, "Message": "An error occoured." };
+            try {
+                $.ajax({
+                    data: { "lookupTypeId": $("#hdnLookupTypeID").val(), "lookupTypeDesc": $("#txtLookupDesc").val() },
+                    url: urlValidateLookupType,
+                    type: "POST",
+                    async: false,
+                    success: function (data) {
+                        ret = data;
+                    },
+                    error: function (x) {
+                        return ret;
+                    }
+                });
+                return ret;
+            } catch (e) {
+                return ret;
+            }
+        };
+        fnValidateLookupMaster = function ($form) {
+            try {
+                var errorList = []
+                    , $summary = $form.find("[data-valmsg-summary=true]")
+                    , $ul = $summary.find("ul");
+
+                    if ($form.valid()) {
+                     if (orgFrmAddLookupMaster != $form.serialize()) {
+                        ////custom validation///
+                        //Serverside validation to check duplicate Lookup description
+                        var resCheckLookupMaster = fnCheckLookupMaster();
+                        if (resCheckLookupMaster != null && resCheckLookupMaster != undefined && resCheckLookupMaster.ID > 0) {
+                            errorList.push(resCheckLookupMaster.Message)
+                        }
+                        if (errorList.length == 0) {
+                            return true;
+                        }
+                        ////////////////////////
+                        $ul.empty();
+                        // Add all errors to the list
+                        $.each(errorList, function (index, message) {
+                            $("<li />").html(message).appendTo($ul);
+                        });
+                        // Add the appropriate class to the summary div
+                        $summary.removeClass("validation-summary-valid")
+                            .addClass("validation-summary-errors");
+                        return false;
+                   }
+                   else {
+                    MainLayout.fnAlertMessege("Alert!", "There is no change in the form to update.");
+                    return false;
+                   }
+                 }
+                return false; // Block the submit
+            } catch (e) {
+
+
+            }
+        };
+
+        fnCheckLookupMaster = function () {
+            var ret = { "ID": 1, "Message": "An error occoured." };
+            try {
+                $.ajax({
+                    data: { "lookupTypeId": $("#hdnLookupTypeID").val(), "lookupMasterID": $("#hdnLkupMasterID").val(), "lookupMasterValue": $("#txtLkupValuePopup").val(), "priority": $("#txtLkupDisplayOredrpopup").val() },
+                    url: urlValidateLookupMaster,
+                    type: "POST",
+                    async: false,
+                    success: function (data) {
+                        ret = data;
+                    },
+                    error: function (x) {
+                        return ret;
+                    }
+                });
+                return ret;
+            } catch (e) {
+                return ret;
+            }
+        };
+
+
+        ///////////
+        MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+
+
+             ///Unlock Logic///
+        fnCancel = function () {
+            var idToUnlock = @Model.CMN_LookupTypeId;
+            var urlForUnlock = '@Url.Action("UnlockRecord", "RecordsLocked")';
+            var urlToNavigate = '@Url.Action("Search", "Lookups")';
+            fnUnlockRecord(urlForUnlock, idToUnlock, enums.ScreenType.LookupType, urlToNavigate);
+        };
+
+    </script>
+}
+
+

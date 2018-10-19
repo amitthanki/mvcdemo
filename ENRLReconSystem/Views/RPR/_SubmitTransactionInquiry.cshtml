@@ -1,0 +1,22 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@model DOGEN_RPRActions
+
+<div class="clearfix">
+    @Html.HiddenFor(m => m.ActualSubmissionDate)
+    <div class="form-group date-group col-md-3">
+        @Html.LabelFor(m => m.ActualSubmissionDate, "Submission Date", new { @class = "required" })
+        @Html.DateTimeFor(m => m.ActualSubmissionDate, false, new CustomValidation().Required("Submission Date").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group textarea col-md-12">
+        @Html.LabelFor(m => m.Comments, "Comments", new { @class = "required" })
+        @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").Required("Comments are Required.").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+    </div>
+</div>
+<script>
+        //validate and create date time picker fields
+    if ('@Model.ActualSubmissionDate' != null && '@Model.ActualSubmissionDate' != '') {
+        //fnSetDateToField('@Model.ActualSubmissionDate','FDRReceivedDate');
+        $('#ActualSubmissionDate_DPart').val(getDateTimeInMMDDYYYY('@Model.ActualSubmissionDate'));
+    }
+</script>

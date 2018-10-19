@@ -1,0 +1,56 @@
+﻿@using ENRLReconSystem.DO
+@model List<DOMGR_ConfigMaster>
+
+<div class="table-responsive">
+
+    <div class="table-responsive">
+        <table class="table table-bordered" id="tblSearchResult">
+            <thead>
+                <tr>
+                    <th>Actions</th>
+                    <th>Configuration Name</th>
+                    <th>Configuration Value</th>
+                    <th>Effective Date</th>
+                    <th>Inactivation Date</th>
+                    <th>Is Active</th>
+                    <th>Created On</th>
+                    <th>Created by</th>
+                    <th>Last Updated On</th>
+                    <th>Last Updated by</th>
+                    <th>LockedBy</th>
+                    <th>LockedOn</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Count() > 0)
+                {
+                    foreach (var item in Model)
+                    {
+                        string lockedClass = item.LockedByRef != null ? "alert-danger" : "";
+                        <tr class ="@lockedClass">
+                            <td style="min-width: 50px;">
+                                @*<a href="@Url.Action("Add", "Configurations", new { ConfigId = @item.MGR_ConfigMasterId, isActive = @item.IsActive })" title="Edit Configuration"><img alt="Edit" src="~/images/edit-img.png"></a>*@
+                                <a onclick="fnLockAndEdit('@item.MGR_ConfigMasterId','@item.IsActive.ToString()');" title="Edit Configuration"><img alt="Edit" src="~/images/edit-img.png"></a>
+                                @*Config history report URL is to be added*@
+                                <a onclick="fnAccessReport(@item.MGR_ConfigMasterId);" title="View History"><div class='divDataTableActions'></div><img src="~/images/history-img.png" alt="Edit" /></a>
+                            </td>
+                            <td>@item.ConfigName</td>
+                            <td>@item.ConfigValue</td>
+                            <td>@item.StartDate</td>
+                            <td>@item.EndDate</td>
+                            <td>@(item.IsActive ? "Yes" : "No")</td>
+                            <td>@item.UTCCreatedOn.ToString("MM/dd/yyyy hh:mm tt")</td>
+                            <td>@item.CreatedByName</td>
+                            <td>@item.UTCLastUpdatedOn.ToString("MM/dd/yyyy hh:mm tt")</td>
+                            <td>@item.LastUpdatedByName</td>
+                            <td>@item.LockedByName</td>
+                            <td>@item.UTCLockedOn</td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+</div>

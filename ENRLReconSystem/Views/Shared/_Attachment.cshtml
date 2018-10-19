@@ -1,0 +1,62 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@model List<DOGEN_Attachments>
+
+@{
+    long curUserId = 0;
+
+    if (System.Web.HttpContext.Current.Session[ConstantTexts.CurrentUserSessionKey] != null)
+    {
+        var users = System.Web.HttpContext.Current.Session[ConstantTexts.CurrentUserSessionKey] as UIUserLogin;
+        curUserId = users.ADM_UserMasterId.ToLong();
+    }
+}
+
+
+
+
+<div class="table-responsive tab-paneScrollable-PWAttachments clearfix" >
+    <table class="table table-bordered" id="tblPWAttachments" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th style="width:2%;">Actions</th>
+                <th>File Name</th>
+                <th>Created By</th>
+                <th>Created On</th>
+                <th>Updated By</th>
+                <th>Updated On</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                if (item.IsActive)
+                {
+                    <tr>
+                        <td align="center">
+                            <input type="hidden" value="@item.GEN_AttachmentsId" class="deletePWAttachment" />
+                            <input type="hidden" value="@item.GEN_QueueRef" class="deleteGenQueueRef" />
+                            @if (curUserId == item.CreatedByRef)
+                            {
+                                <a class="deletePWAttachmentIco" title="delete">
+                                    <img alt="delete" src="~/images/cancle-icon.png">
+                                </a>
+                            }
+                            else
+                            {
+                                <img alt="delete" src="~/images/disable-cancle-icon.png" />
+
+                            }
+                        </td>
+                        <td><a class="downloadAttachment" target="_blank" href="@Url.Action("DownloadPWAttchments","Attachment",new { @AttachmentId=item.GEN_AttachmentsId })">@item.FileName</a></td>
+                        <td>@item.CreatedBy</td>
+                        <td>@item.UTCCreatedOn.ToDateTime().ToString("MM/dd/yyyy hh:mm tt")</td>
+                        <td>@item.LastUpdatedBy</td>
+                        <td>@item.UTCLastUpdatedOn.ToDateTime().ToString("MM/dd/yyyy hh:mm tt")</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

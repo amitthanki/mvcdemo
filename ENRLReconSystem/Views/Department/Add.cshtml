@@ -1,0 +1,294 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@model ENRLReconSystem.DO.DOCMN_Department
+@{
+    ViewBag.Title = Model.CMN_DepartmentId == 0 ? "Add Department" : "Edit Department";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="container main-body-wrpr">
+    @using (Html.BeginForm("Add", "Department", FormMethod.Post ,new { @id = "frmAddDep" }))
+    {
+       @Html.HiddenFor(m => m.EffectiveDate)
+       @Html.HiddenFor(m => m.InactivationDate)
+        <div class="wdgt-wrapper">
+            <div class="wdgt-hdr">
+                <img src="~/Images/list-icon.png" /><h4>@ViewBag.Title</h4>
+            </div>
+            <div class="wdgt-body clearfix">
+                <div style="color:red">
+                    @Html.ValidationSummary()
+                    <div class="validation-summary-errors" data-valmsg-summary="true" id="dvErrorMsg" hidden="hidden">
+                        <li id="dateError"></li>
+                    </div>
+                </div>               
+                @Html.HiddenFor(m => m.CMN_DepartmentId, new { @id = "hdnDepartmentId" })
+                <form>
+                    <div class="form-group col-md-3">                       
+                        <label for="inputEmail">ERS Department Name</label>
+                        @Html.TextBoxFor(m => m.ERSDepartmentName, new { @id = "txtDepName", @class = "form-control", @readonly = true })
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="required" for="inputEmail">Business Segment</label>
+                        @Html.DropDownListFor(m => m.BusinessSegmentLkup, new SelectList(Model.lstBusinessSegment, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please Select Business Segment").AddCssClass("form-control").CustomAttributes("id", "ddlBusinessSeg").validationAttributes)
+                    </div>
+
+                    <div class="form-group col-md-3">
+                        <label class="required" for="inputEmail">Department</label>
+                        @Html.DropDownListFor(m => m.DepartmentLkup, new SelectList(Model.lstCMN_Department, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please Select Department").AddCssClass("form-control").CustomAttributes("id", "ddlDepartment").validationAttributes)                      
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>Is Active</label>
+                        @*@Html.CheckBoxFor(m => m.IsActive, new { @id = "chkIsActive", @class = "form-control" })*@
+                        @Html.CheckBoxFor(m => m.IsActive, (Model.CMN_DepartmentId > 0) ? new { @class = "form-control" } : new { @checked = "checked", @class = "form-control" } as object)
+                    </div>
+                    <div class="form-group date-group col-md-3">
+                        <label class="required" for="inputEmail">Effective Date</label>                       
+                        @Html.DateTimeFor(m => m.EffectiveDate, true, new CustomValidation().Required("Effective Date is Required").validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.Label("Time Zone")
+                        @Html.DropDownListFor(m=>m.DepartmentEffectiveDateTimeZone, new SelectList(Model.lstTimeZone, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "EffectiveDate_ZPart").Required("Time Zone for Effective Date is Required.").AddCssClass("form-control").validationAttributes)
+                    </div>
+                    <div class="form-group date-group col-md-3">
+                        <label for="inputEmail">Inactivation Date</label>                    
+                        @Html.DateTimeFor(m => m.InactivationDate, true,new CustomValidation().validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.Label("Time Zone")
+                       @Html.DropDownListFor(m => m.DepartmentInactivationDateTimeZone, new SelectList(Model.lstTimeZone, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "InactivationDate_ZPart").AddCssClass("form-control").validationAttributes) 
+                    </div>                   
+                    <div class="btn-group clearfix">
+                        <button type="button" id="btnSave" name="Save" value="Save" class="btn btn-primary" title="Save"><img src="~/Images/save-icon.png" /><span>Save</span></button>
+                        <button type="button" id="btnReset" class="btn btn-primary"><img src="~/Images/reset-icon.png" title="Reset" /><span>Reset</span></button>
+                        <button type="button" id="btnCancel" onclick="fnCancel($('#hdnDepartmentId').val());"  class="btn btn-primary" title="Cancel"><img src="~/Images/cancle-icon.png" /><span>Cancel</span></button>
+                  </div>
+                </form>
+            </div>
+        </div>
+    }
+</section>
+@section scripts{
+    <script>
+        var urlGetDepartment = '@Url.Action("CheckDuplicateDep", "Department")';
+        var BusinessSegment;
+        var DepName;
+        var DepId = @Model.CMN_DepartmentId;
+
+
+
+         ///Unlock Logic///
+        fnCancel = function (idToUnlock) {
+            var idToUnlock = @Model.CMN_DepartmentId;
+            var urlForUnlock = '@Url.Action("UnlockRecord", "RecordsLocked")';
+            var urlToNavigate = '@Url.Action("Search", "Department")';
+            fnUnlockRecord(urlForUnlock, idToUnlock, enums.ScreenType.Department, urlToNavigate);
+        }
+
+        getUtcDateIntoHdnFields = function () {
+            var date = getFieldUTCTime('EffectiveDate');
+            if (date != null && date != '') {
+                $('#EffectiveDate').val(getDateTimeInMMDDYYYYHHMM(date, true));
+            }
+            date = getFieldUTCTime('InactivationDate');
+            if (date != null && date != '') {
+                $('#InactivationDate').val(getDateTimeInMMDDYYYYHHMM(date, true));
+            }
+        };
+
+         if ('@Model.EffectiveDate' != null && '@Model.EffectiveDate' != '') {
+            var utcDate = new Date('@Model.EffectiveDate');
+            var result = getLocalTime(utcDate, UserPreferrenceTimeZone);
+            $('#EffectiveDate_DPart').val(getDateTimeInMMDDYYYY(result.time));
+            $('#EffectiveDate_TPart').val(getDateTimeInHHMM(result.time));
+            $('#EffectiveDate_ZPart').val(result.timeZoneLkup);
+        }
+
+         if ('@Model.InactivationDate' != null && '@Model.InactivationDate' != '') {
+            var utcDate = new Date('@Model.InactivationDate');
+            var result = getLocalTime(utcDate, UserPreferrenceTimeZone);
+            $('#InactivationDate_DPart').val(getDateTimeInMMDDYYYY(result.time));
+            $('#InactivationDate_TPart').val(getDateTimeInHHMM(result.time));
+            $('#InactivationDate_ZPart').val(result.timeZoneLkup);
+        }
+
+        getUtcDateIntoHdnFields();
+        var $myForm = $("#frmAddDep");
+        var origForm = $myForm.serialize();
+
+        $('#btnReset').click(function () {
+            MainLayout.fnResetValidationSummary();
+            $("#frmAddDep").deserialize(origForm);  
+            $('#StartDate_CurrentDate').trigger('click');
+            $('#dateError').html('<li id="dateError"></li>');  
+        });
+
+        // Business Segment Change Event
+        $('#ddlBusinessSeg').change(function () {
+            var BusinessSegmentValue = $('#ddlBusinessSeg').val();
+            $('#ddlDepartment').val("");
+            if (BusinessSegmentValue != "")
+            {
+                BusinessSegment = $('#ddlBusinessSeg :selected').text();
+                $('#txtDepName').val(BusinessSegment);
+            }
+            else
+            {
+                $('#txtDepName').val('');
+                $('#ddlDepartment').val("");
+                BusinessSegment = "";
+            }
+        });
+
+        // Department Change Event
+        $('#ddlDepartment').change(function () {            
+            var DepId = @Model.CMN_DepartmentId;
+            var DepValue = $('#ddlDepartment').val();
+            var BusinessValue = $('#ddlBusinessSeg').val();
+            fnCheckDuplicate(BusinessValue, DepValue);
+            if (DepValue != "" && BusinessSegment != undefined && BusinessSegment!="")
+            {
+                DepName = $('#ddlDepartment :selected').text();
+                $('#txtDepName').val(BusinessSegment + " - " + DepName);
+            }
+            else
+            {
+                    // for Add
+                if (DepId == 0) {
+                    if (DepValue == "")
+                    {
+                        $('#ddlBusinessSeg').val("");
+                        $('#txtDepName').val('');
+                        return;
+                    }
+                    MainLayout.fnAlertMessege("Error!", "Please Select Business Segment");
+                    $('#ddlDepartment').val("");
+                    $('#ddlBusinessSeg').val("");
+                    $('#txtDepName').val('');
+                    BusinessSegment = "";
+                    DepName = "";
+                    return;
+                    }
+                else
+                    {
+                        // for Edit
+                    if (DepValue != "")
+                    {
+                        BusinessSegment = $('#ddlBusinessSeg :selected').text();
+                        DepName = $('#ddlDepartment :selected').text();
+                        $('#txtDepName').val(BusinessSegment + " - " + DepName);
+                    }
+
+                    }
+            }
+
+        });
+                
+        //Methods//
+        fnCheckDuplicate = function (BusinessSegment, DepID) {           
+            try {
+                if (BusinessSegment != "") {
+                    $.ajax({
+                        data: { "BusinessSegment": BusinessSegment, "DepName": DepID },
+                        url: urlGetDepartment,
+                        type: "POST",
+                        success: function (response) {
+                            if (response.Data != "") {
+                                MainLayout.fnAlertMessege("Error!", response.Data);
+                                $('#ddlDepartment').val("");
+                                return;
+                            }
+                        },
+                        failure: function (response) {
+                            //alert(response.responseText);
+                        },
+                        error: function (x) {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+                    });
+                }
+
+            } catch (e) {
+
+            }
+        };
+
+        // Save Button Click Event
+          //$('#frmAddDep').on("submit", function (e) {
+        $('#btnSave').on("click", function (e) {
+           var submitUrl = '@Url.Action("Add", "Department")';
+            getUtcDateIntoHdnFields();
+            e.preventDefault();
+            var $form = $('#frmAddDep'),
+                      urlForm = $form.attr('action'),
+                      frmData = $form.serialize();
+            var form = $('#frmAddDep').valid();
+            var datesValid = isDatesValid();
+            if (form)
+                $('.validation-summary-errors ul').empty();
+            if (!(form && datesValid)) return false; 
+            if (origForm != frmData) {                   
+                $.ajax({
+                    type: "POST",
+                    url: submitUrl,
+                    data: frmData,
+                    success: function (data) {
+                        MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                            window.location.href = '@Url.Action("Search", "Department")';
+                        });
+                    },
+                    error: function (data) {
+                        MainLayout.fnAlertMessege("Error!", data.Message);
+                        return;
+                    }
+                });
+            }
+          else
+                MainLayout.fnAlertMessege("Alert","No Changes done!");
+        });      
+
+        // Effective And Inactivation Date Validations.
+        function isDatesValid()
+        {
+            var inactivationDate = new Date($('#InactivationDate_DPart').val());
+            var effectiveDate = new Date($('#EffectiveDate_DPart').val());
+            var inactivationDateTpart = ($('#InactivationDate_TPart').val());
+
+            var today = new Date();
+            var errorList = "";
+            var isValid = true;
+            today.setHours(0, 0, 0, 0)
+
+            if ($('#InactivationDate_DPart').val() != "") {
+                if ($('#InactivationDate_ZPart').val() == "") {
+                    $('#InactivationDate_ZPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Time Zone for Inactivation Date is Required.</li>';
+                    isValid = false;
+                }
+            }
+
+            if (effectiveDate > today) {
+                $('#EffectiveDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Effective Date Must be less than or equal to Current Date.</li>';
+                isValid = false;
+            }
+            if (inactivationDate < effectiveDate) {
+                $('#InactivationDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Inactivation Date must be greater than effective Date.</li>';
+                isValid = false;
+            }
+            if (isValid) {
+                $('#dvErrorMsg').hide();
+            } else {
+                $('#dateError').html(errorList);
+                $('#dvErrorMsg').show();
+            }
+            return isValid;
+        }
+
+
+    </script>
+}
+
+
+

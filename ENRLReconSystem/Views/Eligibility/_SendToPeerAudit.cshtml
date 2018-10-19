@@ -1,0 +1,16 @@
+﻿
+@using ENRLReconSystem.Helpers
+@model ENRLReconSystem.DO.DOGEN_EligibilityActions
+                 
+
+   
+    <div class="clearfix">
+        <form class="clearfix">                               
+            <div class="form-group textarea col-md-12">
+                <label for="inputEmail">Comments</label>
+                @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+            </div>
+        </form>
+    </div>
+
+               

@@ -1,0 +1,190 @@
+﻿@using ENRLReconSystem.DO
+@model  Tuple<List<DOCMN_LookupType>, List<DOCMN_LookupTypeCorrelations>>
+@{
+    ViewBag.Title = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*-------code relation Search----------*@
+
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/images/search-icon.png" /><h4>Search Correlation</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <form>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">Correlation Group Name</label>
+                    @Html.TextBox("txtCorrelationDescription", "", new { @id = "txtCorrelationDescription", @class = "form-control", @maxlength = "75" })
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">Parent Lookup Type</label>
+                    @Html.DropDownList("ddlLookupType", new SelectList(Model.Item1, "CMN_LookupTypeId", "LookupTypeDescription"), "<---Select--->", new { @id = "ddlLookupType", @class = "form-control" })
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Is Active</label>
+                    @Html.CheckBox("chkIsActive", true, new { @id = "chkIsActive", @class = "form-control" })
+                </div>
+                <div class="btn-group clearfix">
+                    <button type="button" id="btnSearch" class="btn btn-primary"><img src="~/images/search-icon.png" /><span>Search</span></button>
+                    <button type="button" id="btnReset" class="btn btn-primary"><img src="~/images/reset-icon.png" /><span>Reset</span></button>
+                    <button type="button" id="btnCancel" class="btn btn-primary"><img src="~/images/cancle-icon.png" /><span>Cancel</span></button>
+                    <button type="button" id="btnAdd" class="btn btn-primary"><img src="~/images/add-icon.png" /><span>Add</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+  
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/images/list-icon.png" /><h4>Search Results</h4>
+        </div>
+        <div class="wdgt-body clearfix" id="divSearchresults">
+            @Html.Partial("_SearchResults", Model.Item2) 
+        </div>
+    </div>
+</section>
+
+
+@section scripts{
+    <script type="text/javascript">
+     //Variables//
+
+        var urlGetLkupCoRelationSearchResult = '@Url.Action("GetLkupCoRelationSearchResult", "LookupCorrelation")';
+        var ReportsUrl = '@Url.Action("GetLookupsCorrelationReportURL", "LookupCorrelation")';
+        var winHistoryReport;
+     //Events//
+
+        $("#btnSearch").on("click", function () {
+            try {
+                fnGetLkupCoRelationSearchResult();
+            } catch (e) {
+
+            }
+
+        });
+
+         $("#btnReset").on("click", function () {
+            try {
+                   fnReset();
+            } catch (e) {
+
+            }
+
+        });
+        $("#btnCancel").on("click",function(){
+          try{
+            window.location.href = '@Url.Action("Home","Home")';
+          }
+          catch(e){
+          }
+        });
+
+          $("#btnAdd").on("click", function () {
+            try {
+                window.location.href = '@Url.Action("Add", "LookupCorrelation", new { lookupTypeCorrelationsId = 0, flag = 1 })';
+            } catch (e) {
+
+            }
+        });
+
+
+
+     //Methods//
+
+        fnGetLkupCoRelationSearchResult = function () {
+            try {
+            var dataParam={
+                       "strDescription": $("#txtCorrelationDescription").val().trim(),
+                       "ddlLookupType":($("#ddlLookupType").val()!="")? parseInt($("#ddlLookupType").val()):0,
+                       "isActive": ($("#chkIsActive").is(":checked")?true:false)
+                 };
+                $.ajax({
+                    data: dataParam,
+                    url: urlGetLkupCoRelationSearchResult,
+                    type: "POST",
+                    success: function (data) {
+                        if (data != "") {
+                            $("#divSearchresults").empty().html(data);
+                            MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+                        }
+                        else {
+                            alert("An error occoured contact administrator!");
+                        }
+                    },
+                    error: function (x) {
+                        alert("An error occoured contact administrator!");
+                    }
+                });
+
+
+            } catch (e) {
+               alert("An error occoured contact administrator!");
+
+            }
+        };
+
+        fnReset=function(){
+        try{
+          $("#txtCorrelationDescription").val("");
+          $("#ddlLookupType").val("");
+          $("#chkIsActive").prop('checked', true);
+        }
+        catch(e){
+        alert("An error occoured contact administrator!");
+         }
+        };
+
+        MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+
+        //////////////Lock /////////////
+        fnLockAndEdit = function (id) {
+            //debugger;
+            var urlForLock = '@Url.Action("GetLockedRecordOrLockRecord", "RecordsLocked")';
+            var urlToNavigate='@Url.Action("Add", "LookupCorrelation")' + "?lookupTypeCorrelationsId=" + id + "&flag=" + 1;
+            fnLockRecord(urlForLock, id, enums.ScreenType.LookupTypeCorrelation, urlToNavigate);
+
+        };
+
+        fnViewOrLockEdit = function (id) {
+            //debugger;
+            if (id < 1000) {
+                window.location.href = '@Url.Action("Add", "LookupCorrelation")' + "?lookupTypeCorrelationsId=" + id + "&flag=" + 0;
+            }
+            else {
+                var urlForLock = '@Url.Action("GetLockedRecordOrLockRecord", "RecordsLocked")';
+                var urlToNavigate='@Url.Action("Add", "LookupCorrelation")' + "?lookupTypeCorrelationsId=" + id + "&flag=" + 0;
+                fnLockRecord(urlForLock, id, enums.ScreenType.LookupTypeCorrelation, urlToNavigate);
+            }
+        };
+
+        // function to access history report
+        fnAccessReport = function (id) {
+            // debugger
+            var urlToNavigate = ReportsUrl;
+            $.ajax({
+                url: urlToNavigate,
+                type: "POST",
+                success: function (data) {
+                    if (data != "") {
+
+                        var Data = data.Data;
+                        var reportUrl = Data + "&LookupTypeCorrelationRef=" + id;
+
+                        var strWindowFeatures = "location=yes,height=580,width=1000,scrollbars=no,resizable=yes,toolbar=no,status=no,menu=no, directories=no,titlebar=no,location=no,addressbar=no,top=100,left=100";
+                        winHistoryReport = MainLayout.fnMyOpenWindow(reportUrl, "_blank", strWindowFeatures, winHistoryReport);
+                        
+                    }
+                },
+                error: function (x) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                }
+            });
+        }
+
+
+
+
+    </script>
+}
+

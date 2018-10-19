@@ -1,0 +1,233 @@
+﻿@using ENRLReconSystem.Helpers@*for custom validation*@
+@model ENRLReconSystem.DO.DOADM_ResourceDetails
+@{
+    ViewBag.Title = Model.ADM_ResourceDetailsId == 0 ? "Add Resource": "Edit Resource";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src='@Url.Content("/images/resource-icon.png")' /><h4>Resource</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <form id="frmAddResource">
+                @Html.HiddenFor(m => m.CreatedByRef)
+                @Html.HiddenFor(m => m.UTCCreatedOn)
+                @Html.HiddenFor(m => m.ResourceEffectiveDate)
+                @Html.HiddenFor(m => m.ResourceInactivationDate)
+                @Html.HiddenFor(m => m.ADM_ResourceDetailsId, new { @id = "hdnADM_ResourceDetailsId" })
+                @Html.ValidationSummary()
+                <div class="wdgt-body clearfix">
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.ResourceName,"Name", new { @class = "required" })
+                        @Html.TextBoxFor(m => m.ResourceName, new CustomValidation().Required("Name is required").
+                        RegularExpression(RegexType.AlphabetsWithNumericSpacesAndAmpersand, "Name").StringMaxLength(50, "Name").
+                        AddCssClass("form-control").CustomAttributes("onkeypress", "fnAvoidSpecialChar(event);").
+                        CustomAttributes("id", "txtResourceName").CustomAttributes((Model.ADM_ResourceDetailsId> 0)? "readonly" : "",
+                        (Model.ADM_ResourceDetailsId>0)?"true":"").validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.ResourceDescription,"Description", new { @class = "required" })
+                        @Html.TextBoxFor(m => m.ResourceDescription, new CustomValidation().Required("Description is required").RegularExpression(RegexType.AlphabetsWithNumericSpacesAndAmpersand, "Description").StringMaxLength(5000, "Description").AddCssClass("form-control").CustomAttributes("onkeypress", "fnAvoidSpecialChar(event);").CustomAttributes("id", "txtResourceDescription").validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.ResourceLinkLocation,"Link Location", new { @class = "required" })
+                        @Html.TextBoxFor(m => m.ResourceLinkLocation, new CustomValidation().Required("Link Location is required").RegularExpression(RegexType.Url, "Link Location").StringMaxLength(500, "Link Location").AddCssClass("form-control").CustomAttributes("id", "txtResourceLinkLocation").validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.CMN_DepartmentRef,"Department")
+                        @Html.DropDownListFor(m => m.CMN_DepartmentRef, new SelectList(Model.lstCMN_Department, "CMN_DepartmentId", "ERSDepartmentName"), "<---Select--->", new { @id = "ddlCMN_DepartmentRef", @class = "form-control" })
+                    </div>
+                    <div class="form-group date-group col-md-3">
+                        @Html.LabelFor(m => m.ResourceEffectiveDate, "Effective Date",new { @class = "required" })
+                        @Html.DateTimeFor(m => m.ResourceEffectiveDate,true, new CustomValidation().Required("Effective Date is required").validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.ResourceEffectiveDateTimeZone, "Timezone")
+                        @Html.DropDownList("Effective Date Time Zone", new SelectList(Model.lstTimeZone, "CMN_LookupMasterId", "LookupValue"), "<---Select--->", new CustomValidation().CustomAttributes("id", "ResourceEffectiveDate_ZPart").AddCssClass("form-control").validationAttributes)
+                    </div>
+                    <div class="form-group date-group col-md-3">
+                        @Html.LabelFor(m => m.ResourceInactivationDate, "Inactivation Date")
+                        @Html.DateTimeFor(m => m.ResourceInactivationDate,true, new CustomValidation().validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.ResourceInactivationDateTimeZone, "Timezone")
+                        @Html.DropDownList("Inactivation Date Time Zone", new SelectList(Model.lstTimeZone, "CMN_LookupMasterId", "LookupValue"), "<---Select--->", new CustomValidation().CustomAttributes("id", "ResourceInactivationDate_ZPart").AddCssClass("form-control").validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.IsActive, "Is Active")
+                        @Html.CheckBoxFor(m => m.IsActive, (Model.ADM_ResourceDetailsId > 0) ? new { @class = "form-control" } : new { @checked = "checked", @class = "form-control"} as object)
+                    </div>
+                </div>
+                <div class="btn-group clearfix">
+                    @*on click of cancel button fnCancel() will be called to unlock record*@
+                    <button type="button" id="btnSubmit" class="btn btn-primary"><img src="~/Images/save-icon.png" /><span>Save</span></button>
+                    <button type="button" id="btnReset" class="btn btn-primary"><img src="~/Images/reset-icon.png" /><span>Reset</span></button>
+                    <button type="button" id="btnCancel" class="btn btn-primary" onclick="fnCancel();"><img src="~/Images/cancle-icon.png" /><span>Cancel</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section scripts{
+<script>
+    var submitUrl = '@Url.Action("Add", "Resources")';
+    var saveSuccessUrl = '@Url.Action("Search", "Resources")';
+    var cancelUrl = '@Url.Action("Search", "Resources")';
+    var unlockUrl = '@Url.Action("UnlockRecord", "RecordsLocked")';
+    var recordId = '@Model.ADM_ResourceDetailsId';
+
+    //validate and create date time picker fields
+    if ('@Model.ResourceEffectiveDate' != null && '@Model.ResourceEffectiveDate' != '') {
+       // fnSetDateToField('@Model.ResourceEffectiveDate','ResourceEffectiveDate');
+          var utcDate = new Date('@Model.ResourceEffectiveDate');
+            var result = getLocalTime(utcDate, UserPreferrenceTimeZone);
+            $('#ResourceEffectiveDate_DPart').val(getDateTimeInMMDDYYYY(result.time));
+            $('#ResourceEffectiveDate_TPart').val(getDateTimeInHHMM(result.time));
+            $('#ResourceEffectiveDate_ZPart').val(result.timeZoneLkup);
+    }
+
+    if ('@Model.ResourceInactivationDate' != null && '@Model.ResourceInactivationDate' != '') {
+        //fnSetDateToField('@Model.ResourceInactivationDate', 'ResourceInactivationDate');
+          var utcDate = new Date('@Model.ResourceInactivationDate');
+            var result = getLocalTime(utcDate, UserPreferrenceTimeZone);
+            $('#ResourceInactivationDate_DPart').val(getDateTimeInMMDDYYYY(result.time));
+            $('#ResourceInactivationDate_TPart').val(getDateTimeInHHMM(result.time));
+            $('#ResourceInactivationDate_ZPart').val(result.timeZoneLkup);
+    }
+
+    //function to set model date time values from date time picker
+    fnGetUtcDateIntoHdnFields = function () {
+        var date = getFieldUTCTime('ResourceEffectiveDate');
+        if (date != null && date != '') {
+            $('#ResourceEffectiveDate').val(getDateTimeInMMDDYYYYHHMM(date, true));
+        } else {
+            $('#ResourceEffectiveDate').val(null);
+        }
+        date = getFieldUTCTime('ResourceInactivationDate');
+        if (date != null && date != '') {
+            $('#ResourceInactivationDate').val(getDateTimeInMMDDYYYYHHMM(date, true));
+        } else {
+            $('#ResourceInactivationDate').val(null);
+        }
+    };
+
+    //fuction to set values for date time fields from date time picker to match format for comparision
+    fnGetUtcDateIntoHdnFields();
+
+    //save intial form value to compare before saving
+    var $myForm = $("#frmAddResource");
+    origForm = $myForm.serialize();
+
+    //function to unlock receord on click of cancel button
+    function fnCancel() {
+        var idToUnlock = recordId;
+        var urlForUnlock = unlockUrl;
+        var urlToNavigate = cancelUrl;
+        fnUnlockRecord(urlForUnlock, idToUnlock, enums.ScreenType.Resources, urlToNavigate);
+    };
+
+    //function for ajax form submit
+    $('#btnSubmit').click(function () {
+        var $form = $('#frmAddResource');
+        $('.validation-summary-errors ul').empty();//clear the error messages
+        fnGetUtcDateIntoHdnFields(); //fuction to set values for date time fields from date time picker fields
+        var formValid = $form.valid();//validate form
+        var isCustomValid = validateCustom();// validate the dates and send alert to filds
+        if (!formValid || !isCustomValid)
+            return;
+        if (origForm != $form.serialize())//check if form fields as changes
+        {
+            try {
+                $.ajax({
+                    data: $form.serialize(),
+                    url: submitUrl,
+                    type: "POST",
+                    success: function (data) {
+                        if (data.ID > 0) {
+                            //if any errors while saving from controller
+                            MainLayout.fnAlertMessege("Error!", data.Message);
+                        }
+                        else {
+                            //if save successfull
+                            MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                                window.location.href = saveSuccessUrl;
+                            });
+                        }
+                    },
+                    error: function (x) {
+                        //Network errror
+                        MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                    }
+                });
+            }
+            catch (e) {
+                //exception forming ajax request or submitting form
+                MainLayout.fnAlertMessege("Error!", "An error occoured.");
+            }
+        } else {
+            MainLayout.fnAlertMessege("Alert!", "There is no change in the form to update.");
+        }
+    });
+
+    //reset function to clear all the fields in edit mode and reset to original value in Edit mode
+    $('#btnReset').click(function () {
+        MainLayout.fnResetValidationSummary();
+        $("#frmAddResource").deserialize(origForm);
+    });
+
+    //custom validations on effective date and inactivation date
+    function validateCustom() {
+        var effectiveDate = new Date($('#ResourceEffectiveDate_DPart').val());
+        var inactivationDate = new Date($('#ResourceInactivationDate_DPart').val());
+
+        var today = new Date();
+        var errorList = "";
+        var isValid = true;
+        today.setHours(0, 0, 0, 0)
+
+        //add error if effective date value is entered and effective date time zone is not selected
+        if (!$('#ResourceEffectiveDate_DPart').val() == "" && $('#ResourceEffectiveDate_ZPart').val() == "") {
+            $('#ResourceEffectiveDate_ZPart').removeClass("valid").addClass("input-validation-error");//to highlight the field
+            errorList = errorList + '<li>Time Zone for Effective Date is Required.</li>';//html for error to be added in validation summary
+            isValid = false;
+        }
+        //add error if Inactivation date value is entered and Inactivation date time zone is not selected
+        if (!$('#ResourceInactivationDate_DPart').val() == "" && $('#ResourceInactivationDate_ZPart').val() == "") {
+            $('#ResourceInactivationDate_ZPart').removeClass("valid").addClass("input-validation-error");
+            errorList = errorList + '<li>Time Zone for Inactivation Date is Required.</li>';
+            isValid = false;
+        }
+        //add error if effective date is greater than today
+        if (effectiveDate > today) {
+            $('#ResourceEffectiveDate_DPart').removeClass("valid").addClass("input-validation-error");
+            errorList = errorList + '<li>Effective Date must be less than or equal to Current Date.</li>';
+            isValid = false;
+        }
+        //add error if inactivation date smaller than today
+        if (inactivationDate <= today) {
+            $('#ResourceInactivationDate_DPart').removeClass("valid").addClass("input-validation-error");
+            errorList = errorList + '<li>Inactivation Date must be Future Date.</li>';
+            isValid = false;
+        }
+        //add error if inactivation date smaller than effective date
+        if (inactivationDate < effectiveDate) {
+            $('#ResourceInactivationDate_DPart').removeClass("valid").addClass("input-validation-error");
+            errorList = errorList + '<li>Inactivation Date must be greater than effective date.</li>';
+            isValid = false;
+        }
+        if (!isValid) {
+            if ($('.validation-summary-errors').length != 0) {
+                //if validion errors div is present add errors to list
+                $('.validation-summary-errors ul').append(errorList);
+            } else {
+                //if validion errors div is not present update validation-summary-valid div and add errors to list
+                $('.validation-summary-valid').addClass('validation-summary-errors').removeClass('validation-summary-valid');
+                $('.validation-summary-errors ul').append(errorList);
+            }
+        }
+        return isValid;
+    };
+</script>
+}

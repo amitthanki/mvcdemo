@@ -1,0 +1,93 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@model DOGEN_OSTActions
+
+@if (ViewBag.FirstSecLetter != "FirstSecLetter")
+{
+
+
+<div class="clearfix">
+    @Html.HiddenFor(m => m.FirstLetterMailDate)
+    @Html.HiddenFor(m => m.FirstLetterMailDateNoResponseTerm)
+    @Html.HiddenFor(m => m.InitialAddressVerificationDate)
+    @Html.HiddenFor(m => m.MemberResponseVerificationDate)
+    @Html.HiddenFor(m => m.SecondLetterMailDate)
+    <div class="clearfix">
+        <div class="form-group col-md-3">
+            <label class="required">Resolution</label>
+            @Html.DropDownListFor(m => m.ResolutionLkup, new SelectList(Model.lstResolution, "CMN_LookupMasterChildRef", "LookupMasterChildValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please select Resolution").CustomAttributes("onMouseWheel", "return false;").CustomAttributes("id", "ddlResolution").AddCssClass("form-control").validationAttributes)
+        </div>
+        <div class="form-group col-md-3">
+            <label>Reason</label>
+            @Html.TextBoxFor(m => m.Reason, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtReasonCloseCase").CustomAttributes("MaxLength", "20").validationAttributes)
+        </div>
+    </div>
+    <div class="tab-pane-wdgt" id="divInArea">
+        <div class="clearfix">
+
+            <div class="form-group date-group col-md-3">
+                <label class="required">First Letter Mail Date</label>
+                @Html.DateTimeFor(m => m.FirstLetterMailDate, false, new CustomValidation().Required("First Letter Mail Date  is required.").validationAttributes)
+            </div>
+        </div>
+    </div>  
+    <div class="tab-pane-wdgt" id="divMemberResponseOOATerm">
+        <div class="clearfix">
+            <div class="form-group date-group col-md-3">
+                <label class="required">Initial Address Verification Date</label>
+                @Html.DateTimeFor(m => m.InitialAddressVerificationDate, false, new CustomValidation().Required("Initial Address Verification Date  is required.").validationAttributes)
+            </div>
+            <div class="form-group date-group col-md-3">
+                <label class="required">Member Response Verification Date</label>
+                @Html.DateTimeFor(m => m.MemberResponseVerificationDate, false, new CustomValidation().Required("Member Response Verification Date  is required.").validationAttributes)
+            </div>
+            <div class="form-group col-md-3">
+                <label class="required">Member Verified State</label>
+                @Html.DropDownListFor(m => m.MemberVerifiedState, new SelectList(Model.lstState, "LookupValue1", "LookupValue1"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Member Verified State is required.").CustomAttributes("onMouseWheel", "return false;").CustomAttributes("id", "ddlMemberVerifiedState").AddCssClass("form-control").validationAttributes)
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane-wdgt" id="divNoResponseFTTerm"> 
+        <div class="clearfix">
+            <div class="form-group date-group col-md-3">
+                <label class="required">First Letter Mail Date</label>
+                @Html.DateTimeFor(m => m.FirstLetterMailDateNoResponseTerm, false, new CustomValidation().Required("First Letter Mail Date is required.").validationAttributes)
+            </div>
+            <div class="form-group date-group col-md-3">
+                <label class="required">Second Letter Mail Date</label>
+                @Html.DateTimeFor(m => m.SecondLetterMailDate, false, new CustomValidation().Required("Second Letter Mail Date  is required.").validationAttributes)
+            </div>
+        </div>
+    </div>
+    <div class="form-group textarea col-md-12">
+        <label class="required" id="lblComment">Comments</label>
+        @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtComments").Required("Please enter Comments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+    </div>
+</div>
+}
+else
+{
+    <script type="text/javascript">
+        MainLayout.fnAlertMessege("Error!", "First Letter and Second Letter Mail Date is Required.");
+        $("#ddlActions").val('');
+    </script>
+
+}
+<script>
+
+    if ('@Model.FirstLetterMailDate' != null && '@Model.FirstLetterMailDate' != '') {
+        $('#FirstLetterMailDate_DPart').val(getDateTimeInMMDDYYYY('@Model.FirstLetterMailDate'));
+        //fnSetDateToField('@Model.FirstLetterMailDate','FirstLetterMailDate');
+    }
+    if ('@Model.FirstLetterMailDateNoResponseTerm' != null && '@Model.FirstLetterMailDateNoResponseTerm' != '') {
+        $('#FirstLetterMailDateNoResponseTerm_DPart').val(getDateTimeInMMDDYYYY('@Model.FirstLetterMailDateNoResponseTerm'));
+       // fnSetDateToField('@Model.FirstLetterMailDateNoResponseTerm','FirstLetterMailDateNoResponseTerm');
+    }
+    if ('@Model.SecondLetterMailDate' != null && '@Model.SecondLetterMailDate' != '') {
+        $('#SecondLetterMailDate_DPart').val(getDateTimeInMMDDYYYY('@Model.SecondLetterMailDate'));
+        //fnSetDateToField('@Model.SecondLetterMailDate','SecondLetterMailDate');
+    }
+</script>
+
+

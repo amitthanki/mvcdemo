@@ -1,0 +1,279 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@model ENRLReconSystem.DO.QueueSummary
+@{
+    ViewBag.Title = "DOB Get Queue";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    int searchRangeInDays = ConstantTexts.DefaultSearchRangeInDays;
+    if (!CacheUtility.GetMasterConfigurationByName(ConstantTexts.GetSearchRangeInDays).IsNullOrEmpty())
+    {
+        searchRangeInDays = CacheUtility.GetMasterConfigurationByName(ConstantTexts.GetSearchRangeInDays).ToInt32();
+    }
+}
+
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper" id="divQueueSummary">
+        <div class="wdgt-hdr">
+            <img src="~/Images/list-icon.png"><h4>DOB Queue Summary</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <div class="clearfix">
+                <form id="frmFilterQueueSummary">
+                    @Html.HiddenFor(m => m.StartDate)
+                    @Html.HiddenFor(m => m.EndDate)
+                    @Html.ValidationSummary()
+                    <div class="form-group date-group col-md-3">
+                        <label for="inputEmail">Created Date(From)</label>
+                        @Html.DateTimeFor(m => m.StartDate, false, new CustomValidation().Required("Created Date(From) is required").AddCssClass("form-control").validationAttributes)
+                    </div>
+
+                    <div class="form-group date-group col-md-3">
+                        <label for="inputEmail">Created Date(To)</label>
+                        @Html.DateTimeFor(m => m.EndDate, false, new CustomValidation().Required("Created Date(To) is required").AddCssClass("form-control").validationAttributes)
+                    </div>
+                    <div class="form-group form-btn col-md-3">
+                        <button class="btn btn-primary" id="btnView" type="button"><img src="~/Images/view-icon.png"><span>View</span></button>
+                    </div>
+                </form>
+            </div>
+            <div class="clearfix" id="divGetDOBQueueCount">
+                @Html.Partial("_GetDOBQueueCount", @Model)
+            </div>
+        </div>
+    </div>
+    <div id="divWorkItem" style="display: none;"> 
+    </div>
+    <div  id="divPendingWorkItems" style="display: none;">       
+       
+    </div>
+</section>
+<div id="myModalView" class="modal fade">
+    <div class="modal-dialog" id="divDialog">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <div class="modal-content" id="divMyModalView">
+
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script language="javascript">
+          var unlockUrl = '@Url.Action("UnlockRecord", "RecordsLocked")';
+          var cancelUrl = '@Url.Action("DOBGetQueue", "EligibilityQueues")';
+          var queueLkup = 0;
+          //custom validations on dates
+          function validateCustom() {
+              var StartDate = new Date($('#StartDate_DPart').val());
+              var EndDate = new Date($('#EndDate_DPart').val());
+
+              var today = new Date();
+              var errorList = "";
+              var isValid = true;
+              today.setHours(0, 0, 0, 0);
+
+              if (EndDate > today) {
+                  $('#EndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                  errorList = errorList + '<li>Created Date(To) cannot be future Date.</li>';
+                  isValid = false;
+              } else {
+                  if (StartDate > EndDate) {
+                      $('#StartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                      errorList = errorList + '<li>Created Date(From) must be less than  Created Date(To).</li>';
+                      isValid = false;
+                  } else {
+                      var diff = daysBetween(EndDate, StartDate);
+                      if (diff > @searchRangeInDays) {
+                          $('#StartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                          $('#EndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                          errorList = errorList + '<li>Created Date(From) and Created Date(To) range cannot be greater than '+ @searchRangeInDays +' days</li>';
+                          isValid = false;
+                      }
+                  }
+              }
+              if (StartDate > today) {
+                  $('#StartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                  errorList = errorList + '<li>Created Date(From) cannot be future Date.</li>';
+                  isValid = false;
+              }
+
+              if (!isValid) {
+                  if ($('.validation-summary-errors').length != 0) {
+                      //if validion errors div is present add errors to list
+                      $('.validation-summary-errors ul').append(errorList);
+                  } else {
+                      //if validion errors div is not present update validation-summary-valid div and add errors to list
+                      $('.validation-summary-valid').addClass('validation-summary-errors').removeClass('validation-summary-valid');
+                      $('.validation-summary-errors ul').append(errorList);
+                  }
+              }
+              return isValid;
+          };
+    $(document).on("click", '.getQueue', function () {
+        queueLkup = $(this).attr('id');
+        fnGMURecord(queueLkup);
+        fnGetPendedRecords(queueLkup);
+        $('#divQueueSummary').hide();
+        $("#divWorkItem").show();
+        $("#divPendingWorkItems").show();
+    });
+
+    $(document).on("click", '#btnCancel', function () {
+        //$("#divWorkItem").hide();
+        //$("#divPendingWorkItems").hide();
+        //$('#divQueueSummary').show();
+        var recordId = $('#GEN_QueueId').val();
+        fnUnlockRecord(unlockUrl, recordId, enums.ScreenType.Queue, cancelUrl);
+    });
+
+        $(document).on("click", '#btnView', function () {
+            fnGetQueuesCount();
+        });
+
+    $(document).on("click", '#btnGetNext', function () {
+        fnGMURecord(queueLkup);
+    });
+
+    //date time picker fields
+    if ('@Model.StartDate' != null && '@Model.StartDate' != '') {
+        //fnSetDateToField('@Model.StartDate','StartDate');
+          $('#StartDate_DPart').val(getDateTimeInMMDDYYYY('@Model.StartDate'));
+    }
+    if ('@Model.EndDate' != null && '@Model.EndDate' != '') {
+       // fnSetDateToField('@Model.EndDate','EndDate');
+        $('#EndDate_DPart').val(getDateTimeInMMDDYYYY('@Model.EndDate'));
+    }
+    $(document).on("click", '#btnStartProcessing', function () {
+        MainLayout.fnSetLocalStorage($("#frmFilterQueueSummary").serialize(), enums.DiscripancyCategory.DOB);
+        var queueId = $('#hdnGEN_QueueId').val();
+        window.location.href = '@Url.Action("DOBProcessWork", "Eligibility")' + '?queueId=' + queueId + "&PageName=" + "QueueSummary";
+    });
+    //function to set model date time values from date time picker
+    function fnGetDateIntoHdnFields() {
+        var date = $('#StartDate_DPart').val();
+        if (date != null && date != '') {
+            $('#StartDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#StartDate').val(null);
+        }
+        date = $('#EndDate_DPart').val();
+        if (date != null && date != '') {
+            $('#EndDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#EndDate').val(null);
+        }
+    };
+
+    fnGMURecord = function (queueLkup) {
+        var queueIdToSkip = $('#GEN_QueueId').val();
+        $.ajax({
+            url: '@Url.Action("GMURecord", "EligibilityQueues")',
+            data: { "dtpStartDate": $("#StartDate").val(), "dtpEndDate": $("#EndDate").val(), "queueLkup": queueLkup, "queueIdToSkip": queueIdToSkip,"DiscrepancyCategory" : "DOB" },
+            type: "POST",
+            success: function (data) {
+                if (data != "") {
+                    $("#divWorkItem").empty().html(data);
+                }
+                else {
+                    alert("An error occoured contact administrator!");
+                }
+            },
+            error: function (error) {
+                alert("An error occoured contact administrator!");
+            }
+        });
+    };
+
+    fnGetPendedRecords = function (queueLkup) {
+        $.ajax({
+            url: '@Url.Action("GetPendedRecords", "EligibilityQueues")',
+            data: { "DiscrepancyCategory": "DOB"},
+            type: "POST",
+            success: function (data) {
+                if (data != "") {
+                    $("#divPendingWorkItems").empty().html(data);
+                    MainLayout.fnInitialiseDataTable($('#tblPendedRecords'));
+                }
+                else {
+                    alert("An error occoured contact administrator!");
+                }
+            },
+            error: function (error) {
+                alert("An error occoured contact administrator!");
+            }
+        });
+    };
+
+        fnGetQueuesCount = function () {
+            fnGetDateIntoHdnFields();
+            $('.validation-summary-errors ul').empty();// clear the error messages
+            $(':input').removeClass("input-validation-error").addClass("valid");// remove border
+            var formValid = $("#frmFilterQueueSummary").valid(); //validate form
+            var isCustomValid = validateCustom();// custom Validations
+            if (!formValid || !isCustomValid) {
+                return
+            } else {
+                $.ajax({
+                    url: '@Url.Action("DOBGetQueue", "EligibilityQueues")',
+                    data: { "dtpStartDate": $("#StartDate").val(), "dtpEndDate": $("#EndDate").val() },
+                    type: "POST",
+                    success: function (data) {
+                        if (data != "") {
+                            MainLayout.fnSetLocalStorage($("#frmFilterQueueSummary").serialize(), enums.DiscripancyCategory.DOB);
+                            $("#divGetDOBQueueCount").empty().html(data);
+                        }
+                        else {
+                            alert("An error occoured contact administrator!");
+                        }
+                    },
+                    error: function (error) {
+                        alert("An error occoured contact administrator!");
+                    }
+                });
+            }
+    };
+        fnViewRecord = function (Id, catId, WorkQueue) {
+               var url = '@Url.Action("CheckUserPermission", "Common")/'+enums.PermissionType.CanView+'/'+catId;
+                        $.ajax({
+                            type: 'POST',
+                            data: { DiscCat: catId, WorkQueue: WorkQueue },
+                        url: url,
+                        success: function (response) {
+                                if(response==true)
+                                {
+                                url = '@Url.Action("ViewRecord", "Common")/' + Id + '/' + catId;
+                                $.ajax({
+                                    type: 'POST',
+                                    url: url,
+                                    success: function (response) {
+                                        $("#divMyModalView").empty().html($("#divMyModalView").empty().html(response).find('section'));
+                                        $('#divMyModalView').find(':input').attr('disabled', true);
+                                        $('#divMyModalView').find(':button').attr('disabled', true);
+                                        $("#myModalView").modal('show');
+                                        $('#divMyModalView').find("#tblPWAttachments .deletePWAttachmentIco").remove();
+                                        $('#divMyModalView').find("#tblPWAttachments .downloadAttachment").href = "";
+                                        $(".dispMsg").unbind("click");
+                                    },
+                                    error: function (result) {
+                                        MainLayout.fnAlertMessege("Error!", result.responseText);
+                                    }
+                                });
+                                } else { MainLayout.fnAlertMessege("Alert!", "You don't have sufficient permission to perform View operation for " + MainLayout.getEnumKey(enums.DiscripancyCategory, catId));}
+                        },
+                        error: function (result) {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+                     });
+        };
+
+        ///load the storage page
+        if (MainLayout.fnIsLocalStorageExists(enums.DiscripancyCategory.DOB)) {
+            $("#frmFilterQueueSummary").deserialize(MainLayout.fnGetLocalStorage(enums.DiscripancyCategory.DOB));
+            fnGetQueuesCount();
+        };
+
+    MainLayout.fnInitialiseDataTable($('#tblPendedRecords'));
+    </script>
+}
+

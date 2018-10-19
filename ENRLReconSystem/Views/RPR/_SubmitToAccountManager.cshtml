@@ -1,0 +1,22 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@model DOGEN_RPRActions
+
+<div class="clearfix">
+    @Html.HiddenFor(m => m.CMSAccountManagerSubmissionDate)
+    <div class="form-group date-group col-md-3">
+        @Html.LabelFor(m => m.CMSAccountManagerSubmissionDate, "CMS Account Manager Submission Date", new { @class = "required" })
+        @Html.DateTimeFor(m => m.CMSAccountManagerSubmissionDate, false, new CustomValidation().Required("Please select CMS Account Manager Submission Date.").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group textarea col-md-12">
+        @Html.LabelFor(m => m.Comments, "Comments", new { @class = "required" })
+        @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").Required("Comments are Required.").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+    </div>
+</div>
+<script>
+    //validate and create date time picker fields
+    if ('@Model.CMSAccountManagerSubmissionDate' != null && '@Model.CMSAccountManagerSubmissionDate' != '') {
+        @*fnSetDateToField('@Model.CMSAccountManagerSubmissionDate','CMSAccountManagerSubmissionDate');*@
+        $('#CMSAccountManagerSubmissionDate_DPart').val(getDateTimeInMMDDYYYY('@Model.CMSAccountManagerSubmissionDate'));
+    }
+</script>

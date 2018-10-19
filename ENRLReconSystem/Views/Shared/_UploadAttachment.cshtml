@@ -1,0 +1,24 @@
+﻿@using (Html.BeginForm("UploadAttachment", "Attachment", FormMethod.Post, new { @id = "frmPWAttachmentUpload", @enctype = "multipart/form-data" }))
+{
+
+    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">×</button>
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/images/upload-icon.png"><h4>File Upload</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <div class="clearfix">
+                @Html.ValidationSummary(false)
+                    <div class="form-group col-md-2" style="width:70%">
+                        <label class="required">File (Max Size:8MB)</label>
+                        <input class="form-control" id="filePWAttachmentBrowse" type="file" accept=".pdf">
+                    </div>
+            </div>
+            <div class="btn-group clearfix">
+                <button class="btn btn-primary" id="btnUploadPwAttchmentFile" type="button"><img src="~/images/upload-icon.png"><span>Upload</span></button>
+            </div>
+        </div>
+
+    </div>
+
+}

@@ -1,0 +1,26 @@
+﻿@using ENRLReconSystem.Utility
+
+
+<div class="wdgt-wrapper">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <div class="wdgt-hdr">
+        <img src="~/images/reassign.jpg" /><h4>Bulk Reassign</h4>
+    </div>
+    <div class="wdgt-body clearfix">
+        <div class="clearfix" style="padding-left:15px;">
+            <label id="lblValidateSummaryPopup" style="color:red;"></label>
+        </div>
+        <div class="form-group col-md-4">
+            <label for="txtDescription" class="required">Reassign To</label>
+            @Html.DropDownList("ReAsignUser", new SelectList(ViewBag.BulkReAssignedUserList, "ADM_UserMasterId", "FullName"), ConstantTexts.dropdownDefaultValue, new { @Id = "ddlBulkReassignUsers", @class = "form-control" })
+        </div>
+
+        <div class="form-group textarea col-md-12">
+            <label for="txtDescription" class="required">Comments</label>
+            @Html.TextArea("Comments", null, new { @Id = "txtBulkComments", @rows = "4", @class = "form-control" })
+        </div>
+        <div class="btn-group clearfix">
+            <button class="btn btn-primary" id="btnBulkReassign" type="button"><img src="~/images/reassign.jpg"><span>Bulk Reassign</span></button>
+        </div>
+    </div>
+</div>

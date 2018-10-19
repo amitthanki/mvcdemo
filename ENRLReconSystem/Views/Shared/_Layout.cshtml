@@ -1,0 +1,639 @@
+﻿@using ENRLReconSystem.Utility
+<!DOCTYPE html>
+<html>
+@{ 
+    ENRLReconSystem.DO.UIUserLogin loggedInUser1 = System.Web.HttpContext.Current.Session[ENRLReconSystem.Utility.ConstantTexts.CurrentUserSessionKey] as ENRLReconSystem.DO.UIUserLogin;
+    if (loggedInUser1 != null)
+    {
+        var WorkBasketlkup = loggedInUser1.WorkBasketLkup;
+        if (WorkBasketlkup == (long)WorkBasket.OST)
+        {
+            ViewBag.WorkBasket = "OST";
+        }
+        else if (WorkBasketlkup == (long)WorkBasket.GPSvsMMR)
+        {
+            ViewBag.WorkBasket = "GPSvsMMR";
+        }
+        else
+        {
+            ViewBag.WorkBasket = "RPR";
+        }
+    }
+}
+<head>  
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv=X-UA-Compatible content="IE=11">
+    @if (ViewBag.WorkBasket != null)
+    {
+    <title>ERS | @ViewBag.WorkBasket | @ViewBag.Title</title>
+    }
+    else
+    {
+        <title>ERS | @ViewBag.Title</title>
+    }
+    <link rel="icon" href="~/Images/icon.png">
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    @*<link href='@Url.Content("~/Content/jquery-ui.css")' rel="stylesheet" />*@
+
+    <script type="text/javascript">
+        //Disable Browser Back button
+        window.history.forward();
+        function noBack() { window.history.forward(); }
+
+        var urlUploadPWAttachment = '@Url.Action("UploadPWAttachment", "Attachment")'
+            , urlAddPWAttachment = '@Url.Action("AddPWAttachment", "Attachment")'
+            , urlDeletePWAttchments = '@Url.Action("DeletePWAttchments", "Attachment")'
+            , urlDownloadPWAttchments = '@Url.Action("DownloadPWAttchments", "Attachment")'
+            , urlLoginPage = '@Url.Action("Login", "Login")'
+            , urlLogout = '@Url.Action("Logout", "Login")'
+            , urlDoRefreshSession = '@Url.Action("DoRefreshSession", "Common")'
+            , urlGetPBP = '@Url.Action("GetPBP", "Common")'
+            , UserPreferrenceTimeZone = 4005;
+    </script>
+</head>
+<body onload="noBack();" onpageshow="if (event.persisted) noBack();" onunload="">
+    <style type="text/css">
+        .hidden_ctrl {
+            display: none !important;
+        }
+
+        .show_ctrl {
+            display: block !important;
+        }
+
+        #tblUserAccess {
+            word-break: break-word;
+        }
+    </style>
+    <input type="hidden" id="hdnPageName" value="@ViewBag.Title" />
+    @{
+        var isPopUpPage = ViewBag.isPopUp == null ? false : ViewBag.isPopUp;
+        var EmailHref = String.Empty;
+    }
+    @if (!isPopUpPage)
+    {
+        <header class="clearfix">
+            <a><img src="~/Images/ERS-Logo.png" alt="Enrollment Reconciliation System" /></a>
+            @if (!string.IsNullOrEmpty(@WebConfigData.ServerType))
+            {
+                <div style="background-color:yellow; font-weight:bold; font-size:xx-large; color:black; width:auto; float:left; position:absolute; left:570px; top:20px">
+                    @WebConfigData.ServerType
+                </div>
+            }
+            <img class="uhc-logo" src="~/Images/UHC-Logo.png" alt="UnitedHealth Care" />
+        </header>
+
+        ENRLReconSystem.DO.UIUserLogin loggedInUser = System.Web.HttpContext.Current.Session[ENRLReconSystem.Utility.ConstantTexts.CurrentUserSessionKey] as ENRLReconSystem.DO.UIUserLogin;
+        long? timeZone = (long?)null;
+        EmailHref = "mailto:UHC-ERS-RRT-Support_DL@ds.uhc.com?subject=ERS%20Application%20Support&amp;body=Dear%20ERS%20Support%20Team%2C%0A%0A%3C%3CEnter%20Details%3E%3E%0A%0A%0A%0ARegards%2C%0A" + (loggedInUser == null ? null : loggedInUser.FullName);
+        if (!loggedInUser.IsNullOrEmpty())
+        {
+            timeZone = (!loggedInUser.ADM_UserPreference.IsNullOrEmpty()) ? loggedInUser.ADM_UserPreference.TimezoneLkup : (long?)null;
+            var userName = loggedInUser.FullName != null ? loggedInUser.FullName : string.Empty;
+
+            <div id="navbar">
+                <nav class="navbar navbar-default navbar-static-top" role="navigation">
+                    <div class="navbar-header">
+                        <button class="navbar-toggle" type="button" data-target="#navbar-collapse-1" data-toggle="collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                    </div>
+
+                    <div class="collapse navbar-collapse" id="navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li class="dispMsg">@Html.ActionLink("Home", "Home", "Home")</li>
+                            @if (loggedInUser.RoleLkup == (long)ENRLReconSystem.Utility.RoleLkup.Admin)
+                            {
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown">Administration <b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li class="dispMsg">@Html.ActionLink("Manage Users", "Search", "UserAdminstration")</li>
+                                        <li class="dispMsg">@Html.ActionLink("Manage Access Group", "Search", "AccessGroup")</li>
+                                        <li class="dispMsg">@Html.ActionLink("Manage Skills", "Search", "Skills")</li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown">Maintenance <b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li class="dispMsg">@Html.ActionLink("Alerts", "Search", "Alerts")</li>
+                                        <li class="dispMsg">@Html.ActionLink("Configurations", "Search", "Configurations")</li>
+                                        <li class="dispMsg">@Html.ActionLink("Department", "Search", "Department")</li>
+                                        <li class="dispMsg">@Html.ActionLink("Lookups", "Search", "Lookups")</li>
+                                        <li class="dispMsg">@Html.ActionLink("Lookups Correlations", "Search", "LookupCorrelation")</li>
+                                        <li class="dispMsg">@Html.ActionLink("Resources", "Search", "Resources")</li>
+                                    </ul>
+                                </li>
+                            }
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown">Application <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    @if (loggedInUser.IsOOAMenuVisible || loggedInUser.IsSCCMenuVisible || loggedInUser.IsTRRMenuVisible)
+                                    {
+                                        <li class="dropdown dropdown-submenu">
+                                            <a class="dropdown-toggle" data-toggle="dropdown">OST</a>
+                                            <ul class="dropdown-menu">
+                                                @if (loggedInUser.IsOOAMenuVisible && (loggedInUser.OSTOOACanCreate || loggedInUser.OSTOOACanSearch))
+                                                {
+                                                    <li class="dropdown dropdown-submenu">
+                                                        <a class="dropdown-toggle" data-toggle="dropdown">OOA</a>
+                                                        <ul class="dropdown-menu">
+
+                                                            @if (loggedInUser.OSTOOACanCreate)
+                                                            {
+                                                                <li class="dispMsg">@Html.ActionLink("Create Suspect Case", "CreateOOACase", "OST")</li>
+                                                            }
+                                                            <li class="dispMsg">@Html.ActionLink("Get Queue", "OOAGetQueue", "OSTQueues")</li>
+
+                                                            @if (loggedInUser.OSTOOACanSearch)
+                                                            {
+                                                                <li class="dispMsg">@Html.ActionLink("Search", "Search", "Common", new { @discCat = (long)DiscripancyCategory.OOA }, null)</li>
+                                                            }
+                                                        </ul>
+                                                    </li>
+                                                }
+                                                @if (loggedInUser.IsSCCMenuVisible && (loggedInUser.OSTSCCCanCreate || loggedInUser.OSTSCCCanSearch))
+                                                {
+                                                    <li class="dropdown dropdown-submenu">
+                                                        <a class="dropdown-toggle" data-toggle="dropdown">SCC</a>
+                                                        <ul class="dropdown-menu">
+
+                                                            @if (loggedInUser.OSTSCCCanCreate)
+                                                            {
+                                                                <li class="dispMsg">@Html.ActionLink("Create Suspect Case", "CreateSCCCase", "OST")</li>
+                                                            }
+                                                            <li class="dispMsg">@Html.ActionLink("Get Queue", "SCCGetQueue", "OSTQueues")</li>
+
+                                                            @if (loggedInUser.OSTSCCCanSearch)
+                                                            {
+                                                                <li class="dispMsg">@Html.ActionLink("Search", "Search", "Common", new { @discCat = (long)DiscripancyCategory.SCC }, null)</li>
+                                                            }
+
+                                                        </ul>
+                                                    </li>
+                                                }
+                                                @if (loggedInUser.IsTRRMenuVisible && (loggedInUser.OSTTRRCanCreate || loggedInUser.OSTTRRCanSearch))
+                                                {
+                                                    <li class="dropdown dropdown-submenu">
+                                                        <a class="dropdown-toggle" data-toggle="dropdown">TRR</a>
+                                                        <ul class="dropdown-menu">
+                                                            @if (loggedInUser.OSTTRRCanCreate)
+                                                            {
+                                                                <li class="dispMsg">@Html.ActionLink("Create Suspect Case", "CreateTRRCase", "OST")</li>
+                                                            }
+                                                            <li class="dispMsg">@Html.ActionLink("Get Queue", "TRRGetQueue", "OSTQueues")</li>
+
+                                                            @if (loggedInUser.OSTTRRCanSearch)
+                                                            {
+                                                                <li class="dispMsg">@Html.ActionLink("Search", "Search", "Common", new { @discCat = (long)DiscripancyCategory.TRR }, null)</li>
+                                                            }
+
+                                                        </ul>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                    @if (loggedInUser.IsMMREligibilityMenuVisible || loggedInUser.IsDOBMenuVisible || loggedInUser.IsGENDERMenuVisible)
+                                    {
+                                        <li class="dropdown dropdown-submenu">
+                                            <a class="dropdown-toggle" data-toggle="dropdown">Eligibility</a>
+                                            <ul class="dropdown-menu">
+                                                @if (loggedInUser.IsMMREligibilityMenuVisible && (loggedInUser.EligibilityMMRCanCreate || loggedInUser.EligibilityMMRCanSearch))
+                                                {
+                                                    <li class="dropdown dropdown-submenu">
+                                                        <a class="dropdown-toggle" data-toggle="dropdown">MMR Eligibility</a>
+                                                        <ul class="dropdown-menu">
+                                                            @if (loggedInUser.EligibilityMMRCanCreate)
+                                                            {
+                                                                <li class="dispMsg">@Html.ActionLink("Create Suspect Case", "CreateEligibilityCase", "Eligibility")</li>
+                                                            }
+                                                            <li class="dispMsg">@Html.ActionLink("Get Queue", "EligibilityGetQueue", "EligibilityQueues")</li>
+
+                                                            @if (loggedInUser.EligibilityMMRCanSearch)
+                                                            {
+                                                                <li class="dispMsg">@Html.ActionLink("Search", "Search", "Common", new { @discCat = (long)DiscripancyCategory.Eligibility }, null)</li>
+                                                            }
+
+                                                        </ul>
+                                                    </li>
+                                                }
+                                                @if (loggedInUser.IsDOBMenuVisible && (loggedInUser.EligibilityDOBCanCreate || loggedInUser.EligibilityDOBCanSearch))
+                                                {
+                                                    <li class="dropdown dropdown-submenu">
+                                                        <a class="dropdown-toggle" data-toggle="dropdown">DOB</a>
+                                                        <ul class="dropdown-menu">
+                                                            @if (loggedInUser.EligibilityDOBCanCreate)
+                                                            {
+                                                                <li class="dispMsg">@Html.ActionLink("Create Suspect Case", "CreateDOBCase", "Eligibility")</li>
+                                                            }
+                                                            <li class="dispMsg">@Html.ActionLink("Get Queue", "DOBGetQueue", "EligibilityQueues")</li>
+                                                            @if (loggedInUser.EligibilityDOBCanSearch)
+                                                            {
+                                                                <li class="dispMsg">@Html.ActionLink("Search", "Search", "Common", new { @discCat = (long)DiscripancyCategory.DOB }, null)</li>
+                                                            }
+                                                        </ul>
+                                                    </li>
+                                                }
+                                                @if (loggedInUser.IsGENDERMenuVisible && (loggedInUser.EligibilityGenderCanCreate || loggedInUser.EligibilityGenderCanSearch))
+                                                {
+                                                    <li class="dropdown dropdown-submenu">
+                                                        <a class="dropdown-toggle" data-toggle="dropdown">Gender</a>
+                                                        <ul class="dropdown-menu">
+                                                            @if (loggedInUser.EligibilityGenderCanCreate)
+                                                            {
+                                                                <li class="dispMsg">@Html.ActionLink("Create Suspect Case", "CreateGenderCase", "Eligibility")</li>
+                                                            }
+                                                            <li class="dispMsg">@Html.ActionLink("Get Queue", "GenderGetQueue", "EligibilityQueues")</li>
+                                                            @if (loggedInUser.EligibilityGenderCanSearch)
+                                                            {
+                                                                <li class="dispMsg">@Html.ActionLink("Search", "Search", "Common", new { @discCat = (long)DiscripancyCategory.Gender }, null)</li>
+                                                            }
+                                                        </ul>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                    @if (loggedInUser.IsRPRMenuVisible && (loggedInUser.RPRCanCreate || loggedInUser.RPRCanCSearch))
+                                    {
+                                        <li class="dropdown dropdown-submenu">
+                                            <a class="dropdown-toggle" data-toggle="dropdown">RPR</a>
+                                            <ul class="dropdown-menu">
+                                                @if (loggedInUser.RPRCanCreate)
+                                                {
+                                                    <li class="dispMsg">@Html.ActionLink("Create Suspect Case", "Create", "RPR")</li>
+                                                }
+                                                <li class="dispMsg">@Html.ActionLink("Get Queue", "RPRGetQueue", "RPRQueues")</li>
+                                                @if (loggedInUser.RPRCanCSearch)
+                                                {
+                                                    <li class="dispMsg">@Html.ActionLink("Search", "Search", "Common", new { discCat = (long)DiscripancyCategory.RPR }, null)</li>
+                                                }
+                                            </ul>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                            @if (loggedInUser.RoleLkup == (long)ENRLReconSystem.Utility.RoleLkup.Admin || loggedInUser.RoleLkup == (long)ENRLReconSystem.Utility.RoleLkup.Manager)
+                            {
+                                <li class="dropdown">
+                                    <a class="dropdown-toggle" data-toggle="dropdown">Manager<b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        @if (loggedInUser.CanMassUpload)
+                                        {
+                                            <li class="dispMsg">@Html.ActionLink("Bulk Upload", "BulkUpload", "BulkUpload")</li>
+                                        }
+                                        @if (loggedInUser.CanMassUnlock)
+                                        {
+                                            <li class="dispMsg">@Html.ActionLink("Unlock", "Unlock", "Manager")</li>
+                                        }
+                                        @if (loggedInUser.CanMassReassign)
+                                        {
+                                            <li class="dispMsg">@Html.ActionLink("Reassign", "ReAssign", "Manager")</li>
+                                        }
+                                        @if (loggedInUser.CanMassUpdate)
+                                        {
+                                            <li class="dispMsg">@Html.ActionLink("Mass Update", "MassUpdate", "Manager")</li>
+                                        }
+                                        @if (loggedInUser.CanMassUpdate)
+                                        {
+                                            <li class="dispMsg">@Html.ActionLink("Mass Update By Template", "Index", "MassUpdateTemplate")</li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                            <li class="dispMsg">@Html.ActionLink("Reports", "Reports", "Reports")</li>  
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown">Help<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li>@Html.ActionLink("About", "About", "Help")</li>
+                                    <li><a href="~/Help/UserManual.pdf" target="_blank">User Manual</a></li>
+                                    @*<li><a href="@Url.Action("UserManualDownload", "Login")" target="_blank">User Manual</a></li>*@                                    
+                                </ul>
+                            </li>
+                            <li class="dropdown pull-right user-prfrnc">
+                                <a class="dropdown-toggle" data-toggle="dropdown"><img src="~/Images/user-img.png" />@userName <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li id="lnkUserAccess"><a href="#"><img src="~/Images/roleicon.png" />User Access</a></li>
+                                    <li id="lnkUserPreferrence"><a href="#"><img src="~/Images/user-img.png" />User Preferences</a></li>
+                                    <li id="lnkUserLogout"><a href="#"><img src="~/Images/logout-icon.png" />Logout</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!-- /.navbar-collapse -->
+                </nav>
+            </div>
+        }
+        <script>
+                if ('@timeZone' != "") {
+                    UserPreferrenceTimeZone = '@timeZone';
+                }
+        </script>
+    }
+    @RenderBody()
+    @*PopUp*@
+
+    <div id="myModalUserPreferrence" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content" id="divMyModalUserPreferrence">
+
+            </div>
+        </div>
+    </div>
+    <div id="myModalUserAccess" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content" id="divMyModalUserAccess">
+
+            </div>
+        </div>
+    </div>
+
+    @*PopUp End*@
+    <footer id="footer" class="footer-wrapper">
+        <ul>
+            <li>Application Version: 1.0.0</li>
+            <li><a href=@Html.Raw(EmailHref)>Application Support</a></li>
+            <li>Copyright © 2018  <a target="_blank" href="http://www.unitedhealthgroup.com/">UnitedHealth Group</a> All Rights Reserved.</li>
+            <li><a target="_blank" href="https://hub.uhg.com/sites/hub/UnitedHealth-Group/d/Legal-Compliance-Regulatory-Affairs/Corporate-Privacy-Office/Documents/UHGPrivacyPolicyManual.pdf">Privacy Policy</a></li>
+        </ul>
+    </footer>
+
+    <script src="~/Scripts/Common/scriptUtility.js"></script>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/custom-validator")
+    @Scripts.Render("~/bundles/customscripts")
+
+    @RenderSection("scripts", required: false)
+
+    @*-----------for sjax spinner---------*@
+    <div class="spinnerModal"></div>
+    @*-----------------End----------------*@
+    @{
+        var conf = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration(System.Web.Hosting.HostingEnvironment.ApplicationVirtualPath);
+        var section = (System.Web.Configuration.SessionStateSection)conf.GetSection("system.web/sessionState");
+        string timeout = section.Timeout.TotalMinutes.ToString();
+    }
+    <script type="text/javascript">
+
+                if ($('#hdnPageName').val() != "Login") {
+                    //----Session Timeout
+                    //How frequently to check for session expiration in milliseconds(1 minute)
+                    var sess_pollInterval = 60000;
+                    //How many minutes the session is valid for
+                    var sess_expirationMinutes =@timeout;
+                    //How many minutes before the warning prompt
+                    var sess_warningMinutes = sess_expirationMinutes - 5;
+                    var sess_intervalID, _checkIntervalIfTimeOutID;
+                    var sess_lastActivity, staticTime;//variable to store the time the page is loaded.
+                    initSession();
+
+                    var ddd = 0;
+
+                    //JavaScript function that initializes the session time when the page loads
+                    function initSession() {
+                        sess_lastActivity = new Date();
+                        sessSetInterval();
+
+                        window.addEventListener('keypress.session', function (ed, e) {
+                            sessKeyPressed(ed, e);
+                        });
+                    }
+                    $(document).on({
+                        ///Performs a loading animation while doing ajax call
+                        ajaxStart: function () {
+                            sess_lastActivity = new Date();
+                        }
+                    });
+                    function sessKeyPressed(ed, e) {
+                        sess_lastActivity = new Date();
+                    }
+                    //function to set session interval
+                    function sessSetInterval() {
+                        sess_intervalID = setInterval('sessInterval()', sess_pollInterval);
+                    }
+                    function checkIntervalIfTimeOut() {
+                        _checkIntervalIfTimeOutID = setInterval('checkSessionTimeOut()', sess_pollInterval);
+                    }
+                    function sessClearInterval() {
+
+                        if (sess_intervalID != null && sess_intervalID != 'undefined') {
+                            clearInterval(sess_intervalID);
+                            sess_intervalID = null;
+
+                        }
+                        if (_checkIntervalIfTimeOutID != null && _checkIntervalIfTimeOutID != 'undefined') {
+                            clearInterval(_checkIntervalIfTimeOutID);
+                            _checkIntervalIfTimeOutID = null;
+                        }
+
+                    }
+                    function sessLogOut() {
+                        window.location.href = urlLogout;
+                    }
+                    function checkSessionTimeOut() {
+                        var curDateTime = new Date();
+                        var dateDiff = curDateTime - staticTime;
+                        //If differents is 5 min then Log out
+                        var diffInMinutes = (dateDiff / 1000 / 60);
+                        if (diffInMinutes > 5) {
+                            sessClearInterval();
+                            sessLogOut();
+                        }
+                    }
+                    //function to calculate session interval and to show a message whenever a session times out.
+                    function sessInterval() {
+                        var now = new Date();
+                        //get milliseconds of differneces
+                        var diff = now - sess_lastActivity;
+                        //get minutes between differences
+                        var diffMins = (diff / 1000 / 60);
+                        if (diffMins >= sess_warningMinutes) {
+                            //warn before expiring
+                            //stop the timer
+                            //start a interval to check whether 5 min over
+                            sessClearInterval();
+                            staticTime = new Date();
+                            checkIntervalIfTimeOut();
+                            MainLayout.fnConfirmDialogbox("Confirm!", 'Your session will expire in ' + (sess_expirationMinutes - sess_warningMinutes) + ' minutes, press Yes to remain logged in or press No to log off. \nIf you are logged off any changes will be lost.', function (isSuccess) {
+                                if (isSuccess == true) {
+                                    now = new Date();
+                                    diff = now - sess_lastActivity;
+                                    diffMins = (diff / 1000 / 60);
+                                    if (diffMins > sess_expirationMinutes) {
+                                        sessLogOut();
+                                    }
+                                    else {
+                                        fnDoRefreshSession();//ping to server for refresh the session
+                                        sessClearInterval();
+                                        initSession();
+                                    }
+                                }
+                                else {
+                                    sessLogOut();
+                                }
+                            });
+                            //prompt for attention
+                            // var active = confirm('Your session will expire in ' + (sess_expirationMinutes - sess_warningMinutes) + 'minutes, press OK to remain logged in or press Cancel to log off. \nIf you are logged off any changes will be lost.');
+                        }
+                    }
+
+                    fnDoRefreshSession = function () {
+                        try {
+                            $.ajax({
+                                url: urlDoRefreshSession,
+                                type: "POST",
+                                async:false,
+                                success: function (data) {
+                                },
+                                error: function (x) {
+                                }
+                            });
+                        } catch (e) {
+                        }
+                    };
+
+                }
+        //----------------------
+
+        var urlUserPreference = '@Url.Action("UserPreference", "UserPreference")';
+        $("#lnkUserPreferrence").on("click", function () {
+         //   $("#divProgress").show();
+            try {
+                $.ajax({
+                    url: urlUserPreference,
+                    type: "POST",
+                    success: function (data) {
+                        if (data != "") {
+                          //  $("#divProgress").hide();
+                            $("#divMyModalUserPreferrence").empty().html(data);
+                            $("#myModalUserPreferrence").modal('show');
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+                    },
+                    error: function (x) {
+                      //  $("#divProgress").hide();
+                        MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                    }
+                });
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", e.error);
+            }
+        });
+
+        var urlUserAccess = '@Url.Action("UserAccess", "UserPreference")';
+        $("#lnkUserAccess").on("click", function () {
+            try {
+                $.ajax({
+
+                    url: urlUserAccess,
+                    type: "POST",
+                    success: function (data) {
+                        if (data != "") {
+                          //  $("#divProgress").hide();
+                            $("#divMyModalUserAccess").empty().html(data);
+                            $("#myModalUserAccess").modal('show');
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+                    },
+                    error: function (x) {
+                     //   $("#divProgress").hide();
+                        MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                    }
+                });
+            } catch (e) {
+
+            }
+        });
+
+
+        $("#lnkUserLogout").on("click", function () {
+            MainLayout.fnShowProgressSpinner();
+            window.location(urlLogout);
+        });
+
+        //function to redirect on edit pending item click
+        fnGetQueueID = function (queueIdEnqr, queueId, strDiscrepancyCategory, prevPage, WorkQueue) {
+            //Need to find user has edit permission
+            var urlRedirection = "#";
+            var descCat = "";
+            var DiscrepancyCategory = parseInt(strDiscrepancyCategory);
+            if (strDiscrepancyCategory != undefined && strDiscrepancyCategory > 0)
+            {
+                switch (DiscrepancyCategory) {
+                    case parseInt(enums.DiscripancyCategory.OOA):
+                        //urlRedirection = '/OST/OOAProcessWork';
+                        urlRedirection = '@Url.Action("OOAProcessWork", "OST")';
+                        descCat = "OOA";
+                        break;
+                    case parseInt(enums.DiscripancyCategory.SCC):
+                        //urlRedirection = '/OST/SCCProcessWork';
+                        urlRedirection = '@Url.Action("SCCProcessWork", "OST")';
+                        descCat = "SCC";
+                        break;
+                    case parseInt(enums.DiscripancyCategory.TRR):
+                        //urlRedirection = '/OST/TRRProcessWork';
+                        urlRedirection = '@Url.Action("TRRProcessWork", "OST")';
+                        descCat = "TRR";
+                        break;
+                    case parseInt(enums.DiscripancyCategory.Eligibility):
+                        //urlRedirection = '/Eligibility/EligibilityProcessWork';
+                        urlRedirection = '@Url.Action("EligibilityProcessWork", "Eligibility")';
+                        descCat = "Eligibility";
+                        break;
+                    case parseInt(enums.DiscripancyCategory.DOB):
+                        //urlRedirection = '/Eligibility/DOBProcessWork';
+                        urlRedirection = '@Url.Action("DOBProcessWork", "Eligibility")';
+                        descCat = "DOB";
+                        break;
+                    case parseInt(enums.DiscripancyCategory.Gender):
+                        //urlRedirection = '/Eligibility/GenderProcessWork';
+                        urlRedirection = '@Url.Action("GenderProcessWork", "Eligibility")';
+                        descCat = "Gender";
+                        break;
+                    case parseInt(enums.DiscripancyCategory.RPR):
+                        //urlRedirection = '/RPR/RPRProcessWork';
+                        urlRedirection = '@Url.Action("RPRProcessWork", "RPR")';
+                        descCat = "RPR";
+                        break;
+                }
+            }
+            var url = '@Url.Action("CheckUserPermission", "Common")/' + enums.PermissionType.CanModify + '/' + strDiscrepancyCategory;
+            $.ajax({
+                //data: { DiscCat: strDiscrepancyCategory },
+                data: { DiscCat: strDiscrepancyCategory, WorkQueue: WorkQueue },
+                url: url,
+                type: "POST",
+                success: function (data) {
+                    if (data != "" && data == true) {
+                        if (strDiscrepancyCategory != undefined && strDiscrepancyCategory > 0) {
+                            var urlForLock = '@Url.Action("GetLockedRecordOrLockRecord", "RecordsLocked")';
+
+                            urlRedirection = urlRedirection + '?queueId=' + queueIdEnqr + "&pageName=" + prevPage;
+                            fnLockRecord(urlForLock, queueId, enums.ScreenType.Queue, urlRedirection);
+                        }
+                    }
+                    else {
+                        //alert("You  don't have edit permission.");
+                        MainLayout.fnAlertMessege("Alert!", "You don't have sufficient permission to perform Edit operation for " + descCat)
+                    }
+                },
+                error: function (x) {
+                    alert("An error occoured");
+                }
+            });
+        };
+    </script>
+</body>
+</html>

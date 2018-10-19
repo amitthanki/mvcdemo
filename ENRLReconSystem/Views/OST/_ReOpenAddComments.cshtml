@@ -1,0 +1,10 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@model DOGEN_OSTActions
+
+<div class="clearfix">
+    <div class="form-group textarea col-md-12">
+        <label for="txtComments" class="required">Comments</label>
+        @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").Required("Please enter Comments.").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+    </div>
+</div>

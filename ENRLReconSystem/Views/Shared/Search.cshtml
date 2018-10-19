@@ -1,0 +1,1552 @@
+﻿@using ENRLReconSystem.DO
+@using ENRLReconSystem.Utility
+@model UISearch
+@{
+    ViewBag.Title = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{ 
+    int searchRangeInDays= ConstantTexts.DefaultSearchRangeInDays;
+    if (!CacheUtility.GetMasterConfigurationByName(ConstantTexts.GetSearchRangeInDays).IsNullOrEmpty())
+    {
+        searchRangeInDays = CacheUtility.GetMasterConfigurationByName(ConstantTexts.GetSearchRangeInDays).ToInt32();
+    }
+}
+
+
+<style>
+    #tblSearchResult tbody tr td {
+        white-space: nowrap;
+    }
+
+    .dt-button {
+        display: none;
+    }
+</style>
+<input id="pageName" type="hidden" value="@ViewBag.pageName" />
+<section class="container main-body-wrpr">
+    <form id="frmSearch">
+        @Html.Partial("_SearchFilterPanel", (SearchCriteria)Model.SearchCriteria)
+    </form>
+    <div id="divSearchResults">
+        @Html.Partial("_SearchResultsPanel", Model.SearchPanel)
+    </div>
+
+</section>
+<div id="myModalView" class="modal fade">
+    <div class="modal-dialog" id="divDialog">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <div class="clearfix" id="divMyModalView">
+
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script>
+        var pageSerializedVal;
+        var LoadDiscTRRUrl = '@Url.Action("GetDiscrepancyOrTRRDataByTab", "Common")';
+        var urlForLock = '@Url.Action("GetLockedRecordOrLockRecord", "RecordsLocked")';
+        var urlLoadQueue = '@Url.Action("LoadQueue", "Common")';
+        var $myForm = $("#frmSearch");
+        var ReportsUrl = '@Url.Action("GetCommonReportURL", "Common")';
+        var winHistoryReport;
+        var ExcelSearchReport;
+        var workBasket='@Model.SearchCriteria.WorkBasketLkup';
+
+        window.onload = function () {
+            pageSerializedVal = $("#frmSearch").serialize();
+            if ($('#DiscrepancyStartDate').val() != null && $('#DiscrepancyStartDate').val() != "") {
+                $('#DiscrepancyStartDate_DPart').val(getDateTimeInMMDDYYYY($('#DiscrepancyStartDate').val()));
+            }
+            if ($('#DiscrepancyEndDate').val() != null && $('#DiscrepancyEndDate').val() != "") {
+                $('#DiscrepancyEndDate_DPart').val(getDateTimeInMMDDYYYY($('#DiscrepancyEndDate').val()));
+            }
+            if ($('#DOB').val() != null && $('#DOB').val() != "") {
+                $('#DOB_DPart').val(getDateTimeInMMDDYYYY($('#DOB').val()));
+            }
+            if ($('#FirstLetterMailStartDate').val() != null && $('#FirstLetterMailStartDate').val() != "") {
+                $('#FirstLetterMailStartDate_DPart').val(getDateTimeInMMDDYYYY($('#FirstLetterMailStartDate').val()));
+            }
+            if ($('#FirstLetterMailEndDate').val() != null && $('#FirstLetterMailEndDate').val() != "") {
+                $('#FirstLetterMailEndDate_DPart').val(getDateTimeInMMDDYYYY($('#FirstLetterMailEndDate').val()));
+            }
+            if ($('#SecondLetterMailStartDate').val() != null && $('#SecondLetterMailStartDate').val() != "") {
+                $('#SecondLetterMailStartDate_DPart').val(getDateTimeInMMDDYYYY($('#SecondLetterMailStartDate').val()));
+            }
+            if ($('#SecondLetterMailEndDate').val() != null && $('#SecondLetterMailEndDate').val() != "") {
+                $('#SecondLetterMailEndDate_DPart').val(getDateTimeInMMDDYYYY($('#SecondLetterMailEndDate').val()));
+            }
+            if ($('#ComplianceStartDate').val() != null && $('#ComplianceStartDate').val() != "") {
+                $('#ComplianceStartDate_DPart').val(getDateTimeInMMDDYYYY($('#ComplianceStartDate').val()));
+            }
+            if ($('#ComplianceEndDate').val() != null && $('#ComplianceEndDate').val() != "") {
+                $('#ComplianceEndDate_DPart').val(getDateTimeInMMDDYYYY($('#ComplianceEndDate').val()));
+            }
+            if ($('#CaseCreationStartDate').val() != null && $('#CaseCreationStartDate').val() != "") {
+                $('#CaseCreationStartDate_DPart').val(getDateTimeInMMDDYYYY($('#CaseCreationStartDate').val()));
+            }
+            if ($('#CaseCreationEndDate').val() != null && $('#CaseCreationEndDate').val() != "") {
+                $('#CaseCreationEndDate_DPart').val(getDateTimeInMMDDYYYY($('#CaseCreationEndDate').val()));
+            }
+            if ($('#LastUpdatedStartDate').val() != null && $('#LastUpdatedStartDate').val() != "") {
+                $('#LastUpdatedStartDate_DPart').val(getDateTimeInMMDDYYYY($('#LastUpdatedStartDate').val()));
+            }
+            if ($('#LastUpdatedEndDate').val() != null && $('#LastUpdatedEndDate').val() != "") {
+                $('#LastUpdatedEndDate_DPart').val(getDateTimeInMMDDYYYY($('#LastUpdatedEndDate').val()));
+            }
+            if ($('#MemberResponseVerificationStartDate').val() != null && $('#MemberResponseVerificationStartDate').val() != "") {
+                $('#MemberResponseVerificationStartDate_DPart').val(getDateTimeInMMDDYYYY($('#MemberResponseVerificationStartDate').val()));
+            }
+            if ($('#MemberResponseVerificationEndDate').val() != null && $('#MemberResponseVerificationEndDate').val() != "") {
+                $('#MemberResponseVerificationEndDate_DPart').val(getDateTimeInMMDDYYYY($('#MemberResponseVerificationEndDate').val()));
+            }
+            if ($('#RequestedEffectiveStartDate').val() != null && $('#RequestedEffectiveStartDate').val() != "") {
+                $('#RequestedEffectiveStartDate_DPart').val(getDateTimeInMMDDYYYY($('#RequestedEffectiveStartDate').val()));
+            }
+            if ($('#RequestedEffectiveEndDate').val() != null && $('#RequestedEffectiveEndDate').val() != "") {
+                $('#RequestedEffectiveEndDate_DPart').val(getDateTimeInMMDDYYYY($('#RequestedEffectiveEndDate').val()));
+            }
+            if ($('#AdjustedCreateStartDate').val() != null && $('#AdjustedCreateStartDate').val() != "") {
+                $('#AdjustedCreateStartDate_DPart').val(getDateTimeInMMDDYYYY($('#AdjustedCreateStartDate').val()));
+            }
+            if ($('#AdjustedCreateEndDate').val() != null && $('#AdjustedCreateEndDate').val() != "") {
+                $('#AdjustedCreateEndDate_DPart').val(getDateTimeInMMDDYYYY($('#AdjustedCreateEndDate').val()));
+            }
+            if ($('#RPCSubmissionStartDate').val() != null && $('#RPCSubmissionStartDate').val() != "") {
+                $('#RPCSubmissionStartDate_DPart').val(getDateTimeInMMDDYYYY($('#RPCSubmissionStartDate').val()));
+            }
+            if ($('#RPCSubmissionEndDate').val() != null && $('#RPCSubmissionEndDate').val() != "") {
+                $('#RPCSubmissionEndDate_DPart').val(getDateTimeInMMDDYYYY($('#RPCSubmissionEndDate').val()));
+            }
+            if ($('#CMSAccountManagerApprovalStartDate').val() != null && $('#CMSAccountManagerApprovalStartDate').val() != "") {
+                $('#CMSAccountManagerApprovalStartDate_DPart').val(getDateTimeInMMDDYYYY($('#CMSAccountManagerApprovalStartDate').val()));
+            }
+            if ($('#CMSAccountManagerApprovalEndDate').val() != null && $('#CMSAccountManagerApprovalEndDate').val() != "") {
+                $('#CMSAccountManagerApprovalEndDate_DPart').val(getDateTimeInMMDDYYYY($('#CMSAccountManagerApprovalEndDate').val()));
+            }
+            if ($('#FDRReceivedStartDate').val() != null && $('#FDRReceivedStartDate').val() != "") {
+                $('#FDRReceivedStartDate_DPart').val(getDateTimeInMMDDYYYY($('#FDRReceivedStartDate').val()));
+            }
+            if ($('#FDRReceivedEndDate').val() != null && $('#FDRReceivedEndDate').val() != "") {
+                $('#FDRReceivedEndDate_DPart').val(getDateTimeInMMDDYYYY($('#FDRReceivedEndDate').val()));
+            }
+            if ($('#PeerAuditCompletionStartDate').val() != null && $('#PeerAuditCompletionStartDate').val() != "") {
+                $('#PeerAuditCompletionStartDate_DPart').val(getDateTimeInMMDDYYYY($('#PeerAuditCompletionStartDate').val()));
+            }
+            if ($('#PeerAuditCompletionEndDate').val() != null && $('#PeerAuditCompletionEndDate').val() != "") {
+                $('#PeerAuditCompletionEndDate_DPart').val(getDateTimeInMMDDYYYY($('#PeerAuditCompletionEndDate').val()));
+            }
+            if ($('#DisenrollmentFromDate').length>0 && $('#DisenrollmentFromDate').val() != null && $('#DisenrollmentFromDate').val() != "") {
+                $('#DisenrollmentFromDate_DPart').val(getDateTimeInMMDDYYYY($('#DisenrollmentFromDate').val()));
+            }
+            if ($('#DisenrollmentToDate').length>0 && $('#DisenrollmentToDate').val() != null && $('#DisenrollmentToDate').val() != "") {
+                $('#DisenrollmentToDate_DPart').val(getDateTimeInMMDDYYYY($('#DisenrollmentToDate').val()));
+            }
+        };
+
+    //custom validations on dates
+    function validateCustom() {
+        var StartDate = ($("#CaseCreationStartDate_DPart").val() != "") ? new Date($('#CaseCreationStartDate').val()) : null;
+        var EndDate = ($("#CaseCreationEndDate_DPart").val() != "") ? new Date($('#CaseCreationEndDate').val()) : null;
+        var LastUpdatedOnStartDate = ($("#LastUpdatedStartDate_DPart").val() != "") ? new Date($('#LastUpdatedStartDate').val()) : null;
+        var LastUpdatedOnEndDate = ($("#LastUpdatedEndDate_DPart").val() != "") ? new Date($('#LastUpdatedEndDate').val()) : null;
+        var ComplianceStartDate = ($("#ComplianceStartDate_DPart").val() != "") ? new Date($('#ComplianceStartDate').val()) : null;
+        var ComplianceEndDate = ($("#ComplianceEndDate_DPart").val() != "") ? new Date($('#ComplianceEndDate').val()) : null;
+
+        var today = new Date();
+        var errorList = "";
+        var isValid = true;
+        today.setHours(0, 0, 0, 0);
+        if ($('#txtWorkItemID').val() == "" && $('#CaseCreationStartDate_DPart').val() == "" && $('#CaseCreationEndDate_DPart').val() == "" && $('#ComplianceStartDate_DPart').val() == "" && $('#ComplianceEndDate_DPart').val() == "" && $('#LastUpdatedStartDate_DPart').val() == "" && $('#LastUpdatedEndDate_DPart').val() == "" && $('#txtCurrentHICN').val() == "" && $('#ddlDiscrepancyCat').val() == "" && $('#ddlDiscrepancyType').val() == "") {
+            errorList = errorList + "To perform a search, you must enter one of the following: ERS Case ID,Case created Start Date & End Date,Complience Start Date From and To ,Last Updated on From & To, Discrepancy Category , Discrepancy Type";
+            isValid = false;
+        }
+        else {
+            if (((StartDate == null || StartDate == '') && (EndDate != null && EndDate != '')) || ((StartDate != null && StartDate != '') && (EndDate == null || EndDate == ''))) {
+                if (StartDate == null || StartDate == '') {
+                    $('#CaseCreationStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Created Date(From) must be provided when Created Date(To) is present</li>';
+                    isValid = false;
+                }
+                else if (EndDate == null || EndDate == '') {
+                    $('#CaseCreationEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Created Date(To) must be provided when Start Date is present</li>';
+                    isValid = false;
+                }
+            }
+            else if (EndDate > today) {
+                $('#CaseCreationEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Created Date(To) cannot be future Date.</li>';
+                isValid = false;
+            } else {
+                if (StartDate > EndDate) {
+                    $('#CaseCreationStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Created Date(From) must be less than  End Date.</li>';
+                    isValid = false;
+                } else if (StartDate != null && EndDate != null) {
+                    var diff = daysBetween(EndDate, StartDate);
+                    if (diff > @searchRangeInDays) {
+                        $('#CaseCreationStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        $('#CaseCreationEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        errorList = errorList + '<li>Created Date(From) and Created Date(To) range cannot be greater than '+ @searchRangeInDays +' days</li>';
+                        isValid = false;
+                    }
+                }
+            }
+            if (StartDate > today) {
+                $('#CaseCreationStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Created Date(From) cannot be future Date.</li>';
+                isValid = false;
+            }
+
+            if (((LastUpdatedOnStartDate == null || LastUpdatedOnStartDate == '') && (LastUpdatedOnEndDate != null && LastUpdatedOnEndDate != '')) || ((LastUpdatedOnStartDate != null && LastUpdatedOnStartDate != '') && (LastUpdatedOnEndDate == null || LastUpdatedOnEndDate == ''))) {
+                if (LastUpdatedOnStartDate == null || LastUpdatedOnStartDate == '') {
+                    $('#LastUpdatedStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Last Updated On(From) must be provided when Last Updated On(To) is present</li>';
+                    isValid = false;
+                }
+                else if (LastUpdatedOnEndDate == null || LastUpdatedOnEndDate == '') {
+                    $('#LastUpdatedEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Last Updated On(To) must be provided when Last Updated On(From) is present</li>';
+                    isValid = false;
+                }
+            }
+
+            else if (LastUpdatedOnEndDate > today) {
+                $('#LastUpdatedEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Last Updated On(To) cannot be future Date.</li>';
+                isValid = false;
+            } else {
+                if (LastUpdatedOnStartDate > LastUpdatedOnEndDate) {
+                    $('#LastUpdatedStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Last Updated On(From) must be less than  Last Updated On(To).</li>';
+                    isValid = false;
+                } else if (LastUpdatedOnStartDate != null && LastUpdatedOnEndDate != null) {
+                    var diff = daysBetween(LastUpdatedOnEndDate, LastUpdatedOnStartDate);
+                    if (diff > @searchRangeInDays) {
+                        $('#LastUpdatedStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        $('#LastUpdatedEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        errorList = errorList + '<li>Last Updated On(From) and Last Updated On(To) range cannot be greater than '+ @searchRangeInDays +' days</li>';
+                        isValid = false;
+                    }
+                }
+            }
+            if (LastUpdatedOnStartDate > today) {
+                $('#LastUpdatedStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Last Updated On(From) cannot be future Date.</li>';
+                isValid = false;
+            }
+
+
+            if (((ComplianceStartDate == null || ComplianceStartDate == '') && (ComplianceEndDate != null && ComplianceEndDate != '')) || ((ComplianceStartDate != null && ComplianceStartDate != '') && (ComplianceEndDate == null || ComplianceEndDate == ''))) {
+                if (ComplianceStartDate == null || ComplianceStartDate == '') {
+                    $('#ComplianceStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Compliance Start Date(From) must be provided when Compliance Start Date(To) is present</li>';
+                    isValid = false;
+                }
+                else if (LastUpdatedOnEndDate == null || LastUpdatedOnEndDate == '') {
+                    $('#ComplianceEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Compliance Start Date(To) must be provided when Compliance Start Date(From) is present</li>';
+                    isValid = false;
+                }
+            }
+            else if (ComplianceEndDate > today) {
+                $('#ComplianceEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Compliance Start Date(To) cannot be future Date.</li>';
+                isValid = false;
+            } else {
+                if (ComplianceStartDate > ComplianceEndDate) {
+                    $('#ComplianceStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Compliance Start Date(From) must be less than  Compliance Start Date(To).</li>';
+                    isValid = false;
+                } else if (ComplianceStartDate != null && ComplianceEndDate != null) {
+                    var diff = daysBetween(ComplianceEndDate, ComplianceStartDate);
+                    if (diff > @searchRangeInDays) {
+                        $('#ComplianceStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        $('#ComplianceEndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                        errorList = errorList + '<li>Compliance Start Date(From) and Compliance Start Date(To) range cannot be greater than '+ @searchRangeInDays +' days</li>';
+                        isValid = false;
+                    }
+                }
+            }
+            if (ComplianceStartDate > today) {
+                $('#ComplianceStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Compliance Start Date(From) cannot be future Date.</li>';
+                isValid = false;
+            }
+            ///////////
+            if ($("#txtWorkItemID").val() == "" && $("#txtCurrentHICN").val() == "" && $("#txtGPSHouseholdIDSearch").val()=="") {
+                if (workBasket == "3001") {
+                    if ($('#ComplianceStartDate_DPart').val() == "" && $('#ComplianceEndDate_DPart').val() == "") {
+                        errorList = errorList + "Compliance Start Date(From)  and Compliance Start Date(To) is required.";
+                        isValid = false;
+                    }
+                }
+                else {
+                    if ($('#CaseCreationStartDate_DPart').val() == "" && $('#CaseCreationEndDate_DPart').val() == "") {
+                        errorList = errorList + "Created Date(From)  and Created Date(To) is required.";
+                        isValid = false;
+                    }
+                }
+            }
+            //////////
+        }
+        
+        if (!isValid) {
+            if ($('.validation-summary-errors').length != 0) {
+                //if validion errors div is present add errors to list
+                $('.validation-summary-errors ul').append(errorList);
+            } else {
+                //if validion errors div is not present update validation-summary-valid div and add errors to list
+                $('.validation-summary-valid').addClass('validation-summary-errors').removeClass('validation-summary-valid');
+                $('.validation-summary-errors ul').html("");
+                $('.validation-summary-errors ul').append(errorList);
+            }
+        }
+        return isValid;
+        };
+    //function to set model date time values from date time picker
+    function fnGetDateIntoHdnFields() {
+        var date = $('#DiscrepancyStartDate_DPart').val();
+        if (date != null && date != '') {
+            $('#DiscrepancyStartDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#DiscrepancyStartDate').val(null);
+        }
+        date = $('#DiscrepancyEndDate_DPart').val();
+        if (date != null && date != '') {
+            $('#DiscrepancyEndDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#DiscrepancyEndDate').val(null);
+        }
+        date = $('#DOB_DPart').val();
+        if (date != null && date != '') {
+            $('#DOB').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#DOB').val(null);
+        }
+        date = $('#FirstLetterMailStartDate_DPart').val();
+        if (date != null && date != '') {
+            $('#FirstLetterMailStartDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#FirstLetterMailStartDate').val(null);
+        }
+        date = $('#FirstLetterMailEndDate_DPart').val();
+        if (date != null && date != '') {
+            $('#FirstLetterMailEndDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#FirstLetterMailEndDate').val(null);
+        }
+        date = $('#SecondLetterMailStartDate_DPart').val();
+        if (date != null && date != '') {
+            $('#SecondLetterMailStartDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#SecondLetterMailStartDate').val(null);
+        }
+        date = $('#SecondLetterMailEndDate_DPart').val();
+        if (date != null && date != '') {
+            $('#SecondLetterMailEndDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#SecondLetterMailEndDate').val(null);
+        }
+        date = $('#ComplianceStartDate_DPart').val();
+        if (date != null && date != '') {
+            $('#ComplianceStartDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#ComplianceStartDate').val(null);
+        }
+        date = $('#ComplianceEndDate_DPart').val();
+        if (date != null && date != '') {
+            $('#ComplianceEndDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#ComplianceEndDate').val(null);
+        }
+        date = $('#CaseCreationStartDate_DPart').val();
+        if (date != null && date != '') {
+            $('#CaseCreationStartDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#CaseCreationStartDate').val(null);
+        }
+        date = $('#CaseCreationEndDate_DPart').val();
+        if (date != null && date != '') {
+            $('#CaseCreationEndDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#CaseCreationEndDate').val(null);
+        }
+
+        date = $('#LastUpdatedStartDate_DPart').val();
+        if (date != null && date != '') {
+            $('#LastUpdatedStartDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#LastUpdatedStartDate').val(null);
+        }
+        date = $('#LastUpdatedEndDate_DPart').val();
+        if (date != null && date != '') {
+            $('#LastUpdatedEndDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#LastUpdatedEndDate').val(null);
+        }
+
+        date = $('#MemberResponseVerificationStartDate_DPart').val();
+        if (date != null && date != '') {
+            $('#MemberResponseVerificationStartDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#MemberResponseVerificationStartDate').val(null);
+        }
+        date = $('#MemberResponseVerificationEndDate_DPart').val();
+        if (date != null && date != '') {
+            $('#MemberResponseVerificationEndDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#MemberResponseVerificationEndDate').val(null);
+        }
+        date = $('#RequestedEffectiveStartDate_DPart').val();
+        if (date != null && date != '') {
+            $('#RequestedEffectiveStartDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#RequestedEffectiveStartDate').val(null);
+        }
+        date = $('#RequestedEffectiveEndDate_DPart').val();
+        if (date != null && date != '') {
+            $('#RequestedEffectiveEndDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#RequestedEffectiveEndDate').val(null);
+        }
+        date = $('#AdjustedCreateStartDate_DPart').val();
+        if (date != null && date != '') {
+            $('#AdjustedCreateStartDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#AdjustedCreateStartDate').val(null);
+        }
+        date = $('#AdjustedCreateEndDate_DPart').val();
+        if (date != null && date != '') {
+            $('#AdjustedCreateEndDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#AdjustedCreateEndDate').val(null);
+        }
+        date = $('#RPCSubmissionStartDate_DPart').val();
+        if (date != null && date != '') {
+            $('#RPCSubmissionStartDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#RPCSubmissionStartDate').val(null);
+        }
+        date = $('#RPCSubmissionEndDate_DPart').val();
+        if (date != null && date != '') {
+            $('#RPCSubmissionEndDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#RPCSubmissionEndDate').val(null);
+        }
+        date = $('#CMSAccountManagerApprovalStartDate_DPart').val();
+        if (date != null && date != '') {
+            $('#CMSAccountManagerApprovalStartDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#CMSAccountManagerApprovalStartDate').val(null);
+        }
+        date = $('#CMSAccountManagerApprovalEndDate_DPart').val();
+        if (date != null && date != '') {
+            $('#CMSAccountManagerApprovalEndDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#CMSAccountManagerApprovalEndDate').val(null);
+        }
+        date = $('#FDRReceivedStartDate_DPart').val();
+        if (date != null && date != '') {
+            $('#FDRReceivedStartDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#FDRReceivedStartDate').val(null);
+        }
+        date = $('#FDRReceivedEndDate_DPart').val();
+        if (date != null && date != '') {
+            $('#FDRReceivedEndDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#FDRReceivedEndDate').val(null);
+        }
+        date = $('#PeerAuditCompletionStartDate_DPart').val();
+        if (date != null && date != '') {
+            $('#PeerAuditCompletionStartDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#PeerAuditCompletionStartDate').val(null);
+        }
+        date = $('#PeerAuditCompletionEndDate_DPart').val();
+        if (date != null && date != '') {
+            $('#PeerAuditCompletionEndDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#PeerAuditCompletionEndDate').val(null);
+        }
+        date = $('#DisenrollmentFromDate_DPart').val();
+        if (date != null && date != '') {
+            $('#DisenrollmentFromDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#DisenrollmentFromDate').val(null);
+        }
+        date = $('#DisenrollmentToDate_DPart').val();
+        if (date != null && date != '') {
+            $('#DisenrollmentToDate').val(getDateTimeInMMDDYYYY(date));
+        } else {
+            $('#DisenrollmentToDate').val(null);
+        }
+      };
+    //$(document).on("click", "#btnExportToExcel", function () {
+    //    try {
+    //        if ($('#tblSearchResult tbody tr').length > 0) {
+    //            $("#tblSearchResult_wrapper .buttons-excel").click();
+    //        }
+    //        else {
+    //            MainLayout.fnAlertMessege("Alert!", "No record to export.");
+    //        }
+    //    } catch (e) {
+
+    //    }
+    //});
+
+
+        $(document).on("click", "#btnSearch", function (e) {
+            try {
+                fnProcessSearch();
+            } catch (e) {
+                alert("An error occoured");
+            }
+
+        });
+
+        fnProcessSearch = function () {
+            try {
+                $('.validation-summary-errors ul').empty();// clear the error messages
+                $(':input').removeClass("input-validation-error").addClass("valid");// remove border
+                var url = '@Url.Action("CheckSearchPermission", "Common")';
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    success: function (data) {
+                        if (data == true) {
+                            fnGetDateIntoHdnFields();
+                            var isFormValid = $("#frmSearch").valid();
+                            var custValidation = validateCustom();
+                            if (custValidation && isFormValid) // custom Validations
+                            {
+                                url = '@Url.Action("Search", "Common")';
+                                $.ajax({
+                                    url: url,
+                                    data: $("#frmSearch").serialize(),
+                                    type: "POST",
+                                    success: function (data) {
+                                        if (data != null) {
+                                            $('#divSearchResults').empty().html(data);
+                                            fnSearchInitialiseDataTable();
+                                        }
+                                    },
+                                    error: function (x) {
+                                        alert("An error occoured");
+                                    },
+                                });
+                            }
+                        } else if (data == false) {
+                            alert("You  don't have search permission.");
+                        }
+                    },
+                    error: function (x) {
+                        alert("An error occoured");
+                    },
+                });
+
+            } catch (e) {
+                throw e;
+
+            }
+        };
+
+        $(document).on("click", "#btnExportReportToExcel", function (e) {
+            try {
+                //
+                fnExportToExcelReport();
+            }
+            catch (e) {
+                alert("An error occured");
+            }
+        });
+
+        fnExportToExcelReport = function () {
+            try {
+
+                $('.validation-summary-errors ul').empty(); // clear the error messages
+                $(':input').removeClass("input-validation-error").addClass("valid"); // remove border
+                fnGetDateIntoHdnFields();
+                var url = '@Url.Action("CheckSearchPermission", "Common")';
+
+                var objSearch = $("#frmSearch").serialize();
+
+                $.ajax({
+                    url: url,
+
+                    type: "POST",
+                    success: function (data) {
+                        //
+                        if (data == true) {
+                            fnGetDateIntoHdnFields();
+                            var isFormValid = $("#frmSearch").valid();
+                            if (!validateCustom() && isFormValid) {
+                                return
+                            }
+                            else {
+
+                                url = '@Url.Action("GetSearchQueueReport", "Common")';
+                                
+                                $.ajax({
+                                    url: url,
+                                    data: $("#frmSearch").serialize(),
+                                    type: "POST",
+                                    success: function (data) {
+                                        if (data != "")
+                                            var reportData = data.Data;
+
+                                        if ($("#frmSearch")[0].WorkItemId != undefined) {
+                                            if ($("#frmSearch")[0].WorkItemId.value != '') {
+                                                reportData = reportData + "&WorkItemId=" + $("#frmSearch")[0].WorkItemId.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].BusinessSegmentLkup != undefined) {
+                                            if ($("#frmSearch")[0].BusinessSegmentLkup.value != '') {
+                                                reportData = reportData + "&BusinessSegmentLkup=" + $("#frmSearch")[0].BusinessSegmentLkup.value;
+                                            }
+                                        }
+                                        if (data.WorkBasketLkup != null) {
+                                            reportData = reportData + "&WorkBasketLkup=" + data.WorkBasketLkup;
+                                        }
+
+                                        if ($("#frmSearch")[0].DiscrepancyCategoryLkup != undefined) {
+                                            if ($("#frmSearch")[0].DiscrepancyCategoryLkup.value != '') {
+                                                reportData = reportData + "&DiscrepancyCategoryLkup=" + $("#frmSearch")[0].DiscrepancyCategoryLkup.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].DiscrepancyTypeLkup != undefined) {
+                                            if ($("#frmSearch")[0].DiscrepancyTypeLkup.value != '') {
+                                                reportData = reportData + "&DiscrepancyTypeLkup=" + $("#frmSearch")[0].DiscrepancyTypeLkup.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].DiscrepancySourceLkup != undefined) {
+                                            if ($("#frmSearch")[0].DiscrepancySourceLkup.value != '') {
+                                                reportData = reportData + "&DiscrepancySourceLkup=" + $("#frmSearch")[0].DiscrepancySourceLkup.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].LOBLkup != undefined) {
+                                            if ($("#frmSearch")[0].LOBLkup.value != '') {
+                                                reportData = reportData + "&LOBLkup=" + $("#frmSearch")[0].LOBLkup.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].LastUpDateIddOperator != undefined) {
+                                            if ($("#frmSearch")[0].LastUpDateIddOperator.value != '') {
+                                                reportData = reportData + "&LastUpDateIddOperator=" + $("#frmSearch")[0].LastUpDateIddOperator.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].AssignedTo != undefined) {
+                                            if ($("#frmSearch")[0].AssignedTo.value != '') {
+                                                reportData = reportData + "&AssignedTo=" + $("#frmSearch")[0].AssignedTo.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].RPRActionRequested != undefined) {
+                                            if ($("#frmSearch")[0].RPRActionRequested.value != '') {
+                                                reportData = reportData + "&RPRActionRequested=" + $("#frmSearch")[0].RPRActionRequested.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].SupervisiorofthePersonEnteringtheRequest != undefined) {
+                                            if ($("#frmSearch")[0].SupervisiorofthePersonEnteringtheRequest.value != '') {
+                                                reportData = reportData + "&SupervisiorofthePersonEnteringtheRequest=" + $("#frmSearch")[0].SupervisiorofthePersonEnteringtheRequest.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].RPRCTMMember != undefined) {
+                                            if ($("#frmSearch")[0].RPRCTMMember.value != '') {
+                                                reportData = reportData + "&RPRCTMMember=" + $("#frmSearch")[0].RPRCTMMember.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].RPREGHPMember != undefined) {
+                                            if ($("#frmSearch")[0].RPREGHPMember.value != '') {
+                                                reportData = reportData + "&RPREGHPMember=" + $("#frmSearch")[0].RPREGHPMember.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].FDRStatus != undefined) {
+                                            if ($("#frmSearch")[0].FDRStatus.value != '') {
+                                                reportData = reportData + "&FDRStatus=" + $("#frmSearch")[0].FDRStatus.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].VerifiedRootCause != undefined) {
+                                            if ($("#frmSearch")[0].VerifiedRootCause.value != '') {
+                                                reportData = reportData + "&VerifiedRootCause=" + $("#frmSearch")[0].VerifiedRootCause.value;
+                                            }
+                                        }
+
+
+                                        if ($("#frmSearch")[0].TaskBeingPerformedWhenThisDiscrepancyWasIdentified != undefined) {
+                                            if ($("#frmSearch")[0].TaskBeingPerformedWhenThisDiscrepancyWasIdentified.value != '') {
+                                                reportData = reportData + "&TaskBeingPerformedWhenThisDiscrepancyWasIdentified=" + $("#frmSearch")[0].TaskBeingPerformedWhenThisDiscrepancyWasIdentified.value;
+                                            }
+                                        }
+
+
+                                        if ($("#frmSearch")[0].SubmissionTypeLkup != undefined) {
+                                            if ($("#frmSearch")[0].SubmissionTypeLkup.value != '') {
+                                                reportData = reportData + "&SubmissionTypeLkup=" + $("#frmSearch")[0].SubmissionTypeLkup.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].PendReason != undefined) {
+                                            if ($("#frmSearch")[0].PendReason.value != '') {
+                                                reportData = reportData + "&PendReason=" + $("#frmSearch")[0].PendReason.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].Resolution != undefined) {
+                                            if ($("#frmSearch")[0].Resolution.value != '') {
+                                                reportData = reportData + "&Resolution=" + $("#frmSearch")[0].Resolution.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].RPRRequestor != undefined) {
+                                            if ($("#frmSearch")[0].RPRRequestor.value != '') {
+                                                reportData = reportData + "&RPRRequestor=" + $("#frmSearch")[0].RPRRequestor.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].Queue != undefined) {
+                                            if ($("#frmSearch")[0].Queue.value != '') {
+                                                reportData = reportData + "&Queue=" + $("#frmSearch")[0].Queue.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].Status != undefined) {
+                                            if ($("#frmSearch")[0].Status.value != '') {
+                                                reportData = reportData + "&Status=" + $("#frmSearch")[0].Status.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].GenderLkup != undefined) {
+                                            if ($("#frmSearch")[0].GenderLkup.value != '') {
+                                                reportData = reportData + "&GenderLkup=" + $("#frmSearch")[0].GenderLkup.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].CaseAgeFrom != undefined) {
+                                            if ($("#frmSearch")[0].CaseAgeFrom.value != '') {
+                                                reportData = reportData + "&CaseAgeFrom=" + $("#frmSearch")[0].CaseAgeFrom.value;
+                                            }
+
+                                        }
+
+                                        if ($("#frmSearch")[0].CaseAgeTo != undefined) {
+                                            if ($("#frmSearch")[0].CaseAgeTo.value != '') {
+                                                reportData = reportData + "&CaseAgeTo=" + $("#frmSearch")[0].CaseAgeTo.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].ContractIDLkup != undefined) {
+                                            if ($("#frmSearch")[0].ContractIDLkup.value != '') {
+                                                reportData = reportData + "&ContractIDLkup=" + $("#frmSearch")[0].ContractIDLkup.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].PBPLkup != undefined) {
+                                            if ($("#frmSearch")[0].PBPLkup.value != '') {
+                                                reportData = reportData + "&PBPLkup=" + $("#frmSearch")[0].PBPLkup.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].CurrentHICN != undefined) {
+                                            if ($("#frmSearch")[0].CurrentHICN.value != '') {
+                                                reportData = reportData + "&CurrentHICN=" + $("#frmSearch")[0].CurrentHICN.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].RPRCTMNumber != undefined) {
+                                            if ($("#frmSearch")[0].RPRCTMNumber.value != '') {
+                                                reportData = reportData + "&RPRCTMNumber=" + $("#frmSearch")[0].RPRCTMNumber.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].MemberSCCCode != undefined) {
+                                            if ($("#frmSearch")[0].MemberSCCCode.value != '') {
+                                                reportData = reportData + "&MemberSCCCode=" + $("#frmSearch")[0].MemberSCCCode.value;
+                                            }
+
+                                        }
+
+                                        if ($("#frmSearch")[0].FirstName != undefined) {
+                                            if ($("#frmSearch")[0].FirstName.value != '') {
+                                                reportData = reportData + "&FirstName=" + $("#frmSearch")[0].FirstName.value;
+                                            }
+                                        }
+
+
+                                        if ($("#frmSearch")[0].LastName != undefined) {
+                                            if ($("#frmSearch")[0].LastName.value != '') {
+                                                reportData = reportData + "&LastName=" + $("#frmSearch")[0].LastName.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].FDRCodeReceived != undefined) {
+                                            if ($("#frmSearch")[0].FDRCodeReceived.value != '') {
+                                                reportData = reportData + "&FDRCodeReceived=" + $("#frmSearch")[0].FDRCodeReceived.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].RPREmployerID != undefined) {
+                                            if ($("#frmSearch")[0].RPREmployerID.value != '') {
+                                                reportData = reportData + "&RPREmployerID=" + $("#frmSearch")[0].RPREmployerID.value;
+                                            }
+                                        }
+
+                                        if ($("#frmSearch")[0].TransactionReplyCode != undefined) {
+                                            if ($("#frmSearch")[0].TransactionReplyCode.value != '') {
+                                                reportData = reportData + "&TransactionReplyCode=" + $("#frmSearch")[0].TransactionReplyCode.value;
+                                            }
+                                        }
+
+                                        if (data.DiscrepancyStartDateId != 0 && data.DiscrepancyStartDateId != null) {
+                                            reportData = reportData + "&DiscrepancyStartDateId=" + data.DiscrepancyStartDateId;
+                                        }
+
+                                        if (data.DiscrepancyEndDateId != 0 && data.DiscrepancyEndDateId != null) {
+                                            reportData = reportData + "&DiscrepancyEndDateId=" + data.DiscrepancyEndDateId;
+                                        }
+
+                                        if (data.CaseCreationStartDateId != 0 && data.CaseCreationStartDateId != null) {
+                                            reportData = reportData + "&CaseCreationStartDateId=" + data.CaseCreationStartDateId;
+                                        }
+
+                                        if (data.CaseCreationEndDateId != 0 && data.CaseCreationEndDateId != null) {
+                                            reportData = reportData + "&CaseCreationEndDateId=" + data.CaseCreationEndDateId;
+                                        }
+
+                                        if (data.DOBId != 0 && data.DOBId != null) {
+                                            reportData = reportData + "&DOBId=" + data.DOBId;
+                                        }
+
+                                        if (data.FirstLetterMailStartDateId != 0 && data.FirstLetterMailStartDateId != null) {
+                                            reportData = reportData + "&FirstLetterMailStartDateId=" + data.FirstLetterMailStartDateId;
+                                        }
+
+                                        if (data.FirstLetterMailEndDateId != 0 && data.FirstLetterMailEndDateId != null) {
+                                            reportData = reportData + "&FirstLetterMailEndDateId=" + data.FirstLetterMailEndDateId;
+                                        }
+
+                                        if (data.SecondLetterMailStartDateId != 0 && data.SecondLetterMailStartDateId != null) {
+                                            reportData = reportData + "&SecondLetterMailStartDateId=" + data.SecondLetterMailStartDateId;
+                                        }
+
+                                        if (data.SecondLetterMailEndDateId != 0 && data.SecondLetterMailEndDateId != null) {
+                                            reportData = reportData + "&SecondLetterMailEndDateId=" + data.SecondLetterMailEndDateId;
+                                        }
+
+                                        if (data.ComplianceStartDateId != 0 && data.ComplianceStartDateId != null) {
+                                            reportData = reportData + "&ComplianceStartDateId=" + data.ComplianceStartDateId;
+                                        }
+
+                                        if (data.ComplianceEndDateId != 0 && data.ComplianceEndDateId != null) {
+                                            reportData = reportData + "&ComplianceEndDateId=" + data.ComplianceEndDateId;
+                                        }
+
+                                        if (data.LastUpdatedStartDateId != 0 && data.LastUpdatedStartDateId != null) {
+                                            reportData = reportData + "&CaseLastUpdatedStartDateId=" + data.LastUpdatedStartDateId;
+                                        }
+
+                                        if (data.LastUpdatedEndDateId != 0 && data.LastUpdatedEndDateId != null) {
+                                            reportData = reportData + "&CaseLastUpdatedEndDateId=" + data.LastUpdatedEndDateId;
+                                        }
+
+                                        if (data.MemberResponseVerificationStartDateId != 0 && data.MemberResponseVerificationStartDateId != null) {
+                                            reportData = reportData + "&MemberResponseVerificationStartDateId=" + data.MemberResponseVerificationStartDateId;
+                                        }
+
+                                        if (data.MemberResponseVerificationEndDateId != 0 && data.MemberResponseVerificationEndDateId != null) {
+                                            reportData = reportData + "&MemberResponseVerificationEndDateId=" + data.MemberResponseVerificationEndDateId;
+                                        }
+
+                                        if (data.RequestedEffectiveStartDateId != 0 && data.RequestedEffectiveStartDateId != null) {
+                                            reportData = reportData + "&RequestedEffectiveStartDateId=" + data.RequestedEffectiveStartDateId;
+                                        }
+
+                                        if (data.RequestedEffectiveEndDateId != 0 && data.RequestedEffectiveEndDateId != null) {
+                                            reportData = reportData + "&RequestedEffectiveEndDateId=" + data.RequestedEffectiveEndDateId;
+                                        }
+
+                                        if (data.AdjustedCreateStartDateId != 0 && data.AdjustedCreateStartDateId != null) {
+                                            reportData = reportData + "&AdjustedCreateStartDateId=" + data.AdjustedCreateStartDateId;
+                                        }
+
+                                        if (data.AdjustedCreateEndDateId != 0 && data.AdjustedCreateEndDateId != null) {
+                                            reportData = reportData + "&AdjustedCreateEndDateId=" + data.RequestedEffectiveEndDateId;
+                                        }
+
+                                        if (data.RPCSubmissionStartDateId != 0 && data.RPCSubmissionStartDateId != null) {
+                                            reportData = reportData + "&RPCSubmissionStartDateId=" + data.RPCSubmissionStartDateId;
+                                        }
+
+                                        if (data.RPCSubmissionEndDateId != 0 && data.RPCSubmissionEndDateId != null) {
+                                            reportData = reportData + "&RPCSubmissionEndDateId=" + data.RPCSubmissionEndDateId;
+                                        }
+                                        if (data.CMSAccountManagerApprovalStartDateId != 0 && data.CMSAccountManagerApprovalStartDateId != null) {
+                                            reportData = reportData + "&CMSAccountManagerApprovalStartDateId=" + data.CMSAccountManagerApprovalStartDateId;
+                                        }
+
+                                        if (data.CMSAccountManagerApprovalEndDateId != 0 && data.CMSAccountManagerApprovalEndDateId != null) {
+                                            reportData = reportData + "&CMSAccountManagerApprovalEndDateId=" + data.CMSAccountManagerApprovalEndDateId;
+                                        }
+
+                                        if (data.FDRReceivedStartDateId != 0 && data.FDRReceivedStartDateId != null) {
+                                            reportData = reportData + "&FDRReceivedStartDateId=" + data.FDRReceivedStartDateId;
+                                        }
+
+                                        if (data.FDRReceivedEndDateId != 0 && data.FDRReceivedEndDateId != null) {
+                                            reportData = reportData + "&FDRReceivedEndDateId=" + data.FDRReceivedEndDateId;
+                                        }
+
+                                        if (data.GPSHouseholdId != 0 && data.GPSHouseholdId != null) {
+                                            reportData = reportData + "&GPSHouseholdId=" + data.GPSHouseholdId;
+                                        }
+
+                                        if (data.PeerAuditCompletionStartDateId != 0 && data.PeerAuditCompletionStartDateId != null) {
+                                            reportData = reportData + "&PeerAuditCompletionStartDateId=" + data.PeerAuditCompletionStartDateId;
+                                        }
+
+                                        if (data.PeerAuditCompletionEndDateId != 0 && data.PeerAuditCompletionEndDateId != null) {
+                                            reportData = reportData + "&PeerAuditCompletionEndDateId=" + data.PeerAuditCompletionEndDateId;
+                                        }
+
+                                        if (data.IsRestricted != null) {
+                                            reportData = reportData + "&IsRestricted=" + data.IsRestricted;
+                                        }
+                                        
+                                        if (data.PDPAutoEnrolleeInd != null || data.PDPAutoEnrolleeInd != undefined)
+                                        {
+                                            reportData = reportData + "&PDPAutoEnrolleeInd=" + data.PDPAutoEnrolleeInd;
+                                        }
+
+                                        if (data.DisenrollmentFromDateId != 0 && data.DisenrollmentFromDateId != null) {
+                                            reportData = reportData + "&DisenrollmentFromDateId=" + data.DisenrollmentFromDateId;
+                                        }
+
+                                        if (data.DisenrollmentToDateId != 0 && data.DisenrollmentToDateId != null) {
+                                            reportData = reportData + "&DisenrollmentToDateId=" + data.DisenrollmentToDateId;
+                                        }
+
+                                        if (data.EmployerGroupNumber != 0 && data.EmployerGroupNumber != null) {
+                                            reportData = reportData + "&EmployerGroupNumber=" + data.EmployerGroupNumber;
+                                        }
+                                        
+                                        var strWindowFeatures = "location=yes,height=580,width=1000,scrollbars=no,resizable=yes,toolbar=no,status=no,menu=no, directories=no,titlebar=no,location=no,addressbar=no,top=100,left=100";
+                                        ExcelSearchReport = MainLayout.fnMyOpenWindow(reportData, "_blank", strWindowFeatures, ExcelSearchReport);
+                                    },
+                                    error: function (x) {
+                                        MainLayout.fnAlertMessege("Error!", "An error occured.");
+                                    }
+                                });
+
+                            }
+                        }
+                    }
+                });
+
+            }
+            catch (e) {
+                throw e;
+            }
+        };
+
+        fnLockAndEdit = function (Id, qId, catId, WorkQueue) {
+            //Need to find user has edit permission
+
+            var url = '@Url.Action("CheckUserPermission", "Common")/' + enums.PermissionType.CanModify + '/' + catId;
+
+            var categoryDesc;
+            var urlToNavigate;
+            switch (catId) {
+                case enums.DiscripancyCategory.OOA:
+
+                    urlToNavigate = '@Url.Action("OOAProcessWork", "OST")?queueId=' + qId + '&pageName=Search';
+
+                    categoryDesc = 'OOA';
+                    break;
+                case enums.DiscripancyCategory.SCC:
+
+                    urlToNavigate = '@Url.Action("SCCProcessWork", "OST")?queueId=' + qId + '&pageName=Search';
+
+                    categoryDesc = "SCC";
+                    break;
+                case enums.DiscripancyCategory.TRR:
+
+                    urlToNavigate = '@Url.Action("TRRProcessWork", "OST")?queueId=' + qId + '&pageName=Search';
+
+                    categoryDesc = "TRR";
+                    break;
+                case enums.DiscripancyCategory.Eligibility:
+
+                    urlToNavigate = '@Url.Action("EligibilityProcessWork", "Eligibility")?queueId=' + qId + '&pageName=Search';
+
+                    categoryDesc = "Eligibility";
+                    break;
+                case enums.DiscripancyCategory.DOB:
+
+                    urlToNavigate = '@Url.Action("DOBProcessWork", "Eligibility")?queueId=' + qId + '&pageName=Search';
+
+                    categoryDesc = "DOB";
+                    break;
+                case enums.DiscripancyCategory.Gender:
+
+                    urlToNavigate = '@Url.Action("GenderProcessWork", "Eligibility")?queueId=' + qId + '&pageName=Search';
+
+                    categoryDesc = "Gender";
+                    break;
+                case enums.DiscripancyCategory.RPR:
+
+                    urlToNavigate = '@Url.Action("RPRProcessWork", "RPR")?queueId=' + qId + '&pageName=Search';
+
+                    categoryDesc = "RPR";
+                    break;
+            }
+            $.ajax({
+                data: { DiscCat: catId, WorkQueue: WorkQueue },
+                url: url,
+                type: "POST",
+                success: function (data) {
+                    if (data == true) {
+                        localStorage['myPage'] = $("#frmSearch").serialize();
+                        if (catId != undefined && catId > 0) {
+
+                            if (urlToNavigate != undefined) {
+                                fnLockRecord(urlForLock, Id, enums.ScreenType.Queue, urlToNavigate);
+                            }
+                        }
+                    }
+                    else if (data == false) {
+                        MainLayout.fnAlertMessege("Alert!", "You don't have sufficient permission to perform Edit operation for " + categoryDesc)
+                    }
+                },
+                error: function (x) {
+                    alert("An error occoured");
+                }
+            });
+        };
+
+        fnReOpenCaseCheck = function (Id, catID) {
+        ////  child case already exists and is in Process
+            var ischeck = false;
+            try {
+                var url1 = '@Url.Action("CheckReopenCase", "Common")';
+                if (enums.DiscripancyCategory.OOA == catID || enums.DiscripancyCategory.SCC == catID || enums.DiscripancyCategory.TRR == catID || enums.DiscripancyCategory.Eligibility == catID) {
+                    $.ajax({
+                        url: url1,
+                        data: { GenQueueId: Id },
+                        type: "POST",
+                        async: false,
+                        success: function (response) {
+                            if (response.Data == 1) {
+                                ischeck = true;
+                            }
+                        },
+                        error: function (x) {
+                        },
+                    });
+
+                }
+
+                return ischeck;
+
+            } catch (e) {
+                throw e;
+            }
+
+        };
+
+        fnGetPWURL = function (catId, qId) {
+            try {
+                var urlToNavigate;
+               switch (catId) {
+                case enums.DiscripancyCategory.OOA:
+                    urlToNavigate = '@Url.Action("OOAProcessWork", "OST")?queueId=' + qId + '&pageName=Search';
+                    break;
+                case enums.DiscripancyCategory.SCC:
+                    urlToNavigate = '@Url.Action("SCCProcessWork", "OST")?queueId=' + qId + '&pageName=Search';
+                    break;
+                case enums.DiscripancyCategory.TRR:
+                    urlToNavigate = '@Url.Action("TRRProcessWork", "OST")?queueId=' + qId + '&pageName=Search';
+                    break;
+                case enums.DiscripancyCategory.Eligibility:
+                    urlToNavigate = '@Url.Action("EligibilityProcessWork", "Eligibility")?queueId=' + qId + '&pageName=Search';
+                    break;
+                case enums.DiscripancyCategory.DOB:
+                    urlToNavigate = '@Url.Action("DOBProcessWork", "Eligibility")?queueId=' + qId + '&pageName=Search';
+                    break;
+                case enums.DiscripancyCategory.Gender:
+                    urlToNavigate = '@Url.Action("GenderProcessWork", "Eligibility")?queueId=' + qId + '&pageName=Search';
+                    break;
+                case enums.DiscripancyCategory.RPR:
+                    urlToNavigate = '@Url.Action("RPRProcessWork", "RPR")?queueId=' + qId + '&pageName=Search';
+                    break;
+                }
+               return urlToNavigate;
+
+            } catch (e) {
+                throw e;
+            }
+        };
+
+
+        fnCheckReOpenPermission = function (catId, WorkQueueLkup) {
+            var isPermission = false;
+            var url = '@Url.Action("CheckUserPermission", "Common")/' + enums.PermissionType.CanReopen + '/' + catId;
+            try {
+
+                $.ajax({
+                    data: { DiscCat: catId, WorkQueue: WorkQueueLkup },
+                    url: url,
+                    type: "POST",
+                    async: false,
+                    success: function (data) {
+                        if (data == true) {
+                            isPermission = true;
+                        }
+                    },
+                    error: function (x) {
+
+                    }
+                });
+
+                return isPermission;
+
+            } catch (e) {
+                throw e;
+            }
+        };
+
+        fnCheckDuplicateForReOpenCase = function (queueId) {
+            try {
+                var urlCheckDuplicateForReopen = '@Url.Action("CheckDuplicateForReopen", "Common")';
+                var duplicateCaseID = 0;
+
+                $.ajax({
+                    data: { "queueId": queueId},
+                    url: urlCheckDuplicateForReopen,
+                    type: "POST",
+                    async: false,
+                    success: function (data) {
+                        duplicateCaseID = data.ID;
+                    },
+                    error: function (x) {
+                        duplicateCaseID = -1;
+                    }
+                });
+                return duplicateCaseID;
+            } catch (e) {
+                throw e;
+            }
+        };
+
+        fnLockAndReopen = function (Id, qId, catId, WorkQueueLkup) {
+            try {
+                var urlToNavigate = fnGetPWURL(catId, qId);
+
+                if (fnCheckReOpenPermission(catId, WorkQueueLkup)) {
+                    ///Check for Reopen Permission
+                    if (!fnReOpenCaseCheck(Id, catId)) {
+                        //Check Duplicate Logic For Reopen Cases
+                        var existingCaseID = 0;
+                        existingCaseID = fnCheckDuplicateForReOpenCase(Id);
+                        if (existingCaseID == 0) {
+                            localStorage['myPage'] = $("#frmSearch").serialize();
+                            var isLocked = fnLockRecord(urlForLock, Id, enums.ScreenType.Queue, urlToNavigate);
+                        }
+                        else if (existingCaseID > 0) {
+                            MainLayout.fnAlertMessege("Alert!", "Already case with ERS Case ID_" + existingCaseID + " exists");
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+                        }
+
+
+                    }
+                    else {
+                        MainLayout.fnAlertMessege("Alert!", "Cannot Reopen case as a child case already exists and is in Process.");
+                    }
+                }
+                else {
+                    MainLayout.fnAlertMessege("Alert!", "You don't have sufficient permission to perform this action.");
+                }
+
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured");
+            }
+        };
+        //To clear all form controls
+        $(document).on("click", "#btnReset", function (event) {
+            event.preventDefault();
+            document.getElementById("frmSearch").reset();
+        });
+       //To cancel this page and redirect to home
+        $(document).on("click", "#btnSearchCancel", function (event) {
+            try {
+                var screenType = $(this).attr("screenType");
+                var discCatId = $(this).attr("discCatId");
+
+                var url = '@Url.Action("Home", "Home")';
+
+                ///screenType==0 for home page
+                if (screenType > 0) {
+                    switch (discCatId) {
+                        case "6001":
+
+                            url = '@Url.Action("OOAGetQueue", "OSTQueues")';
+
+                            break;
+                        case "6002":
+
+                            url = '@Url.Action("SCCGetQueue", "OSTQueues")';
+
+                            break;
+                        case "6003":
+
+                            url = '@Url.Action("TRRGetQueue", "OSTQueues")';
+
+                            break;
+                        case "6004":
+
+                            url = '@Url.Action("EligibilityGetQueue", "EligibilityQueues")';
+
+                            break;
+                        case "6005":
+
+                            url = '@Url.Action("DOBGetQueue", "EligibilityQueues")';
+
+                            break;
+                        case "6006":
+
+                            url = '@Url.Action("GenderGetQueue", "EligibilityQueues")';
+
+                            break;
+                        case "6007":
+
+                            url = '@Url.Action("RPRGetQueue", "RPRQueues")';
+
+                            break;
+                    }
+
+                }
+                window.location = url;
+            } catch (e) {
+
+            }
+        });
+
+        fnViewRecord = function (Id, catId, WorkQueue) {
+            var DescCat;
+            switch (catId) {
+                case enums.DiscripancyCategory.OOA:
+                    DescCat = "OOA";
+                    break;
+                case enums.DiscripancyCategory.SCC:
+                    DescCat = "SCC";
+                    break;
+                case enums.DiscripancyCategory.TRR:
+                    DescCat = "TRR";
+                    break;
+                case enums.DiscripancyCategory.Eligibility:
+                    DescCat = "Eligibility";
+                    break;
+                case enums.DiscripancyCategory.DOB:
+                    DescCat = "DOB";
+                    break;
+                case enums.DiscripancyCategory.Gender:
+                    DescCat = "Gender";
+                    break;
+                case enums.DiscripancyCategory.RPR:
+                    DescCat = "RPR";
+                    break;
+            }
+
+            var url = '@Url.Action("CheckUserPermission", "Common")/' + enums.PermissionType.CanView + '/' + catId;
+
+            $.ajax({
+                type: 'POST',
+                data: { DiscCat: catId, WorkQueue: WorkQueue },
+                url: url,
+                success: function (response) {
+                    if (response == true) {
+
+                        url = '@Url.Action("ViewRecord", "Common")/' + Id + '/' + catId;
+
+                        $.ajax({
+                            type: 'POST',
+                            url: url,
+                            success: function (response) {
+                                $("#divMyModalView").empty().html($("#divMyModalView").empty().html(response).find('section'));
+                                $('#divMyModalView').find(':input').attr('disabled', true);
+                                $('#divMyModalView').find(':button').attr('disabled', true);
+                                $("#myModalView").modal('show');
+                                $('#divMyModalView').find("#tblPWAttachments .deletePWAttachmentIco").remove();
+                                $('#divMyModalView').find("#tblRefferencedCases .deleteViewIcon").remove();
+                                $('#divMyModalView').find("#tblPWAttachments .downloadAttachment").href = "";
+                                $(".dispMsg").unbind("click");
+                            },
+                            error: function (result) {
+                                MainLayout.fnAlertMessege("Error!", result.responseText);
+                            }
+                        });
+                    }
+                    else if (response == false) {
+                        MainLayout.fnAlertMessege("Alert!", "You don't have sufficient permission to perform View operation for " + DescCat)
+                    }
+                },
+                error: function (result) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                }
+            });
+        };
+
+        fnCloneRecord = function (qId, catId) {
+            var url = '@Url.Action("CheckUserPermission", "Common")/' + enums.PermissionType.CanClone + '/' + catId;
+            $.ajax({
+                type: 'POST',
+                url: url,
+                success: function (response) {
+                    if (response == true) {
+                        localStorage['myPage'] = $("#frmSearch").serialize();
+                        var cloneRecordURL = '@Url.Action("CloneRecord", "Common")?GenQueueId=' + qId + '&discCategoryID=' + catId;
+                        fnLockRecord(urlForLock, qId, enums.ScreenType.Queue, cloneRecordURL);
+
+                    }
+                    else if (response ==false)
+                    {
+                       alert("You don't have clone permission.");
+                    }
+                },
+                error: function (result) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                }
+            });
+        };
+
+        fnViewHistory = function (qId, catId) {
+
+            var url = '@Url.Action("CheckUserPermission", "Common")/' + enums.PermissionType.CanHistory + '/' + catId;
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                success: function (response) {
+                    if (response == true) {
+                        alert('History report is not available.');
+
+                    }
+                    else if (response == false) {
+                        MainLayout.fnAlertMessege("Alert!", "You don't have sufficient permission to View History")
+                    }
+                },
+                error: function (result) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                }
+            });
+        };
+
+        fnSearchInitialiseDataTable = function () {
+            var table = $('#tblSearchResult').DataTable({
+                "dom": "<'row'<'col-sm-12'Btr>>" +
+                "<'row cmnDatatablePager'<'col-md-3'l><'col-md-4'<'text-center'i>><'col-md-5'p>>",
+                "oLanguage": {
+                    "sEmptyTable": "No data available"
+                },
+                stateSave: true,
+                order: [],
+                orderClasses: false,
+                columnDefs: [{ orderable: false, targets: [0] }],
+                buttons: [
+                    {
+                        extend: 'excelHtml5',
+                        filename: 'ERS Search',
+                        title: null,
+                        messageTop: null,
+                        exportOptions: {
+                            columns: ".sorting"
+                        }
+                    }
+                ]
+            });
+        };
+
+        // function to access history report
+        fnAccessReport = function (id, catId, WorkQueue) {
+            debugger
+            var DescCat;
+            if (catId != "" && catId != undefined) {
+                switch (catId) {
+                    case enums.DiscripancyCategory.OOA:
+                        DescCat = "OOA";
+                        break;
+                    case enums.DiscripancyCategory.SCC:
+                        DescCat = "SCC";
+                        break;
+                    case enums.DiscripancyCategory.TRR:
+                        DescCat = "TRR";
+                        break;
+                    case enums.DiscripancyCategory.Eligibility:
+                        DescCat = "Eligibility";
+                        break;
+                    case enums.DiscripancyCategory.DOB:
+                        DescCat = "DOB";
+                        break;
+                    case enums.DiscripancyCategory.Gender:
+                        DescCat = "Gender";
+                        break;
+                    case enums.DiscripancyCategory.RPR:
+                        DescCat = "RPR";
+                        break;
+                }
+            }
+            var urlToNavigate = ReportsUrl;
+
+            var urlChkUserPermission = '@Url.Action("CheckUserPermission", "Common")/' + enums.PermissionType.CanHistory + '/' + catId;
+
+            $.ajax({
+                //data: { DiscCat: catId },
+                data: { DiscCat: catId, WorkQueue: WorkQueue },
+                url: urlChkUserPermission,
+                type: "POST",
+                success: function (data) {
+                    if (data == true) {
+                        $.ajax({
+                            url: urlToNavigate,
+                            type: "POST",
+                            success: function (data) {
+                                if (data != "") {
+                                    debugger;
+                                    var Data = data.Data;
+                                    var reportUrl = Data + "&GenQueueId=" + id;
+                                    var strWindowFeatures = "location=yes,height=580,width=1000,scrollbars=no,resizable=yes,toolbar=no,status=no,menu=no, directories=no,titlebar=no,location=no,addressbar=no,top=100,left=100";
+                                    winHistoryReport = MainLayout.fnMyOpenWindow(reportUrl, "_blank", strWindowFeatures, winHistoryReport);
+
+                                }
+                            },
+                            error: function (x) {
+                                MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                            }
+                        });
+                    }
+                    else if (data == false) {
+                        MainLayout.fnAlertMessege("Alert!", "You don't have sufficient permission to View Histroy for " + DescCat)
+                    }
+                }
+            });
+
+        };
+
+        $(document).on("change", "#ddlDiscrepancyCat", function (event) {
+            try {
+
+                ///need to check user permission///
+                var categoryID = $(this).val();
+                //queueId = "";
+                //  $("#divMassUpdateResult").empty().html('<div style="text-align:center;color: red; ">No Records Found</div >');
+                $("#ddlQueue").empty().append($("<option></option>").val("").html(enums.DropdownDefaultValue));
+                if (categoryID != "" && categoryID != "0") {
+                    discCatId = categoryID;
+                    fnLoadQueue(categoryID);
+                }
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+        });
+
+        fnLoadQueue = function (categoryID) {
+            try {
+                $.ajax({
+                    url: urlLoadQueue,
+                    data: JSON.stringify({ "categoryID": categoryID }),
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        if (data != null && data != "") {
+                            $.each(data, function (i, val) {
+                                $("#ddlQueue").append($("<option></option>").val(val.CMN_LookupMasterChildRef).html(val.LookupMasterChildValue));
+                            });
+
+                        }
+                    },
+                    error: function (x) {
+                        MainLayout.fnAlertMessege("Error!", "An error occoured!");
+                    },
+                });
+
+            } catch (e) {
+                throw ex;
+            }
+        };
+
+          //Get Discrepancy and TRR data  based on Tab clicked
+        var fnAccessLinkTab = function (GEN_QueueId, TabType) {
+
+            var TabToBeUsed = (TabType == 'discrepancydata') ? $("#sectionB") : $("#SectionTrrData");
+            try {
+                $.ajax({
+                    data: { "GEN_QueueId": GEN_QueueId, "TabType": TabType },
+                    url: LoadDiscTRRUrl,
+                    type: "POST",
+                    success: function (data) {
+                        //
+                        if (data != "") {
+                            TabToBeUsed.empty().html(data);
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+
+                    },
+                    error: function (x) {
+                        //
+                        $("#sectionB").empty();
+                        $("#SectionTrrData").empty();
+                        MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                    }
+                });
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+
+
+        };
+
+        $(document).on("keypress", function (e) {
+            try {
+                if (e.which == 13 && !$(e.target).is("textarea") && $("#btnSearch").is(":visible") && $("#btnSearch").length > 0) {
+                    fnProcessSearch();
+                }
+
+            } catch (e) {
+
+            }
+        });
+
+        if ($('#pageName').val() != "Home") {
+            if (localStorage['myPage'] != undefined && localStorage['myPage'] != "null" && localStorage['myPage'] != "") {
+                $myForm.deserialize(localStorage['myPage']);
+                $("#btnSearch").click();
+                localStorage['myPage'] = null;
+            }
+        };
+////Initial Load Datatable////
+        fnSearchInitialiseDataTable();
+
+    </script>
+}

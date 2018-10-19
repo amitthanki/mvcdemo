@@ -1,0 +1,44 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@model DOGEN_OSTActions
+
+
+    <div class="clearfix">
+        @*@Html.HiddenFor(m => m.FirstLetterMailDate)*@
+        
+
+
+        @if (Model.FirstLetterMailDate != null)
+        {
+            <div class="form-group col-md-3">
+                <label for="txtLastName">First Letter Mail Date</label>
+                @Html.TextBoxFor(xx => xx.FirstLetterMailDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+            </div> 
+        }
+
+
+
+        @if (ViewBag.source != "MassUpdate")
+        {
+        if (!string.IsNullOrEmpty(Model.GPSHouseholdID))
+        {
+            <div class="form-group col-md-3">
+                <label for="txtLastName">GPS Household ID</label>
+                @Html.TextBoxFor(xx => xx.GPSHouseholdID, new { @class = "form-control", @readonly = "readonly" })
+            </div>
+        }
+        else
+        {
+            <div class="form-group col-md-3">
+                <label for="txtLastName" class="required">GPS Household ID</label>
+                @Html.TextBoxFor(xx => xx.GPSHouseholdID, new CustomValidation().Required("GPS Household ID is Required").AddCssClass("form-control").CustomAttributes("id", "txtGPSHouseholdID").RegularExpression(RegexType.Numeric, "GPS Household ID").CustomAttributes("maxlength", "13").StringMaxLength(13, "GPS Household ID").validationAttributes)
+            </div>
+        }
+        }
+
+            <div class="form-group textarea col-md-12">
+                <label class="required">Comments</label>
+                @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").Required("Please enter Comments.").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+            </div>
+        
+    </div>

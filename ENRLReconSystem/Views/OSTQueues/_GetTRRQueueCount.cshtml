@@ -1,0 +1,276 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.DO
+@model QueueSummary
+
+@functions {
+
+    public IHtmlString QueueActions(long queueId, long count, bool showGetQueue = true)
+    {
+        string strTag = "";
+        if (count > 0 && Model.lstUserAccessQueueLkups.Contains(queueId))
+        {
+            var discCat = (long)DiscripancyCategory.TRR;
+            var href = Url.Action("SearchFromHome", "Common", new { @ComplianceStartDate = Model.StartDate, @ComplianceEndDate = Model.EndDate, @Queue = queueId, @data = discCat, @screenType = 37010 });
+            var reportHref = ViewBag.ReportUrl + "&FromDate=" + Model.StartDate.ToString("MM/dd/yyyy") + "&ToDate=" + Model.EndDate.ToString("MM/dd/yyyy") + "&WorkQueueLkup=" + queueId + "&BusinessSegmentLkup=" + Model.BusinessSegment; 
+            if (showGetQueue)
+                strTag = "<a id = '" + queueId + "' class='getQueue' href='#' title='Get Queue'><img src = '/Images/get-queue-img.png' ></a>";//get queue link
+            strTag = strTag + "<a href='" + href + "'><img src = '/Images/view-img.png' title='View Queue' ></a>";//View Queue link
+            strTag = strTag + "<a href='" + reportHref + "' target ='_blank' title='View Report'><img src='/Images/report-img.png'></a>";//Report link
+        }
+        else
+        {
+            if (showGetQueue)
+                strTag = "<a  class='inAccessible' href='#'><img src = '/Images/disable-get-queue-img.png' ></ a >";//get queue link disabled
+            strTag = strTag + "<a  class='inAccessible' href='#'><img src = '/Images/disable-view-img.png' title='View Queue' ></a>";//View Queue link disabled
+            strTag = strTag + "<a class='inAccessible' href='#' title='View Report'><img src='/Images/disable-report-img.png'></a>";//Report link disabled
+        }
+        return new HtmlString(strTag);
+    }
+}
+
+<div class="queue-smry-wdgt">
+    <div class="processing-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Processing Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>CMS Rejected</td>
+                    <td>@Model.objTRRQueueSummary.TRRCMSRejected</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRCMSRejected.ToInt64(), Model.objTRRQueueSummary.TRRCMSRejected)
+                    </td>
+                </tr>
+                <tr>
+                    <td>CMS Rejected Deletion Code</td>
+                    <td>@Model.objTRRQueueSummary.TRRCMSRejectedDeletionCode</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRCMSRejectedDeletionCode.ToInt64(), Model.objTRRQueueSummary.TRRCMSRejectedDeletionCode)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Needs EGHP Review</td>
+                    <td>@Model.objTRRQueueSummary.TRRNeedEGHPReview</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRNeedsEGHPReview.ToInt64(), Model.objTRRQueueSummary.TRRNeedEGHPReview)
+                    </td>
+                </tr>
+                @*<tr>
+                    <td>TRC 085</td>
+                    <td>@Model.objTRRQueueSummary.TRRTRC085</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRTRC085.ToInt64(), Model.objTRRQueueSummary.TRRTRC085)
+                    </td>
+                </tr>*@
+                <tr>
+                    <td>TRC 154:76</td>
+                    <td>@Model.objTRRQueueSummary.TRRTRC15476</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRTRC15476.ToInt64(), Model.objTRRQueueSummary.TRRTRC15476)
+                    </td>
+                </tr>
+                <tr>
+                    <td>TRC 154:01</td>
+                    <td>@Model.objTRRQueueSummary.TRRTRC15401</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRTRC15401.ToInt64(), Model.objTRRQueueSummary.TRRTRC15401)
+                    </td>
+                </tr>
+                <tr>
+                    <td>TRC 155</td>
+                    <td>@Model.objTRRQueueSummary.TRRTRC155</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRTRC155.ToInt64(), Model.objTRRQueueSummary.TRRTRC155)
+                    </td>
+                </tr>
+                <tr>
+                    <td>TRC 282</td>
+                    <td>@Model.objTRRQueueSummary.TRRTRC282</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRTRC282.ToInt64(), Model.objTRRQueueSummary.TRRTRC282)
+                    </td>
+                </tr>
+                @*<tr>
+                    <td>Fallout TRC 085</td>
+                    <td>@Model.objTRRQueueSummary.TRRFalloutTRC085</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRFalloutTRC085.ToInt64(), Model.objTRRQueueSummary.TRRFalloutTRC085)
+                    </td>
+                </tr>*@
+                <tr>
+                    <td>Fallout TRC 155</td>
+                    <td>@Model.objTRRQueueSummary.TRRFalloutTRC155</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRFalloutTRC155.ToInt64(), Model.objTRRQueueSummary.TRRFalloutTRC155)
+                    </td>
+                </tr>
+                @*<tr>
+                    <td>TRR - Open NOT</td>
+                    <td>@Model.objTRRQueueSummary.TRROpenNOT</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRROpenNOT.ToInt64(), Model.objTRRQueueSummary.TRROpenNOT)
+                    </td>
+                </tr>
+                <tr>
+                    <td>TRR - Open Disenroll</td>
+                    <td>@Model.objTRRQueueSummary.TRROpenDisenroll</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRROpenDisenroll.ToInt64(), Model.objTRRQueueSummary.TRROpenDisenroll)
+                    </td>
+                </tr>
+                <tr>
+                    <td>TRR - MARx Address Letter</td>
+                    <td>@Model.objTRRQueueSummary.TRRMARxAddressLetter</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRMARxAddressLetter.ToInt64(), Model.objTRRQueueSummary.TRRMARxAddressLetter)
+                    </td>
+                </tr>
+                <tr>
+                    <td>TRR - Address Scrub</td>
+                    <td>@Model.objTRRQueueSummary.TRRAddressScrub</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRAddressScrub.ToInt64(), Model.objTRRQueueSummary.TRRAddressScrub)
+                    </td>
+                </tr>*@
+                <tr>
+                    <td>Escalated</td>
+                    <td>@Model.objTRRQueueSummary.TRREscalated</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRREscalated.ToInt64(), Model.objTRRQueueSummary.TRREscalated)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Update Sent to CMS(Failed)</td>
+                    <td>@Model.objTRRQueueSummary.TRRUpdateSenttoCMSFAILED</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRUpdateSenttoCMSFAILED.ToInt64(), Model.objTRRQueueSummary.TRRUpdateSenttoCMSFAILED)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pending Audit</td>
+                    <td>@Model.objTRRQueueSummary.TRRPendingAudit</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRPendingAudit.ToInt64(), Model.objTRRQueueSummary.TRRPendingAudit)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Peer Audit Failed</td>
+                    <td>@Model.objTRRQueueSummary.TRRPeerAuditFailed</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRPeerAuditFailed.ToInt64(), Model.objTRRQueueSummary.TRRPeerAuditFailed)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pended</td>
+                    <td>@Model.objTRRQueueSummary.TRRPended</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRPended.ToInt64(), Model.objTRRQueueSummary.TRRPended)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="queue-smry-wdgt">
+    <div class="holding-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Holding Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @*<tr>
+                    <td>TRR - Pending FTT</td>
+                    <td>@Model.objTRRQueueSummary.TRRPendingFTT</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRPendingFTT.ToInt64(), Model.objTRRQueueSummary.TRRPendingFTT,false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>TRR - Pending NOT</td>
+                    <td>@Model.objTRRQueueSummary.TRRPendingNOT</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRPendingNOT.ToInt64(), Model.objTRRQueueSummary.TRRPendingNOT, false)
+                    </td>
+                </tr>*@
+                <tr>
+                    <td>Submit to CMS</td>
+                    <td>@Model.objTRRQueueSummary.TRRSubmitToCMS</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRSubmitToCMS.ToInt64(), Model.objTRRQueueSummary.TRRSubmitToCMS, false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Submit to CMS Deletion Code</td>
+                    <td>@Model.objTRRQueueSummary.TRRSubmitToCMSDeletionCode</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRSubmitToCMSDeletionCode.ToInt64(), Model.objTRRQueueSummary.TRRSubmitToCMSDeletionCode, false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pending SCC RPR</td>
+                    <td>@Model.objTRRQueueSummary.TRRPendingSCCRPR</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRPendingSCCRPR.ToInt64(), Model.objTRRQueueSummary.TRRPendingSCCRPR,false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Update Sent to CMS</td>
+                    <td>@Model.objTRRQueueSummary.TRRUpdateSentToCMS</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRUpdateSentToCMS.ToInt64(), Model.objTRRQueueSummary.TRRUpdateSentToCMS, false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Update Sent to CMS Deletion Code</td>
+                    <td>@Model.objTRRQueueSummary.TRRUpdateSentToCMSDeletionCode</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRUpdateSentToCMSDeletionCode.ToInt64(), Model.objTRRQueueSummary.TRRUpdateSentToCMSDeletionCode, false)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="completed-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Completed Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Completed</td>
+                    <td>@Model.objTRRQueueSummary.TRRCompleted</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRCompleted.ToInt64(), Model.objTRRQueueSummary.TRRCompleted, false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>CMS Accepted</td>
+                    <td>@Model.objTRRQueueSummary.TRRCMSAccepted</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRCMSAccepted.ToInt64(), Model.objTRRQueueSummary.TRRCMSAccepted, false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>CMS Accepted Deletion Code</td>
+                    <td>@Model.objTRRQueueSummary.TRRCMSAcceptedDeletionCode</td>
+                    <td>
+                        @QueueActions(TRRQueue.TRRCMSAcceptedDeletionCode.ToInt64(), Model.objTRRQueueSummary.TRRCMSAcceptedDeletionCode, false)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

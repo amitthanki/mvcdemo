@@ -1,0 +1,185 @@
+﻿@*@using ENRLReconSystem.Helpers
+@model ENRLReconSystem.DO.DOGEN_TRRDetails
+
+
+
+<div class="wdgt-body clearfix">
+    <div class="inner-wdgt clearfix">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="primary-hdr" aria-expanded="true" href="#collapseOne" data-toggle="collapse"><img src="~/images/manage-case-icon.png"> <span>TRR Details</span></a>
+                </h4>
+            </div>
+            <div class="tab-panel-group">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#sectionA">Beneficiary</a></li>
+                    <li><a data-toggle="tab" href="#sectionB">Enrollment</a></li>
+                    <li><a data-toggle="tab" href="#sectionC">Indicator</a></li>
+                    <li><a data-toggle="tab" href="#SectionTrrData">Drug</a></li>
+                    <li><a data-toggle="tab" href="#sectionD">Transaction</a></li>
+                    <li><a data-toggle="tab" href="#sectionE">Response</a></li>
+                      </ul>
+                <div class="tab-content wdgt-tab-content">
+                    <div id="sectionA" class="tab-pane fade in active">
+                        <div class="tab-pane-wdgt clearfix">
+                            <div class="secondary-sub-hdr">
+                                <h4>Address Section</h4>
+                            </div>
+                            <div class="tab-pane-body clearfix">
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Active Ind</label>
+                                        @Html.TextBoxFor(xx => xx.ActiveInd, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Address 2</label>
+                                        @Html.TextBoxFor(xx => xx.Address2, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">CMS CountyCode</label>
+                                        @Html.TextBoxFor(xx => xx.CMSCountyCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Address ID</label>
+                                        @Html.TextBoxFor(xx => xx.AddressID, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Address 3</label>
+                                        @Html.TextBoxFor(xx => xx.Address3, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">CMS State Code</label>
+                                        @Html.TextBoxFor(xx => xx.CMSStateCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Address 1</label>
+                                        @Html.TextBoxFor(xx => xx.Address1, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">City</label>
+                                        @Html.TextBoxFor(xx => xx.City, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Country Code</label>
+                                        @Html.TextBoxFor(xx => xx.CountryCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                               </div>
+                            <div class="tab-pane-wdgt clearfix">
+                                <div class="secondary-sub-hdr">
+                                    <h4>Consumer Medicaid Details</h4>
+                                </div>
+                                <div class="tab-pane-body clearfix">
+                                    <div class="tab-pane-section col-md-4">
+                                        <div class="form-group">
+                                            <label class="col-md-6">Active Status Flag</label>
+                                            @Html.TextBoxFor(xx => xx.ActiveStatusFlag, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                        </div>
+                                        
+                                    </div>
+                                    <div class="tab-pane-section col-md-4">
+                                        <div class="form-group">
+                                            <label class="col-md-6">Medicaid ID</label>
+                                            @Html.TextBoxFor(xx => xx.MedicaidId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                        </div>
+                                       </div>
+                                    <div class="tab-pane-section col-md-4">
+                                        <div class="form-group">
+                                            <label class="col-md-6">Medicaid State Code</label>
+                                            @Html.TextBoxFor(xx => xx.MedicaidId, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                        </div>
+                                       </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane-wdgt clearfix">
+                                <div class="secondary-sub-hdr">
+                                    <h4>Consumer Medicare Details</h4>
+                                </div>
+                                <div class="tab-pane-body clearfix">
+                                    <div class="tab-pane-section col-md-4">
+                                        <div class="form-group">
+                                            <label class="col-md-6">Active Flag</label>
+                                            @Html.TextBoxFor(xx => xx.ActiveStatusFlag, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-6">Medicare PartD Opt In Flag</label>
+                                            @Html.TextBoxFor(xx => xx.MedicarePartDOptInFlag, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane-section col-md-4">
+                                        <div class="form-group">
+                                            <label class="col-md-6">Medicare Claim Number</label>
+                                            @Html.TextBoxFor(xx => xx.MedicareClaimNumber, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-6">Medicare Eligibility Start Date</label>
+                                            @Html.TextBoxFor(xx => xx.MedicareEligibilityStartDate, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane-section col-md-4">
+                                        <div class="form-group">
+                                            <label class="col-md-6">Medicare Eligibility Part</label>
+                                            @Html.TextBoxFor(xx => xx.MediCareEligiblityPart, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="col-md-6">Medicare Eligibility Stop Date</label>
+                                            @Html.TextBoxFor(xx => xx.MedicareEligibilityStopDate, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="sectionB" class="tab-pane fade">
+                        <div class="tab-panel-group clearfix">
+                            <div class="secondary-sub-hdr">
+                                    <h4>Enrollment Information</h4>
+                                </div>
+                            <div class="tab-pane-body clearfix">
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Application Date Ind </label>
+                                        @Html.TextBoxFor(xx => xx.ApplicationDateInd, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Enrolle Type Ind PBP Level</label>
+                                        @Html.TextBoxFor(xx => xx.EnrolleTypeIndPBPLevel, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Penalty Amount </label>
+                                        @Html.TextBoxFor(xx => xx.PenaltyAmount, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                                
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Election Type </label>
+                                        @Html.TextBoxFor(xx => xx.ElectionType, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Enrollment Source </label>
+                                        @Html.TextBoxFor(xx => xx.EnrollmentSource, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">End Date Gap Enrollment </label>
+                                        @Html.TextBoxFor(xx => xx.EndDateGapEnrollment, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Entitlement Type Code </label>
+                                        @Html.TextBoxFor(xx => xx.EntitlementTypeCode, new { @tabindex = "-1",@readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+</div>
+</div>
+</div>
+</div>
+</div>*@

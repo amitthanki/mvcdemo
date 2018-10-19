@@ -1,0 +1,235 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@model ENRLReconSystem.DO.DOMGR_ConfigMaster
+@{
+    ViewBag.Title = Model.MGR_ConfigMasterId == 0 ? "Add Configurations" : "Edit Configurations";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="container main-body-wrpr">
+    @using (Html.BeginForm("Add", "Configurations", FormMethod.Post , new { @id = "frmAddConfig" }))
+    {   @Html.AntiForgeryToken()
+
+        @Html.HiddenFor(m => m.StartDate)
+        @Html.HiddenFor(m => m.EndDate)
+        <div class="wdgt-wrapper">
+            <div class="wdgt-hdr">
+                <img src="~/Images/configuration-icon.png" /><h4>@ViewBag.Title</h4>
+            </div>
+            <div class="wdgt-body clearfix">
+                <div style="color:red">
+                    @Html.ValidationSummary()
+                    <div class="validation-summary-errors" data-valmsg-summary="true" id="dvErrorMsg" hidden="hidden">
+                        <li id="dateError"></li>
+                    </div>
+                </div>
+                @Html.HiddenFor(m => m.MGR_ConfigMasterId, new { @id = "hdnMGR_ConfigMasterId" })
+                    <div class="form-group col-md-3">
+                        <label class="required" for="inputEmail">Configuration Name</label>
+                        @Html.TextBoxFor(m => m.ConfigName, new CustomValidation().Required("Configuration Name is Required").AddCssClass("form-control").CustomAttributes("id", "txtConfigName").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAmpersandAndSpaces, "Configuration Name").StringMaxLength(500, "Configuration Name")
+                       .CustomAttributes((Model.MGR_ConfigMasterId > 0) ? "readonly" : "",
+                        (Model.MGR_ConfigMasterId > 0) ? "true" : "").validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label class="required" for="inputEmail">Configuration Value</label>
+                        @Html.TextBoxFor(m => m.ConfigValue, new CustomValidation().Required("Configuration Value is Required").AddCssClass("form-control").CustomAttributes("id", "txtConfigValue").StringMaxLength(2000, "Configuration Value").validationAttributes)
+                    </div>
+                    <div class="form-group date-group col-md-3">
+                        <label class="required" for="inputEmail">Effective Date</label>
+                        @Html.DateTimeFor(m => m.StartDate, true, new CustomValidation().Required("Effective Date is Required").AddCssClass("form-control").validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.Label("Time Zone")
+                        @Html.DropDownListFor(m => m.ConfigurationEffectiveDateTimeZone, new SelectList(Model.lstTimeZone, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "StartDate_ZPart").Required("Time Zone for Effective Date is Required").AddCssClass("form-control").validationAttributes)
+                    </div>
+                    <div class="form-group date-group col-md-3">
+                        <label for="inputEmail">Inactivation Date</label>
+                        @Html.DateTimeFor(m => m.EndDate, true, new CustomValidation().validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.Label("Time Zone")
+                        @Html.DropDownListFor(m => m.ConfigurationInactivationDateTimeZone, new SelectList(Model.lstTimeZone, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "EndDate_ZPart").AddCssClass("form-control").validationAttributes)
+                    </div>
+                    <div class="form-group col-md-3">
+                        @Html.LabelFor(m => m.IsActive, "Is Active")
+                        @*@Html.CheckBoxFor(m => m.IsActive, new { @id = "chkIsActive", @class = "form-control" })*@
+                        @Html.CheckBoxFor(m => m.IsActive, (Model.MGR_ConfigMasterId > 0) ? new { @class = "form-control" } : new { @checked = "checked", @class = "form-control" } as object)
+                    </div>
+                <div class="btn-group clearfix">
+                    <button type="button" id="btnSave" class="btn btn-primary" title="Save"><img src="~/Images/save-icon.png" /><span>Save</span></button>
+                    <button type="button" id="btnReset" class="btn btn-primary" title="Reset"><img src="~/Images/reset-icon.png" /><span>Reset</span></button>
+                    <button type="button" id="btnCancel" onclick="fnCancel($('#hdnMGR_ConfigMasterId').val());" class="btn btn-primary" title="Cancel"><img src="~/Images/cancle-icon.png" /><span>Cancel</span></button>
+                </div>
+            </div>
+           
+        </div>      
+    }
+</section>
+@section scripts{
+
+    <script>
+        var urlForUnlock = '@Url.Action("UnlockRecord", "RecordsLocked")';
+        var ConfigID = @Model.MGR_ConfigMasterId;     
+        var urlGetConfigName = '@Url.Action("CheckDuplicateConfigName", "Configurations")';
+
+          ///Unlock Logic///
+        fnCancel = function (idToUnlock) {
+            var idToUnlock = @Model.MGR_ConfigMasterId;
+            var urlToNavigate = '@Url.Action("Search", "Configurations")';
+            fnUnlockRecord(urlForUnlock, idToUnlock, enums.ScreenType.Configuration, urlToNavigate);
+        }
+
+        getUtcDateIntoHdnFields = function () {
+            var date = getFieldUTCTime('StartDate');
+            if (date != null && date != '') {
+                $('#StartDate').val(getDateTimeInMMDDYYYYHHMM(date, true));
+            }
+            date = getFieldUTCTime('EndDate');
+            if (date != null && date != '') {
+                $('#EndDate').val(getDateTimeInMMDDYYYYHHMM(date, true));
+            }
+        };
+         if ('@Model.StartDate' != null && '@Model.StartDate' != '') {
+            var utcDate = new Date('@Model.StartDate');
+            var result = getLocalTime(utcDate, UserPreferrenceTimeZone);
+            $('#StartDate_DPart').val(getDateTimeInMMDDYYYY(result.time));
+            $('#StartDate_TPart').val(getDateTimeInHHMM(result.time));
+            $('#StartDate_ZPart').val(result.timeZoneLkup);
+        }
+
+         if ('@Model.EndDate' != null && '@Model.EndDate' != '') {
+            var utcDate = new Date('@Model.EndDate');
+            var result = getLocalTime(utcDate, UserPreferrenceTimeZone);
+            $('#EndDate_DPart').val(getDateTimeInMMDDYYYY(result.time));
+            $('#EndDate_TPart').val(getDateTimeInHHMM(result.time));
+            $('#EndDate_ZPart').val(result.timeZoneLkup);
+         }
+
+         getUtcDateIntoHdnFields();
+         var $myForm = $("#frmAddConfig");
+         var origForm = $myForm.serialize();
+
+
+         // Reset Button Click Event
+         $('#btnReset').click(function () {
+             MainLayout.fnResetValidationSummary();
+             $("#frmAddConfig").deserialize(origForm);
+             $('#StartDate_CurrentDate').trigger('click');
+             $('#dateError').html('<li id="dateError"></li>');
+      });
+
+       // Save Button Click Event
+        //$('#frmAddConfig').on("submit", function (e) {
+        $('#btnSave').on("click", function (e) {
+           var submitUrl = '@Url.Action("Add", "Configurations")';
+            getUtcDateIntoHdnFields();
+            e.preventDefault();
+            var $form = $('#frmAddConfig'),
+                      urlForm = $form.attr('action'),
+                      frmData = $form.serialize();
+            var form = $('#frmAddConfig').valid();
+            var datesValid = isDatesValid();
+            if (form)
+                $('.validation-summary-errors ul').empty();
+            if (!(form && datesValid)) return false;
+            if (origForm != frmData) {
+                $.ajax({
+                    type: "POST",
+                    url: submitUrl,
+                    data: frmData,
+                    success: function (data) {
+                        MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                            window.location.href = '@Url.Action("Search", "Configurations")';
+                        });
+                    },
+                    error: function (data) {
+                        MainLayout.fnAlertMessege("Error!", data.Message);
+                        return;
+                    }
+                });
+            }
+          else
+                MainLayout.fnAlertMessege("Alert","No Changes done!");
+         });
+
+         // ConfigurationName Change Event
+        $('#txtConfigName').change(function () {
+            var ConfigurationName = $('#txtConfigName').val();
+            fnCheckConfigName(ConfigurationName);
+        });
+
+        //Methods//
+        fnCheckConfigName = function (ConfigName) {
+            try {
+                if (ConfigName != "") {
+                    $.ajax({
+                        data: { "ConfigName": ConfigName },
+                        url: urlGetConfigName,
+                        type: "POST",
+                        success: function (response) {
+                            if (response.Data != "") {
+                                MainLayout.fnAlertMessege("Error!", response.Data);                              
+                                $('#txtConfigName').val('');
+                                $('#txtConfigName').focus();
+                                return;
+                            }
+                            else
+                            {
+                                $('#txtConfigValue').focus();
+                            }
+                        },
+                        failure: function (response) {
+                            //alert(response.responseText);
+                        },
+                        error: function (x) {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+                    });
+                }
+
+            } catch (e) {
+
+            }
+        };
+
+        // Date Validation.
+        function isDatesValid() {
+            var inactivationDate = new Date($('#EndDate_DPart').val());
+            var effectiveDate = new Date($('#StartDate_DPart').val());
+
+            var today = new Date();
+            var errorList = "";
+            var isValid = true;
+            today.setHours(0, 0, 0, 0)
+
+            if ($('#EndDate_DPart').val() != "") {
+                if ($('#EndDate_ZPart').val() == "") {
+                    $('#EndDate_ZPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Time Zone for Inactivation Date is Required</li>';
+                    isValid = false;
+                }
+            }
+
+            if (effectiveDate > today) {
+                $('#StartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Effective Date Must be less than or equal to Current Date</li>';
+                isValid = false;
+            }
+            if (inactivationDate < effectiveDate) {
+                $('#EndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Inactivation Date must be greater than effective Date</li>';
+                isValid = false;
+            }
+            if (isValid) {
+                $('#dvErrorMsg').hide();
+            } else {
+                $('#dateError').html(errorList);
+                $('#dvErrorMsg').show();
+            }
+            return isValid;
+        }
+
+    </script>
+}
+
+

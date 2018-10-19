@@ -1,0 +1,135 @@
+﻿@using ENRLReconSystem.Helpers
+@model IEnumerable<ENRLReconSystem.DO.DOADM_UserMaster>
+@{
+    ViewBag.Title = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/Images/search-icon.png" /><h4>Search User</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            @using (Html.BeginForm("Search", "UserAdminstration", FormMethod.Post))
+            {
+                @Html.ValidationSummary()
+                <div class="form-group col-md-3">
+                    @Html.Label("MS ID")
+                    @Html.TextBox("MSID", "", new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtMSID").StringMaxLength(100, "MS ID").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.Label("Full Name")
+                    @Html.TextBox("FullName", "", new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtFullName").StringMaxLength(100, "Full Name").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.Label("Email")
+                    @Html.TextBox("Email", "", new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtEmail").StringMaxLength(100, "Email").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.Label("Is Active")
+                    @Html.CheckBox("IsActive", true, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "chkIsActive").validationAttributes)
+                </div>
+                <div class="btn-group clearfix">
+                    <button type="button" id="btnSearch" class="btn btn-primary"><img src="~/Images/search-icon.png" /><span>Search</span></button>
+                    <button type="button" id="btnReset" class="btn btn-primary"><img src="~/Images/reset-icon.png" /><span>Reset</span></button>
+                    <button type="button" id="btnCancel" class="btn btn-primary"><img src="~/Images/cancle-icon.png" /><span>Cancel</span></button>
+                    <button type="button" id="btnAdd" class="btn btn-primary"><img src="~/Images/add-icon.png" /><span>Add User</span></button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/Images/list-icon.png" /><h4>Search Results</h4>
+        </div>
+
+        <div class="wdgt-body clearfix" id="divSearchResult">
+            @Html.Partial("_SearchResults", Model)
+        </div>
+    </div>
+</section>
+
+
+@section scripts{
+    <script>
+        var urlForLock = '@Url.Action("GetLockedRecordOrLockRecord", "RecordsLocked")';
+        var ReportsUrl = '@Url.Action("GetUserAdminReportURL", "UserAdminstration")';
+        var urlAddUser = '@Url.Action("Add", "UserAdminstration")';
+        var urlSearchUser = '@Url.Action("Search", "UserAdminstration")';
+
+         var winHistoryReport;
+
+        $('btnSearch').focus();
+
+        $('#btnAdd').click(function () {
+            window.location.href = urlAddUser;
+        });
+
+        $('#btnCancel').click(function () {
+            window.location.href = '@Url.Action("Home","Home")';
+        });
+
+        $('#btnReset').click(function () {
+            $('#txtMSID').val('');
+            $('#txtFullName').val('');
+            $('#txtEmail').val('');
+            $('#ddlIsActive').val('');
+            $('#chkIsActive').prop("checked", true);
+        });
+
+        $("#btnSearch").on("click", function () {
+            $.ajax({
+                url: urlSearchUser,
+                data: { "strMSID": $("#txtMSID").val().trim(), "strFullName": $('#txtFullName').val().trim(), "strEmail": $('#txtEmail').val().trim(), "bIsActive": $("#chkIsActive").is(":checked") ? true : false },
+                type: "POST",
+                success: function (data) {
+                    if (data != "") {
+                        $("#divSearchResult").empty().html(data);
+                        MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+                    }
+                    else {
+                        alert("An error occoured contact administrator!");
+                    }
+                },
+                error: function (error) {
+                    alert("An error occoured contact administrator!");
+                }
+            });
+        });
+
+        fnLockAndEdit = function (id,isActive) {
+            var urlToNavigate = urlAddUser +'?UserId=' + id + "&IsActive=" + isActive;
+            var isLocked=fnLockRecord(urlForLock,id, enums.ScreenType.UserAdmin,urlToNavigate);
+        };
+      
+
+    
+
+         // function to access history report
+        fnAccessReport = function (id) {
+            var urlToNavigate = ReportsUrl;
+            $.ajax({
+                url: urlToNavigate,
+                type: "POST",
+                success: function (data) {
+                    if (data != "")
+                    {
+                        var Data = data.Data;
+                        var reportUrl = Data + "&ADM_UserMasterId=" + id;
+                        var strWindowFeatures = "location=yes,height=580,width=1000,scrollbars=no,resizable=yes,toolbar=no,status=no,menu=no, directories=no,titlebar=no,location=no,addressbar=no,top=100,left=100";
+                        winHistoryReport = MainLayout.fnMyOpenWindow(reportUrl, "_blank", strWindowFeatures, winHistoryReport);
+
+                    }
+                },
+                error: function (x) {
+                    MainLayout.fnAlertMessage("Error!", "An error occoured.");
+                }
+            });
+        }
+
+        MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+
+    </script>
+}

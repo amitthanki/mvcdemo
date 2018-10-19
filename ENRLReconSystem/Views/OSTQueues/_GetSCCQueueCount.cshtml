@@ -1,0 +1,214 @@
+﻿@using ENRLReconSystem.Utility
+@model ENRLReconSystem.DO.QueueSummary
+
+
+@functions {
+
+    public IHtmlString QueueActions(long queueId, long count, bool showGetQueue = true)
+    {
+        string strTag = "";
+        if (count > 0 && Model.lstUserAccessQueueLkups.Contains(queueId))
+        {
+            var discCat = (long)DiscripancyCategory.SCC;
+            var href = Url.Action("SearchFromHome", "Common", new { @ComplianceStartDate = Model.StartDate, @ComplianceEndDate = Model.EndDate, @Queue = queueId, @data = discCat ,@screenType= 37010 });
+            var reportHref = ViewBag.ReportUrl + "&FromDate=" + Model.StartDate.ToString("MM/dd/yyyy") + "&ToDate=" + Model.EndDate.ToString("MM/dd/yyyy") + "&WorkQueueLkup=" + queueId + "&BusinessSegmentLkup=" + Model.BusinessSegment; 
+            if (showGetQueue)
+                strTag = "<a id = '" + queueId + "' class='getQueue' href='#' title='Get Queue'><img src = '/Images/get-queue-img.png' ></a>";//get queue link
+            strTag = strTag + "<a href='" + href + "'><img src = '/Images/view-img.png' title='View Queue' ></a>";//View Queue link
+            strTag = strTag + "<a href='" + reportHref + "' target ='_blank' title='View Report'><img src='/Images/report-img.png'></a>";//Report link
+        }
+        else
+        {
+            if (showGetQueue)
+                strTag = "<a  class='inAccessible' href='#'><img src = '/Images/disable-get-queue-img.png' ></ a >";//get queue link disabled
+            strTag = strTag + "<a  class='inAccessible' href='#'><img src = '/Images/disable-view-img.png' title='View Queue' ></a>";//View Queue link disabled
+            strTag = strTag + "<a class='inAccessible' href='#' title='View Report'><img src='/Images/disable-report-img.png'></a>";//Report link disabled
+        }
+        return new HtmlString(strTag);
+    }
+}
+
+
+<div class="queue-smry-wdgt">
+    <div class="processing-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Processing Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>New Case</td>
+                    <td>@Model.objSCCQueueSummary.SCCNewCase</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCNewCase.ToInt64(), Model.objSCCQueueSummary.SCCNewCase)
+                    </td>
+                </tr>
+                <tr>
+                    <td>MIIM Updated</td>
+                    <td>@Model.objSCCQueueSummary.SCCMIIMUpdated</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCMIIMUpdated.ToInt64(), Model.objSCCQueueSummary.SCCMIIMUpdated)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Potential SCC RPR Day 1</td>
+                    <td>@Model.objSCCQueueSummary.SCCPotentialSCCRPRDay1</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCPotentialSCCRPRDay1.ToInt64(), Model.objSCCQueueSummary.SCCPotentialSCCRPRDay1)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Potential SCC RPR Day 2</td>
+                    <td>@Model.objSCCQueueSummary.SCCPotentialSCCRPRDay2</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCPotentialSCCRPRDay2.ToInt64(), Model.objSCCQueueSummary.SCCPotentialSCCRPRDay2)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Needs EGHP Review</td>
+                    <td>@Model.objSCCQueueSummary.SCCNeedEGHPReview</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCNeedsEGHPReview.ToInt64(), Model.objSCCQueueSummary.SCCNeedEGHPReview)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Update Sent to CMS(Failed)</td>
+                    <td>@Model.objSCCQueueSummary.SCCUpdateSenttoCMSFAILED</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCUpdateSenttoCMSFAILED.ToInt64(), Model.objSCCQueueSummary.SCCUpdateSenttoCMSFAILED)
+                    </td>
+                </tr>
+                @*<tr>
+                    <td>Open NOT</td>
+                    <td>@Model.objSCCQueueSummary.SCCOpenNOT</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCOpenNOT.ToInt64(), Model.objSCCQueueSummary.SCCOpenNOT)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Open Disenroll</td>
+                    <td>@Model.objSCCQueueSummary.SCCOpenDisenroll</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCOpenDisenroll.ToInt64(), Model.objSCCQueueSummary.SCCOpenDisenroll)
+                    </td>
+                </tr>
+                <tr>
+                    <td>MARx Address Letter</td>
+                    <td>@Model.objSCCQueueSummary.SCCMARxAddressLetter</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCMARxAddressLetter.ToInt64(), Model.objSCCQueueSummary.SCCMARxAddressLetter)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Address Scrub</td>
+                    <td>@Model.objSCCQueueSummary.SCCAddressScrub</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCAddressScrub.ToInt64(), Model.objSCCQueueSummary.SCCAddressScrub)
+                    </td>
+                </tr>*@
+                <tr>
+                    <td>Pending Audit</td>
+                    <td>@Model.objSCCQueueSummary.SCCPendingAudit</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCPendingAudit.ToInt64(), Model.objSCCQueueSummary.SCCPendingAudit)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Peer Audit Failed</td>
+                    <td>@Model.objSCCQueueSummary.SCCPeerAuditFailed</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCPeerAuditFailed.ToInt64(), Model.objSCCQueueSummary.SCCPeerAuditFailed)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pended</td>
+                    <td>@Model.objSCCQueueSummary.SCCPended</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCPended.ToInt64(), Model.objSCCQueueSummary.SCCPended)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="queue-smry-wdgt">
+    <div class="holding-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Holding Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @*<tr>
+                    <td>Pending FTT</td>
+                    <td>@Model.objSCCQueueSummary.SCCPendingFTT</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCPendingFTT.ToInt64(), Model.objSCCQueueSummary.SCCPendingFTT,false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pending NOT</td>
+                    <td>@Model.objSCCQueueSummary.SCCPendingNOT</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCPendingNOT.ToInt64(), Model.objSCCQueueSummary.SCCPendingNOT, false)
+                    </td>
+                </tr>*@
+                <tr>
+                    <td>Pending SCC RPR</td>
+                    <td>@Model.objSCCQueueSummary.SCCPendingSCCRPR</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCPendingSCCRPR.ToInt64(), Model.objSCCQueueSummary.SCCPendingSCCRPR,false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Submit to CMS</td>
+                    <td>@Model.objSCCQueueSummary.SCCSubmitToCMS</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCSubmitToCMS.ToInt64(), Model.objSCCQueueSummary.SCCSubmitToCMS, false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Update Sent to CMS</td>
+                    <td>@Model.objSCCQueueSummary.SCCUpdateSentToCMS</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCUpdateSentToCMS.ToInt64(), Model.objSCCQueueSummary.SCCUpdateSentToCMS, false)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="completed-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Completed Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Completed</td>
+                    <td>@Model.objSCCQueueSummary.SCCCompleted</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCCompleted.ToInt64(), Model.objSCCQueueSummary.SCCCompleted, false)
+                    </td>
+                </tr>
+                <tr>
+                    <td>CMS Accepted</td>
+                    <td>@Model.objSCCQueueSummary.SCCCMSAccepted</td>
+                    <td>
+                        @QueueActions(SCCQueue.SCCCMSAccepted.ToInt64(), Model.objSCCQueueSummary.SCCCMSAccepted, false)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

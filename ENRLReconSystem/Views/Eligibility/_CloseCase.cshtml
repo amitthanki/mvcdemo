@@ -1,0 +1,36 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@model ENRLReconSystem.DO.DOGEN_EligibilityActions
+
+
+    <div class="clearfix">
+        @if(ViewBag.DisCat != "disCat")
+        {
+    <div class="form-group col-md-3">
+        <label for="inputEmail" class="required">Resolution</label>
+        @Html.DropDownListFor(m => m.ResolutionLkup, new SelectList(Model.lstResolution, "CMN_LookupMasterChildRef", "LookupMasterChildValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").Required("Please Select Resolution").CustomAttributes("id", "ddlResolution").validationAttributes)
+    </div>
+        <div class="form-group col-md-3" id="divRootCause">
+            <label for="inputEmail" class="required">Root Cause</label>
+            @Html.DropDownListFor(m => m.RootCauseLkup, new SelectList(Model.lstRootCause, "CMN_LookupMasterChildRef", "LookupMasterChildValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").Required("Please Select Root Cause").CustomAttributes("id", "ddlRootCause").validationAttributes)
+        </div>
+        <div class="form-group col-md-3" id="divOtherRootCause" hidden="hidden">
+            <label class="required" for="inputEmail">Other Root Cause </label>
+            @Html.TextBoxFor(m => m.OtherRootCause, new CustomValidation().Required("Other Root Cause is Required").AddCssClass("form-control").CustomAttributes("id", "txtotherRootCause").CustomAttributes("maxlength", "150").StringMaxLength(150, "Other Root Cause").validationAttributes)
+        </div>
+        <div class="form-group textarea col-md-12">
+            <label for="inputEmail">Comments</label>
+            @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+        </div>
+        }
+        else
+        {
+            <div class="form-group textarea col-md-12">
+                <label for="inputEmail">Comments</label>
+                @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+            </div>
+        }
+        </div>
+    
+
+                

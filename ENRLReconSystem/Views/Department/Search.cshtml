@@ -1,0 +1,138 @@
+﻿@model IEnumerable<ENRLReconSystem.DO.DOCMN_Department>
+@{
+    ViewBag.Title = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";   
+   
+}
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/Images/list-icon.png" /><h4>Search Department</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <form>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">ERS Department</label>
+                    @Html.TextBox("ERSDepartmentName","", new { @id = "txtDepName", @class = "form-control", @onkeypress = "fnAvoidSpecialCharandAllowDase(event);" })
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Is Active</label>
+                    <input type="checkbox" name="IsActive" checked="checked" id="cbxIsActive" class="form-control"><br>
+                    @*@Html.CheckBox("IsActive",false, new { @id = "chkIsActive", @class = "form-control" })*@
+                </div>
+                <div class="btn-group clearfix">
+                    <button type="button" id="btnSearch" class="btn btn-primary" title="Search"><img src="~/Images/search-icon.png" /><span>Search</span></button>
+                    <button type="button" id="btnReset" class="btn btn-primary" title="Reset"><img src="~/Images/reset-icon.png" /><span>Reset</span></button>
+                    <button type="button" id="btnCancel" class="btn btn-primary" title="Cancel"><img src="~/Images/cancle-icon.png" /><span>Cancel</span></button> 
+                    <button type="button" id="btnAddNew" class="btn btn-primary" title="Add"><img src="~/Images/add-icon.png" /><span>Add</span></button>                      
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/Images/list-icon.png" /><h4>Search Results</h4>
+        </div>
+        <div class="wdgt-body clearfix" id="divSearchResult">
+            @Html.Partial("_SearchResults", Model)  
+        </div>
+    </div>
+</section>
+@section scripts{
+   
+    <script>
+          //Variables//
+        var urlGetDepartment = '@Url.Action("Search", "Department")';
+        var ReportsUrl = '@Url.Action("GetDepartmentReportURL", "Department")';
+        var winHistoryReport;
+        $('#btnSearch').click(function () {
+            $.ajax({
+                data: { "strDepName": $('#txtDepName').val().trim(), "isActive": ($('#cbxIsActive').is(":checked") ? true : false) },
+                url: urlGetDepartment,
+                type: "POST",
+                success: function (data) {
+                      if (data != "") {
+                        $("#divSearchResult").empty().html(data);
+                         // fnInitialiseDataTable();
+                        MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+                      }
+                      //else {
+                      //    alert("An error occoured contact administrator!");
+                      //}
+                  },
+                //error: function (x) {
+                //    alert("An error occoured contact administrator!");
+                //}
+            });
+        });
+
+        //fnInitialiseDataTable = function () {
+        //      var table = $('#tblSearchResult').DataTable({
+        //          "dom": '<"top">t<"bottom"lip><"clear">',
+        //        "oLanguage": {
+        //              "sEmptyTable": "No data available"
+        //        },
+        //        "columnDefs": [
+        //            {
+        //                "targets": [0],
+        //                orderable: false
+        //            },
+        //        ]
+        //    });
+        //};
+        //fnInitialiseDataTable();
+        MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+        $('#btnCancel').click(function () {
+              window.location.href = '@Url.Action("Home", "Home")';
+          });
+        $('#btnAddNew').click(function () {
+              window.location.href = '@Url.Action("Add", "Department")';
+          });
+
+        $('#btnReset').click(function () {
+            $('#txtDepName').val('');
+            $("#cbxIsActive").prop('checked', true);
+        });
+
+        // function to access history report
+        fnAccessReport = function (id) {
+            // debugger
+            var urlToNavigate = ReportsUrl;
+            $.ajax({
+                url: urlToNavigate,
+                type: "POST",
+                success: function (data) {
+                    if (data != "") {
+
+                        var Data = data.Data;
+                        var reportUrl = Data + "&DepartmentRef=" + id;
+
+                        var strWindowFeatures = "location=yes,height=580,width=1000,scrollbars=no,resizable=yes,toolbar=no,status=no,menu=no, directories=no,titlebar=no,location=no,addressbar=no,top=100,left=100";
+                        winHistoryReport = MainLayout.fnMyOpenWindow(reportUrl, "_blank", strWindowFeatures, winHistoryReport);
+                        
+
+                    }
+                },
+                error: function (x) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                }
+            });
+        }
+
+        fnLockAndEdit = function (id, IsActive) {
+            var urlForLock = '@Url.Action("GetLockedRecordOrLockRecord", "RecordsLocked")';
+            var urlToNavigate = '@Url.Action("Add", "Department")' + "?DepId=" + id + "&isActive=" + IsActive;
+            fnLockRecord(urlForLock, id, enums.ScreenType.Department, urlToNavigate);
+
+            @*if (isLocked == true) {
+                //debugger;
+                //Call Edit Action
+                window.location.href = '@Url.Action("Add", "Department")' + "?DepId=" + id + "&isActive=" + IsActive;
+            }*@
+
+        };
+
+ 
+    </script>
+}

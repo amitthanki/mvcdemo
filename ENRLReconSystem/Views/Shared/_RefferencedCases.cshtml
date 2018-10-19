@@ -1,0 +1,74 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.DO
+@model List<DOGEN_QueueRefferencedCases>
+
+<div class="table-responsive tab-paneScrollable-1 clearfix">
+    <table class="table table-bordered" id="tblRefferencedCases">
+        <thead>
+            <tr>
+                <th>Actions</th>
+                <th>ERS Case ID</th>
+                <th>Discrepancy Category</th>
+                <th>Discrepancy Type</th>
+                <th>Most Recent Queue</th>
+                <th>Most Recent Status</th>
+                <th>Discrepancy Start Date</th>
+                <th>Medicare Id</th>
+                <th>Contract</th>
+                <th>PBP</th>  
+                <th>FirstLetter Mail Date</th>  
+                <th>SecondLetter Mail Date</th>  
+                <th>Parent Case ID</th>  
+                <th>Created On</th>  
+                <th>Created By</th>  
+                <th>Last Updated On</th>  
+                <th>Last Updated By</th> 
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model)
+            {
+            <tr>
+                <td>
+                    <a class="deleteViewIcon" onclick="fnViewReferenceCase(@item.Gen_QueueId,@item.DiscrepancyCategoryLkup);" title="View Record"><img src="~/Images/View.png" /></a>&nbsp;
+                </td>
+                <td>@item.Gen_QueueId</td>
+                <td>@item.DiscrepancyCategory</td>
+                <td>@item.DiscrepancyType</td>
+                <td>@item.MostRecentWorkQueue</td>
+                <td>@item.MostRecentStatus</td>
+                <td>
+                    @if (item.DiscrepancyStartDate.HasValue)
+                    {@item.DiscrepancyStartDate.Value.ToString("MM/dd/yyyy")}
+                </td>
+                <td>@item.MemberCurrentHICN</td>
+                <td>@item.MemberContract</td>
+                <td>@item.MemberPBP</td>
+                <td>
+                    @if (item.FirstLetterMailDate.HasValue)
+                    {@item.FirstLetterMailDate.Value.ToString("MM/dd/yyyy")}
+                </td>
+                <td>
+                    @if (item.SecondLetterMailDate.HasValue)
+                    {@item.SecondLetterMailDate.Value.ToString("MM/dd/yyyy")}
+                 </td>
+                <td>@if (item.ParentQueueRef>0)
+                    {
+                       @item.ParentQueueRef
+                    }
+                </td>
+                <td>
+                    @if (item.UTCCreatedOn.HasValue)
+                    {@item.UTCCreatedOn.Value.ToString("MM/dd/yyyy")}
+                </td>
+                <td>@item.CreatedBy</td>
+                <td>
+                    @if (item.UTCLastUpdatedOn.HasValue)
+                    {@item.UTCLastUpdatedOn.Value.ToString("MM/dd/yyyy")}
+                </td>
+                <td>@item.LastUpdatedBy</td>
+            </tr>            
+          }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,74 @@
+﻿@model List<ENRLReconSystem.DO.DORPT_ReportsMaster>
+@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.Utility
+@{
+    ViewBag.Title = "Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/Images/configuration-icon.png" /><h4>Generate Report</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <div class="report-slct">
+            <div class="form-group">
+                <label for="ReportName">Report Name</label>
+            </div>
+            <div class="form-group">
+                @Html.DropDownList("ReportName", new SelectList(Model, "ReportURL", "ReportName"), ConstantTexts.dropdownDefaultValue, new { @id= "ReportName"})
+            </div>
+            <div class="form-group">
+                    <button type="button" id="btnView" class="btn btn-primary"><img src='@Url.Content("/images/view-icon.png")' /><span>View</span></button>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="wdgt-wrapper">
+
+        <div class="wdgt-body clearfix" id="divSearchResult">
+            <div style="clear:both; height:10px;"></div>
+            <div id="divReport" style="height: 700px;">
+                <iframe name="ReportIframe" id="frame" width="100%" height="100%" scrolling="auto"></iframe>
+            </div>
+            <div style="clear:both; height:20px;"></div>
+        </div>
+    </div>
+</section>
+
+
+
+@section Scripts{
+    <script type="text/javascript">
+        var ERSControlReportList = ["ERS Error Log Report","ERS Locked Records Report","Background Process Monitor Report"
+                                   ,"Web Service Monitoring Report","MQ Processing Report","ERS Locked Records Report","OOA Control Report"];
+        $(function () {
+            $("#ReportName option").each(function () {
+                if ($.inArray($(this).html().trim(), ERSControlReportList)!=-1) {
+                    $(this).css('color', "blue");
+                }
+            });
+
+        });
+
+        $("#btnView").click(function () {
+            var ERSReportList = ["ERS Home Page Summary Report", "ERS Locked Records Report", "MTD Peer Audit Quality Report",
+                , "Daily Dashboard Report", "Pending Report", "Monthly Metrics Report", "OOA Tracking Report", "RPR Submission Report", "RPR Plan Error Report", "Macro Report", "MARx Address Letter Report","RPR Completed Report"];
+            if ($("#ReportName").val() == "") {
+                alert("Please select a Report Name to view.");
+                return;
+            }
+            var ReportName = $("#ReportName option:selected").text();          
+            if ($.inArray(ReportName, ERSReportList)!==-1) {
+                var reportUrl = $("#ReportName").val() + "&BusinessSegmentLkup=" + @ViewBag.BusinessSegment;
+            }
+            else {
+                var reportUrl = $("#ReportName").val();
+            }           
+            $("#frame").attr("src", reportUrl );           
+        });
+         </script>
+}

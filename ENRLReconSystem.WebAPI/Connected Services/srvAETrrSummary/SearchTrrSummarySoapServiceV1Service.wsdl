@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://upm3.uhc.com/uhcmr/cms/trrsummary/v1" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" name="SearchTrrSummarySoapServiceV1Service" targetNamespace="http://upm3.uhc.com/uhcmr/cms/trrsummary/v1" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <xs:schema xmlns:ns1="http://upm3.uhc.com" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://upm3.uhc.com/uhcmr/cms/trrsummary/v1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://upm3.uhc.com" />
+      <xs:element name="internalUse" type="ns1:internalUse" />
+      <xs:element name="keyValuePair" type="ns1:keyValuePair" />
+      <xs:element name="logLevel" type="ns1:logLevel" />
+      <xs:element name="pingHop" type="ns1:pingHop" />
+      <xs:element name="pingRequest" type="ns1:pingRequest" />
+      <xs:element name="pingResponse" type="ns1:pingResponse" />
+      <xs:element name="requestBase" type="ns1:requestBase" />
+      <xs:element name="requestHeader" type="ns1:requestHeader" />
+      <xs:element name="responseBase" type="ns1:responseBase" />
+      <xs:element name="responseHeader" type="ns1:responseHeader" />
+      <xs:element name="search">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="individualId" type="xs:string" />
+            <xs:element minOccurs="0" name="controlModifier" type="tns:controlModifiersType" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="serviceCallStatus" type="ns1:serviceCallStatus" />
+      <xs:element name="serviceHop" type="ns1:serviceHop" />
+      <xs:element name="statusMessage" type="ns1:statusMessage" />
+      <xs:element name="statusMessageLevel" type="ns1:statusMessageLevel" />
+      <xs:element name="vr1StatusContainer" type="ns1:vr1StatusContainer" />
+      <xs:element name="vrcStatusGroup" type="ns1:vrcStatusGroup" />
+      <xs:complexType name="searchTrrSummaryRequest">
+        <xs:complexContent mixed="false">
+          <xs:extension base="ns1:requestBase">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="search">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element minOccurs="0" name="individualId" type="xs:string" />
+                    <xs:element minOccurs="0" name="controlModifier" type="tns:controlModifiersType" />
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="controlModifiersType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="gpsSystemParameters" type="tns:gpsSystemParametersType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="gpsSystemParametersType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="clientId" type="xs:string" />
+          <xs:element minOccurs="0" name="userId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="searchTrrSummaryResponse">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:responseBase2">
+            <xs:sequence>
+              <xs:element minOccurs="0" name="trrsummary" type="tns:trrsummary" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="responseBase2">
+        <xs:complexContent mixed="false">
+          <xs:extension base="ns1:responseBase">
+            <xs:sequence />
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="trrsummary">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="badHistoryTransaction" nillable="true" type="tns:transactionType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="badPendingTransaction" nillable="true" type="tns:transactionType" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="summaryTransaction" nillable="true" type="tns:transactionSummaryType" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="transactionType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="contract" type="tns:contractType" />
+          <xs:element minOccurs="0" name="effectiveDate" type="xs:string" />
+          <xs:element minOccurs="0" name="medicareClaimNumber" type="xs:string" />
+          <xs:element minOccurs="0" name="partDRx" type="tns:partDGroupInfoType" />
+          <xs:element minOccurs="0" name="planCoverageInfo" type="tns:planCoverageInfoType" />
+          <xs:element minOccurs="0" name="transactionCode" type="tns:transactionCodeType" />
+          <xs:element minOccurs="0" name="transactionDate" type="xs:string" />
+          <xs:element minOccurs="0" name="transactionId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="contractType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="contractNumber" type="xs:string" />
+          <xs:element minOccurs="0" name="planBenefitPackage" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="partDGroupInfoType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="rxBin" type="xs:string" />
+          <xs:element minOccurs="0" name="rxGroup" type="xs:string" />
+          <xs:element minOccurs="0" name="rxId" type="xs:string" />
+          <xs:element minOccurs="0" name="rxPcn" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="planCoverageInfoType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="creditableCoverageInd" type="xs:string" />
+          <xs:element minOccurs="0" name="eghbInd" type="xs:string" />
+          <xs:element minOccurs="0" name="employerSubsidyOverrideInd" type="xs:string" />
+          <xs:element minOccurs="0" name="notCoveredMonths" type="xs:string" />
+          <xs:element minOccurs="0" name="partDPremiumAmount" type="xs:string" />
+          <xs:element minOccurs="0" name="premiumWitholdOption" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="transactionCodeType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="code" type="xs:string" />
+          <xs:element minOccurs="0" name="description" type="xs:string" />
+          <xs:element minOccurs="0" name="replyCode" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="transactionSummaryType">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="contract" type="tns:contractType" />
+          <xs:element minOccurs="0" name="effectiveDate" type="xs:string" />
+          <xs:element minOccurs="0" name="medicareClaimNumber" type="xs:string" />
+          <xs:element minOccurs="0" name="processDate" type="xs:string" />
+          <xs:element minOccurs="0" name="transactionCode" type="tns:transactionCodeType" />
+          <xs:element minOccurs="0" name="transactionDate" type="xs:string" />
+          <xs:element minOccurs="0" name="transactionId" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ServiceException" type="tns:ServiceException" />
+      <xs:complexType name="ServiceException">
+        <xs:sequence />
+      </xs:complexType>
+      <xs:element name="invokePing" type="tns:invokePing" />
+      <xs:complexType name="invokePing">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="arg0" type="ns1:pingRequest" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="invokePingResponse" type="tns:invokePingResponse" />
+      <xs:complexType name="invokePingResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="ns1:pingResponse" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="invokeService" type="tns:invokeService" />
+      <xs:complexType name="invokeService">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="arg0" type="tns:searchTrrSummaryRequest" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="invokeServiceResponse" type="tns:invokeServiceResponse" />
+      <xs:complexType name="invokeServiceResponse">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="return" type="tns:searchTrrSummaryResponse" />
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+    <xs:schema xmlns:tns="http://upm3.uhc.com" xmlns:ns1="http://upm3.uhc.com/uhcmr/cms/trrsummary/v1" targetNamespace="http://upm3.uhc.com" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://upm3.uhc.com/uhcmr/cms/trrsummary/v1" />
+      <xs:complexType name="pingRequest">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:requestBase">
+            <xs:sequence />
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="requestBase" abstract="true">
+        <xs:sequence>
+          <xs:element name="requestHeader" type="tns:requestHeader" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="requestHeader">
+        <xs:sequence>
+          <xs:element name="applicationName" type="xs:string" />
+          <xs:element name="applicationInstanceName" nillable="true" type="xs:string" />
+          <xs:element name="logLevel" type="tns:logLevel" />
+          <xs:element minOccurs="0" name="externalId" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="serviceOption" nillable="true" type="tns:keyValuePair" />
+          <xs:element minOccurs="0" name="internalUse" nillable="true" type="tns:internalUse" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="keyValuePair">
+        <xs:sequence>
+          <xs:element name="key" type="xs:string" />
+          <xs:element name="value" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="internalUse">
+        <xs:sequence>
+          <xs:element name="uid" nillable="true" type="xs:string" />
+          <xs:element name="serviceName" nillable="true" type="xs:string" />
+          <xs:element name="serviceVersion" nillable="true" type="xs:string" />
+          <xs:element name="originalConsumer" nillable="true" type="xs:string" />
+          <xs:element name="originalServiceName" nillable="true" type="xs:string" />
+          <xs:element name="originalServiceVersion" nillable="true" type="xs:string" />
+          <xs:element name="logSequence" nillable="true" type="xs:int" />
+          <xs:element name="uidGeneratedBy" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="pingResponse">
+        <xs:complexContent mixed="false">
+          <xs:extension base="tns:responseBase">
+            <xs:sequence>
+              <xs:element minOccurs="0" maxOccurs="unbounded" name="pingHops" type="tns:pingHop" />
+            </xs:sequence>
+          </xs:extension>
+        </xs:complexContent>
+      </xs:complexType>
+      <xs:complexType name="responseBase" abstract="true">
+        <xs:sequence>
+          <xs:element name="responseHeader" type="tns:responseHeader" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="pingHop">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="className" type="xs:string" />
+          <xs:element minOccurs="0" name="bundleName" type="xs:string" />
+          <xs:element minOccurs="0" name="bundleVersion" type="xs:string" />
+          <xs:element minOccurs="0" name="bundleId" type="xs:string" />
+          <xs:element minOccurs="0" name="timestamp" type="xs:string" />
+          <xs:element minOccurs="0" name="applicationAuthorized" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="configurationInformation" nillable="true" type="tns:keyValuePair" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="responseHeader">
+        <xs:sequence>
+          <xs:element name="serviceCallStatus" type="tns:serviceCallStatus" />
+          <xs:element name="externalId" nillable="true" type="xs:string" />
+          <xs:element name="serviceName" type="xs:string" />
+          <xs:element name="serviceVersion" type="xs:string" />
+          <xs:element name="logLevel" type="tns:logLevel" />
+          <xs:element name="upmEnvironment" type="xs:string" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="serviceHops" nillable="true" type="tns:serviceHop" />
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="statusMessages" nillable="true" type="tns:statusMessage" />
+          <xs:element name="internalUse" type="tns:internalUse" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="serviceHop">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="bundleName" type="xs:string" />
+          <xs:element minOccurs="0" name="bundleVersion" type="xs:string" />
+          <xs:element minOccurs="0" name="bundleId" type="xs:string" />
+          <xs:element minOccurs="0" name="startTimestamp" type="xs:string" />
+          <xs:element minOccurs="0" name="endTimestamp" type="xs:string" />
+          <xs:element minOccurs="0" name="totalTimeInMilliseconds" type="xs:string" />
+          <xs:element minOccurs="0" name="location" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="statusMessage">
+        <xs:sequence>
+          <xs:element name="statusMessageLevel" type="tns:statusMessageLevel" />
+          <xs:element name="messageType" type="xs:string" />
+          <xs:element name="statusMessage" type="xs:string" />
+          <xs:element minOccurs="0" name="hopLocation" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="stackTrace" nillable="true" type="xs:string" />
+          <xs:element name="statusOrigin" type="xs:string" />
+          <xs:element minOccurs="0" name="vrcStatusGroup" nillable="true" type="tns:vrcStatusGroup" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="vrcStatusGroup">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="statusContainerBeans" nillable="true" type="tns:vr1StatusContainer" />
+          <xs:element minOccurs="0" name="vr1_status_container_num_occ" type="xs:string" />
+          <xs:element minOccurs="0" name="vrc_status_generated_by" type="xs:string" />
+          <xs:element minOccurs="0" name="vrc_status_orig_channel" type="xs:string" />
+          <xs:element minOccurs="0" name="vrc_status_owned_by" type="xs:string" />
+          <xs:element minOccurs="0" name="vrc_status_service_name" type="xs:string" />
+          <xs:element minOccurs="0" name="vrc_status_service_version" type="xs:string" />
+          <xs:element minOccurs="0" name="vrc_status_system" type="xs:string" />
+          <xs:element minOccurs="0" name="vrc_status_transid" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="vr1StatusContainer">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="vr1_status_additional_info" type="xs:string" />
+          <xs:element minOccurs="0" name="vr1_status_code" type="xs:string" />
+          <xs:element minOccurs="0" name="vr1_status_code_desc" type="xs:string" />
+          <xs:element minOccurs="0" name="vr1_status_code_type_desc" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:simpleType name="logLevel">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="DEFAULT" />
+          <xs:enumeration value="TRACE" />
+          <xs:enumeration value="DEBUG" />
+          <xs:enumeration value="INFO" />
+          <xs:enumeration value="WARN" />
+          <xs:enumeration value="ERROR" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="serviceCallStatus">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="SUCCESS" />
+          <xs:enumeration value="INFO" />
+          <xs:enumeration value="ERROR" />
+          <xs:enumeration value="EXCEPTION" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType name="statusMessageLevel">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="INFORMATIONAL" />
+          <xs:enumeration value="FAULT" />
+          <xs:enumeration value="EXCEPTION" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="ServiceException">
+    <wsdl:part name="ServiceException" element="tns:ServiceException" />
+  </wsdl:message>
+  <wsdl:message name="invokeService">
+    <wsdl:part name="parameters" element="tns:invokeService" />
+  </wsdl:message>
+  <wsdl:message name="invokeServiceResponse">
+    <wsdl:part name="parameters" element="tns:invokeServiceResponse" />
+  </wsdl:message>
+  <wsdl:message name="invokePingResponse">
+    <wsdl:part name="parameters" element="tns:invokePingResponse" />
+  </wsdl:message>
+  <wsdl:message name="invokePing">
+    <wsdl:part name="parameters" element="tns:invokePing" />
+  </wsdl:message>
+  <wsdl:portType name="SearchTrrSummary">
+    <wsdl:operation name="invokePing">
+      <wsdl:input name="invokePing" message="tns:invokePing" />
+      <wsdl:output name="invokePingResponse" message="tns:invokePingResponse" />
+      <wsdl:fault name="ServiceException" message="tns:ServiceException" />
+    </wsdl:operation>
+    <wsdl:operation name="invokeService">
+      <wsdl:input name="invokeService" message="tns:invokeService" />
+      <wsdl:output name="invokeServiceResponse" message="tns:invokeServiceResponse" />
+      <wsdl:fault name="ServiceException" message="tns:ServiceException" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SearchTrrSummarySoapServiceV1ServiceSoapBinding" type="tns:SearchTrrSummary">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="invokePing">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="invokePing">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="invokePingResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="invokeService">
+      <soap:operation soapAction="" style="document" />
+      <wsdl:input name="invokeService">
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output name="invokeServiceResponse">
+        <soap:body use="literal" />
+      </wsdl:output>
+      <wsdl:fault name="ServiceException">
+        <soap:fault use="literal" name="ServiceException" namespace="" />
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SearchTrrSummarySoapServiceV1Service">
+    <wsdl:port name="SearchTrrSummaryPort" binding="tns:SearchTrrSummarySoapServiceV1ServiceSoapBinding">
+      <soap:address location="https://u3calpha.uhc.com/upm3_gateway/upm3/uhcmr/cms/trrsummary/SearchTrrSummaryV1" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

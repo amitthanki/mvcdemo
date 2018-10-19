@@ -1,0 +1,86 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@model DOGEN_OSTActions
+
+
+<div class="secondary-hdr">
+    <h4>SCC RPR Request</h4>
+</div>
+<div class="sub-inner-body clearfix">
+
+    @Html.HiddenFor(m => m.RPRRequestedEffectiveDate)
+    @Html.HiddenFor(m => m.SCCRPRRequstedSubmissionDate)
+    <div class="form-group col-md-3">
+        @Html.LabelFor(m => m.RPRCTMMember, "CTM Member")
+        @Html.CheckBoxFor(m => m.RPRCTMMember, new { @class = "form-control", @id = "cbxCTMMember" })
+    </div>
+    <div class="form-group col-md-3">
+        @Html.LabelFor(m => m.RPRCTMNumber, "CTM Number")
+        @Html.TextBoxFor(m => m.RPRCTMNumber, new CustomValidation().Required("CTM Number is Required.").CustomAttributes("disabled", "disabled").CustomAttributes("id", "txtCTMNumber").CustomAttributes("maxlength", "20").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group col-md-3">
+        @Html.LabelFor(m => m.RPREGHPMember, "EGHP Member")
+        @Html.CheckBoxFor(m => m.RPREGHPMember, new { @class = "form-control", @id = "cbxEGHPMember" })
+    </div>
+    <div class="form-group col-md-3">
+        @Html.LabelFor(m => m.RPREmployerID, "Employer ID")
+        @Html.TextBoxFor(m => m.RPREmployerID, new CustomValidation().Required("Employer ID is Required.").CustomAttributes("disabled", "disabled").CustomAttributes("id", "txtEmployerId").CustomAttributes("maxlength", "20").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group date-group col-md-3">
+        @Html.LabelFor(m => m.RPRRequestedEffectiveDate, "Requested Effective Date", new { @class = "required" })
+        @Html.DateTimeFor(m => m.RPRRequestedEffectiveDate, false, new CustomValidation().Required("Requested Effective Date is Required.").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group col-md-3">
+        @Html.LabelFor(m => m.RPRActionRequestedLkup, "Action Requested", new { @class = "required" })
+        @Html.DropDownListFor(m => m.RPRActionRequestedLkup, new SelectList(Model.lstActionRequested, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "ddlActionRequestedLkup").Required("Please select Action Requested").AddCssClass("form-control").validationAttributes)
+        @Html.HiddenFor(m => m.RPRActionRequestedLkup)
+    </div>
+    <div class="form-group col-md-3" id="divOtherAction" hidden="hidden">
+        @Html.LabelFor(m => m.RPROtherActionRequested, "Other Action Requested", new { @class = "required" })
+        @Html.TextBoxFor(m => m.RPROtherActionRequested, new CustomValidation().Required("Other Action Requested is required").RegularExpression(RegexType.AlphabetsWithNumericSpacesAndAmpersand, "Other Action Requested").StringMaxLength(50, "Other Action Requested").CustomAttributes("maxlength", "50").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group col-md-3">
+        @Html.LabelFor(m => m.RPRSupervisorOrRequesterRef, "Supervisor or person entering request", new { @class = "required" })
+        @Html.DropDownListFor(m => m.RPRSupervisorOrRequesterRef, new SelectList(Model.lstUsers, "ADM_UserMasterId", "FullName"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please select Supervisor or person entering request").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group col-md-3">
+        <label class="required" title="Task being performed when this discrepancy was identified ?">Task Being Performed...</label>
+        @Html.DropDownListFor(m => m.RPRTaskPerformedLkup, new SelectList(Model.lstTaskBeingPerformed, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "ddlTaskPerformedLkup").Required("Please select Task being performed when this discrepancy was identified ?").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group col-md-3" id="divOtherTaskType" hidden="hidden">
+        @Html.LabelFor(m => m.RPROtherTaskPerformed, "Other Task Being Performed", new { @class = "required" })
+        @Html.TextBoxFor(m => m.RPROtherTaskPerformed, new CustomValidation().Required("Other Task Being Performed is required").CustomAttributes("disabled", "disabled").RegularExpression(RegexType.AlphabetsWithNumericSpacesAndAmpersand, "Task Type").StringMaxLength(50, "Task Type").CustomAttributes("maxlength", "50").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group col-md-3">
+        @Html.LabelFor(m => m.SCCRPRRequested, "Requested SCC", new { @class = "required" })
+        @Html.TextBoxFor(m => m.SCCRPRRequested, new CustomValidation().Required("Requested SCC is required").RegularExpression(RegexType.Numeric, "Requested SCC").StringLength(5, "Requested SCC").CustomAttributes("maxlength", "5").AddCssClass("form-control allowOnlyNumeric").validationAttributes)
+    </div>
+    <div class="form-group col-md-3">
+        @Html.LabelFor(m => m.SCCRPRRequestedZip, "Requested ZIP", new { @class = "required" })
+        @Html.TextBoxFor(m => m.SCCRPRRequestedZip, new CustomValidation().Required("Requested ZIP is required").RegularExpression(RegexType.Numeric, "Requested ZIP").StringLength(5, "Requested ZIP").CustomAttributes("maxlength", "5").AddCssClass("form-control allowOnlyNumeric").validationAttributes)
+    </div>
+    <div class="form-group date-group col-md-3">
+        @Html.LabelFor(m => m.SCCRPRRequstedSubmissionDate, "Requested Submission Date")
+        @Html.DateTimeFor(m => m.SCCRPRRequstedSubmissionDate, false, new CustomValidation().AddCssClass("form -control").validationAttributes)
+    </div>
+    <div class="form-group textarea col-md-12">
+        @Html.LabelFor(m => m.RPRReasonforRequest, "Reason for Request", new { @class = "required" })
+        @Html.TextAreaFor(m => m.RPRReasonforRequest, new CustomValidation().CustomAttributes("id", "txtReasonForRequest").CustomAttributes("maxlength", "2000").Required("Please Enter Reason for Request").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group textarea col-md-12">
+        <label class="required">Comments</label>
+        @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").Required("Please enter Comments.").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+         if ('@ViewBag.SCCRPR' == "SCCRPR"){
+            $("#txtReasonForRequest").prop("readonly", true);
+            $("#ddlActionRequestedLkup").attr("disabled", "disabled");
+        }
+       
+
+    });
+</script>  

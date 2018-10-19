@@ -1,0 +1,445 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.DO
+@using ENRLReconSystem.Helpers
+@model DOCMN_LookupTypeCorrelations
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+    int flag = Convert.ToInt32(TempData["PageVisibility"]);
+    TempData.Keep("PageVisibility");
+}
+
+<section class="container main-body-wrpr">
+@using (Html.BeginForm("SaveLookupTypeCorrelation", "LookupCorrelation", FormMethod.Post, new { @id = "frmAddCorrelationType" }))
+{
+    <div class="wdgt-wrapper">
+       
+        @Html.AntiForgeryToken()
+
+        @Html.HiddenFor(xx => xx.CMN_LookupTypeCorrelationsId, new { @id = "hdnLookupTypeCorrelationsId" })
+        <div class="wdgt-hdr">
+            <img src="~/images/search-icon.png" /><h4>Correlation Type</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <div style="color:red;">
+                @Html.ValidationSummary(false)
+            </div>
+                <div class="form-group col-md-3">
+                    <label for="txtCorrelationGroup" class="required">Correlation Group</label>
+                    @Html.TextBoxFor(xx => xx.CorrelationDescription, new CustomValidation().Required("Correlation Group is required.").AddCssClass("form-control").CustomAttributes("id", "txtCorrelationGroup").CustomAttributes((flag == 0) ? "disabled" : "", (flag == 0) ? "true" : "").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAmpersandAndSpaces, "Correlation Group").StringMaxLength(75, "Correlation Group").CustomAttributes("maxlength", "75").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="ddlParentLookupType" class="required">Parent Lookup Type</label>
+                    @Html.DropDownListFor(xx => xx.CMN_LookupTypeParentRef, new SelectList(Model.lstDOCMN_LookupType, "CMN_LookupTypeId", "LookupTypeDescription"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Parent Lookup Type is required.").AddCssClass("form-control").CustomAttributes("id", "ddlParentLookupType").CustomAttributes((flag == 0) ? "disabled" : "", (flag == 0) ? "true" : "").validationAttributes) @*new { @id = "ddlParentLookupType", @class = "form-control" })*@
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="ddlChildLookupType" class="required">Child Lookup Type</label>
+                    @Html.DropDownListFor(xx => xx.CMN_LookupTypeChildRef, new SelectList(Model.lstDOCMN_LookupType, "CMN_LookupTypeId", "LookupTypeDescription"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Child Lookup Type is required.").AddCssClass("form-control").CustomAttributes("id", "ddlChildLookupType").CustomAttributes((flag == 0) ? "disabled" : "", (flag == 0) ? "true" : "").validationAttributes) @*new { @id = "ddlChildLookupType", @class = "form-control" })*@
+                </div>
+            @if (Model.CMN_LookupTypeCorrelationsId > 0)
+            {
+                <div class="form-group col-md-3">
+                    <label for="chkIsActive">Is Active</label>
+                    @Html.CheckBoxFor(xx => xx.IsActive, (flag > 0) ? new { @id = "chkIsActive", @checked = "checked", @class = "form-control" } : new { @id = "chkIsActive", @checked = "checked", @class = "form-control", @disabled = "disabled" } as object)
+                </div>
+            }
+             @if (flag > 0) 
+             {
+                <div class="btn-group clearfix">
+                    <button type="submit" id="btnSave" title="Save" class="btn btn-primary"><img src='@Url.Content("~/images/save-icon.png")' /><span>Save</span></button>
+                    <button type="button" id="btnReset" title="Reset" class="btn btn-primary"><img src='@Url.Content("~/images/reset-icon.png")' /><span>Reset</span></button>
+                    <button type="button" id="btnCancel" title="Cancel" class="btn btn-primary"><img src='@Url.Content("~/images/cancle-icon.png")' /><span>Cancel</span></button>
+                </div>
+             }
+     
+
+        </div>
+    </div>
+}
+@if (Model.CMN_LookupTypeCorrelationsId > 0 && flag == 0)
+{
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/images/list-icon.png" /><h4>Correlation Masters</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <div class="table-responsive">
+                <table id="tblSearchResult" class="table table-bordered" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th style="width:5%">Actions</th>
+                            <th>Description</th>
+                            <th>Parent Lookup Master</th>
+                            <th>Child Lookup Master</th>
+                            <th>Is Active</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            @foreach (var item in Model.lstDOCMN_LookupMasterCorrelations)
+                            {
+                            <tr>
+                                <td align="center">
+                                    @if (item.CMN_LookupMasterCorrelationsId > 1000000)
+                                    {
+                                    <a id="@item.CMN_LookupMasterCorrelationsId" class="lnkEdit" title="Edit Correlation Master"><img src="~/images/edit-img.png" alt="Edit" /></a>
+                                    }
+                                    else
+                                    {
+                                        <a class="inAccessible" title="Edit Correlation Master"><img src="~/images/disable-edit-img.png" alt="Edit" /></a>
+                                    }
+                                </td>
+                                <td>@item.CorrelationDescription</td>
+                                <td>@item.LookupMasterParentValue</td>
+                                <td>@item.LookupMasterChildValue</td>
+                                <td align="center">@(item.IsActive ? "Yes" : "No")</td>
+                            </tr>
+                            }
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="btn-group clearfix">
+        <button type="button" id="btnCancelCoRelationMaster" title="Cancel" class="btn btn-primary"><img src="~/images/cancle-icon.png" /><span>Cancel</span></button>
+        <button type="button" id="btnAddNew" class="btn btn-primary" title="Add New"><img src="~/images/add-icon.png" /><span>Add New</span></button>
+    </div>
+}
+</section>
+@*PopUp*@
+
+<div id="myModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content" id="divAddCorrelationMaster">
+
+        </div>
+    </div>
+</div>
+
+@*PopUp End*@
+
+@section scripts{
+    <script type="text/javascript">
+        //variables//
+        var urlGetCorelationMaster = '@Url.Action("GetCorelationMaster", "LookupCorrelation")',
+            urlValidateLookupTypeCorrelation = '@Url.Action("ValidateLookupTypeCorrelation", "LookupCorrelation")',
+            urlValidateLookupMasterCorrelation='@Url.Action("ValidateLookupMasterCorrelation", "LookupCorrelation")';
+        var $myForm = $("#frmAddCorrelationType"),orgFrmCorelationMaster,
+            origForm = $myForm.serialize();
+
+
+        //Events//
+
+        $("#btnCancel").on("click", function () {
+            try {
+         fnCancel();
+            
+            } catch (e) {
+
+            }
+         });
+
+        $("#btnReset").on("click", function () {
+            try {
+                MainLayout.fnResetValidationSummary();
+                    $myForm.deserialize(origForm);
+            } catch (e) {
+
+            }
+        });
+
+        $(document).on("click", ".lnkEdit", function () {
+            try {
+                fnOpenLookupCorrelationMasterPopup(0,this.id);
+            } catch (e) {
+
+            }
+        });
+
+        $(document).on("click", "#btnLkupMasterReset", function () {
+            try {
+               fnClearLookupMasterCorrelationPopup();
+            } catch (e) {
+
+            }
+        });
+        //Add Lookup Crrelation Master Popup//
+        $("#btnAddNew").on("click", function () {
+            try {
+                fnOpenLookupCorrelationMasterPopup($("#hdnLookupTypeCorrelationsId").val(),0);
+            } catch (e) {
+
+            }
+        });
+
+        $("#btnCancelCoRelationMaster").on("click", function () {
+            try {
+         fnCancel();
+            
+            } catch (e) {
+
+            }
+        });
+
+        $("#frmAddCorrelationType").on("submit", function (e) {
+            try {
+                e.preventDefault();
+                var $form = $(this),
+                    urlForm = $form.attr('action'),
+                    frmData = $form.serialize();
+                if (fnValidateCorrelationType($form)) {
+                            $.ajax({
+                                data: frmData,
+                                url: urlForm,
+                                type: "POST",
+                                success: function (data) {
+                                    if (data.ID > 0) {
+                                        MainLayout.fnAlertMessege("Alert!", "An error occoured!");
+                                    }
+                                    else {
+                                        MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                                            fnLookupCorrelationPageSearchRedirection();
+                                        });
+                                    }
+                                },
+                                error: function (x) {
+                                    MainLayout.fnAlertMessege("Alert!", "An error occoured!");
+                                }
+                            });
+                }
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured!");
+            }
+        });
+        $(document).on("submit", "#frmAddCorrelationMaster", function (e) {
+            try {
+                e.preventDefault();
+                var $form = $(this),
+                    urlForm = $form.attr('action'),
+                    frmData = $form.serialize();
+                if (fnValidateCorrelationMaster($form)) {
+                    $.ajax({
+                        data: frmData,
+                        url: urlForm,
+                        type: "POST",
+                        success: function (data) {
+                            if (data.ID > 0) {
+                                MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+                            }
+                            else {
+                                MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                                    fnRefreshCorrelationMasterPage();
+                                });
+                            }
+                        },
+                        error: function (x) {
+                            MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+                        }
+                    });
+                }
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+            }
+        });
+
+
+
+        //Methods//
+
+
+        fnValidateCorrelationType = function ($form) {
+            try {
+                var errorList = []
+                    , $summary = $form.find("[data-valmsg-summary=true]")
+                    , $ul = $summary.find("ul");
+
+                    if ($form.valid()) {
+         if (origForm != $form.serialize()) {
+                        var res = fnCheckCorrelationType();
+                        ////custom validation///
+                        if (res != null && res != "undefined" && res.ID > 0) {
+                            errorList.push(res.Message)
+                        }
+                        if ($("#ddlParentLookupType").val() == $("#ddlChildLookupType").val()) {
+                            errorList.push("Both Parent/Child can't be same.")
+                        }
+                        if (errorList.length == 0) {
+                            return true;
+                        }
+                        ////////////////////////
+                        $ul.empty();
+                        // Add all errors to the list
+                        $.each(errorList, function (index, message) {
+                            $("<li />").html(message).appendTo($ul);
+                        });
+                        // Add the appropriate class to the summary div
+                        $summary.removeClass("validation-summary-valid")
+                            .addClass("validation-summary-errors");
+                        return false;
+                    }
+                   else {
+                    MainLayout.fnAlertMessege("Alert!", "There is no change in the form to update.");
+                    return false;
+                    }
+                  }
+
+                return false; // Block the submit
+            } catch (e) {
+
+
+            }
+        };
+        fnValidateCorrelationMaster = function ($form) {
+            try {
+                var errorList = []
+                    , $summary = $form.find("[data-valmsg-summary=true]")
+                    , $ul = $summary.find("ul");
+
+                //Get All the error
+
+                    if ($form.valid()) {
+                       if (orgFrmCorelationMaster != $form.serialize()) {
+                        ////custom validation///
+                        var res = fnCheckCorrelationMaster();
+                        if (res != null && res != "undefined" && res.ID > 0) {
+                            errorList.push(res.Message)
+                        }
+                        if ($("#ddlParentLookupMaster").val() == $("#ddlChildLookupMaster").val()) {
+                            errorList.push("Both Parent/Child lookup correlation master can't be same.");
+                        }
+                        if (errorList.length == 0) {
+                            return true;
+                        }
+                        ////////////////////////
+                        $ul.empty();
+                        // Add all errors to the list
+                        $.each(errorList, function (index, message) {
+                            $("<li />").html(message).appendTo($ul);
+                        });
+                        // Add the appropriate class to the summary div
+                        $summary.removeClass("validation-summary-valid")
+                            .addClass("validation-summary-errors");
+                        return false;
+                       }
+                       else {
+                          MainLayout.fnAlertMessege("Alert!", "There is no change in the form to update.");
+                          return false;
+                       }
+                    }
+                return false; // Block the submit
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured!");
+            }
+        }
+
+        //fnClearLookupMasterCorrelationPopup = function () {
+        //    try {
+
+
+        //    } catch (e) {
+
+        //    }
+        //};
+
+        fnOpenLookupCorrelationMasterPopup = function (lkupCorelationTypeID, lkupCorrelationMasterID) {
+            try {
+                $.ajax({
+                    data: { "lkupCorelationTypeID": lkupCorelationTypeID, "lkupCorelationMasterID": lkupCorrelationMasterID },
+                    url: urlGetCorelationMaster,
+                    type: "POST",
+                    success: function (data) {
+                        if (data != "") {
+                            $("#divAddCorrelationMaster").empty().html(data);
+                            $("#myModal").modal('show');
+                            orgFrmCorelationMaster = $("#frmAddCorrelationMaster").serialize();
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+                        }
+                    },
+                    error: function (x) {
+                        MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+                    }
+                });
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+            }
+        };
+
+        fnCheckCorrelationType = function () {
+            try {
+                var ret = { "ID": 1, "Message": "An error occoured." };
+                try {
+                    $.ajax({
+                        data: { "lookupCorelationTypeID": $("#hdnLookupTypeCorrelationsId").val(), "groupName": $("#txtCorrelationGroup").val(), "parentID": $("#ddlParentLookupType").val(), "childID": $("#ddlChildLookupType").val()  },
+                        url: urlValidateLookupTypeCorrelation,
+                        type: "POST",
+                        async: false,
+                        success: function (data) {
+                            ret = data;
+                        },
+                        error: function (x) {
+                            return ret;
+                        }
+                    });
+                    return ret;
+                } catch (e) {
+                    return ret;
+                }
+
+            } catch (e) {
+
+            }
+        };
+        fnCheckCorrelationMaster = function () {
+            try {
+                var ret = { "ID": 1, "Message": "An error occoured." };
+                try {
+                    $.ajax({
+                        data: { "lookupCorelationTypeID": $("#hdnLookupTypeCorrelationsId").val(), "lookupCorelationMasterID": $("#hdnLookupMasterCorrelationsId").val(), "groupName": $("#txtLkupDescriptionPopup").val(), "parentID": $("#ddlParentLookupMaster").val(), "childID": $("#ddlChildLookupMaster").val()},
+                        url: urlValidateLookupMasterCorrelation,
+                        type: "POST",
+                        async: false,
+                        success: function (data) {
+                            ret = data;
+                        },
+                        error: function (x) {
+                            return ret;
+                        }
+                    });
+                    return ret;
+                } catch (e) {
+                    return ret;
+                }
+
+            } catch (e) {
+
+            }
+        };
+
+
+
+
+
+
+        fnLookupCorrelationPageSearchRedirection = function () {
+            window.location.href = '@Url.Action("Search", "LookupCorrelation")';
+        };
+        fnRefreshCorrelationMasterPage = function () {
+            window.location.href = '@Url.Action("Add", "LookupCorrelation")?lookupTypeCorrelationsId=' + $("#hdnLookupTypeCorrelationsId").val();
+        };
+             ///Unlock Logic///
+        fnCancel = function () {
+            var idToUnlock = @Model.CMN_LookupTypeCorrelationsId;
+            var urlForUnlock = '@Url.Action("UnlockRecord", "RecordsLocked")';
+            var urlToNavigate = '@Url.Action("Search", "LookupCorrelation")';
+            fnUnlockRecord(urlForUnlock, idToUnlock, enums.ScreenType.LookupTypeCorrelation, urlToNavigate);
+        };
+        MainLayout.fnInitialiseDataTable($('#tblSearchResult'));
+
+    </script>
+}

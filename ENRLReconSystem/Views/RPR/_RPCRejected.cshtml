@@ -1,0 +1,30 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@model DOGEN_RPRActions
+
+<div class="clearfix">
+    @Html.HiddenFor(m => m.FDRReceivedDate)
+    <div class="form-group date-group col-md-3">
+        @Html.LabelFor(m => m.FDRReceivedDate, "FDR Recieved Date", new { @class = "required" })
+        @Html.DateTimeFor(m => m.FDRReceivedDate, false, new CustomValidation().Required("FDR Recieved Date").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group col-md-3">
+        @Html.LabelFor(m => m.FDRCodeReceived, "FDR Code Recieved", new { @class = "required" })
+        @Html.TextBoxFor(m => m.FDRCodeReceived, new CustomValidation().Required("FDR Code Recieved is Required").AddCssClass("form-control").CustomAttributes("maxlength", "20").StringMaxLength(20, "FDR Code Recieved").validationAttributes)
+    </div>
+    <div class="form-group col-md-3">
+        @Html.LabelFor(m => m.FDRDescription, "FDR Description")
+        @Html.TextBoxFor(m => m.FDRDescription, new CustomValidation().AddCssClass("form-control").CustomAttributes("maxlength", "500").StringMaxLength(500, "FDR Description").validationAttributes)
+    </div>
+    <div class="form-group textarea col-md-12">
+        @Html.LabelFor(m => m.Comments, "Comments", new { @class = "required" })
+        @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").Required("Comments are Required.").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+    </div>
+</div>
+<script>
+        //validate and create date time picker fields
+    if ('@Model.FDRReceivedDate' != null && '@Model.FDRReceivedDate' != '') {
+        //fnSetDateToField('@Model.FDRReceivedDate','FDRReceivedDate');
+        $('#FDRReceivedDate_DPart').val(getDateTimeInMMDDYYYY('@Model.FDRReceivedDate'));
+    }
+</script>

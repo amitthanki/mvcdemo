@@ -1,0 +1,54 @@
+﻿@using ENRLReconSystem.Utility
+@model List<ENRLReconSystem.DO.DOGEN_Queue>
+<div class="table-responsive">    
+    <table class="table table-bordered" id="tblPendedRecords">
+        <thead>
+            <tr>
+                <th>Actions</th>
+                <th>ERS Case ID</th>
+                <th>Business Segment</th>
+                <th>Discrepancy Category</th>
+                <th>Discrepancy Type</th>
+                <th>Medicare ID</th>
+                <th>Contract Id</th>
+                <th>PBP</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Case Age</th>
+                <th>Discrepancy Start Date</th>
+                <th>Pend Reason</th>
+                <th>Pended By</th>
+                <th>Pended On</th>
+                <th>Most Recent Queue</th>
+                <th>Most Recent Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <a onclick="fnGetQueueID('@URLEncoderDecoder.Encode(@item.GEN_QueueId.ToString())',@item.GEN_QueueId,'@item.DiscrepancyCategoryLkup','Home',@item.MostRecentWorkQueueLkup);" title="Edit Pending Queue"><img src="~/images/edit-img.png"></a>
+                        <a onclick="fnViewRecord(@item.GEN_QueueId,@item.DiscrepancyCategoryLkup,@item.MostRecentWorkQueueLkup);" title="View Record"><img src="~/Images/View.png" /></a>&nbsp;
+                    </td>
+                    <td>@item.GEN_QueueId</td>
+                    <td>@item.BusinessSegment</td>
+                    <td>@item.DiscrepancyCategory</td>
+                    <td>@item.DiscrepancyType</td>
+                    <td>@item.MemberCurrentHICN</td>
+                    <td>@item.MemberContractID</td>
+                    <td>@item.MemberPBP</td>
+                    <td>@item.MemberFirstName</td>
+                    <td>@item.MemberLastName</td>
+                    <td>@item.Aging</td>
+                    <td>@if (item.DiscrepancyStartDate.HasValue){@item.DiscrepancyStartDate.Value.ToString("MM/dd/yyyy")}</td>
+                    <td>@item.PendReason</td>
+                    <td>@item.Pendedby</td>
+                    <td>@if (item.UTCPendedOn.HasValue){@item.UTCPendedOn.Value.ToString("MM/dd/yyyy")}</td>
+                    <td>@item.MostRecentWorkQueue</td>
+                    <td>@item.MostRecentStatus</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D947B3C5-7B28-4728-9E66-80EF2C87DE58}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ENRLReconSystem.DO</RootNamespace>
+    <AssemblyName>ENRLReconSystem.DO</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataObjectsExtended\DOGEN_Queue_Extended.cs" />
+    <Compile Include="DataObjectsExtended\ExcelCreationConfig.cs" />
+    <Compile Include="DataObjectsExtended\FDRSubmissionRow.cs" />
+    <Compile Include="DataObjectsExtended\FDRSubmissionSheetData.cs" />
+    <Compile Include="DataObjectsExtended\QueueSummary.cs" />
+    <Compile Include="DataObjectsExtended\QueueSummaryDetails.cs" />
+    <Compile Include="DataObjectsExtended\UIBulkAssign.cs" />
+    <Compile Include="DataObjectsExtended\UIBulkUploadSearch.cs" />
+    <Compile Include="DataObjectsExtended\UIDOAccessGroup.cs" />
+    <Compile Include="DataObjectsExtended\UIDOGEN_BulkImportExcelTemplate.cs" />
+    <Compile Include="DataObjectsExtended\UIMassUpdateByTemplates.cs" />
+    <Compile Include="DataObjectsExtended\UIMassUpdateExtended.cs" />
+    <Compile Include="DataObjectsExtended\UIMassUpdateUploadExtended.cs" />
+    <Compile Include="DataObjectsExtended\UIRecordsLock.cs" />
+    <Compile Include="DataObjectsExtended\UISearch.cs" />
+    <Compile Include="DataObjectsExtended\UIUserAdminSearch.cs" />
+    <Compile Include="DataObjectsExtended\UIUserLogin.cs" />
+    <Compile Include="DataObjects\DOADM_AccessGroupMaster.cs" />
+    <Compile Include="DataObjects\DOADM_AccessGroupReportCorrelation.cs" />
+    <Compile Include="DataObjects\DOADM_AccessGroupSkillsCorrelation.cs" />
+    <Compile Include="DataObjects\DOADM_AccessGroupUserCorrelation.cs" />
+    <Compile Include="DataObjects\DOADM_AlertDetails.cs" />
+    <Compile Include="DataObjects\DOADM_AlertsRead.cs" />
+    <Compile Include="DataObjects\DOADM_ResourceDetails.cs" />
+    <Compile Include="DataObjects\DOADM_SkillsMaster.cs" />
+    <Compile Include="DataObjects\DOADM_SkillWorkQueuesCorrelation.cs" />
+    <Compile Include="DataObjects\DOADM_UserMaster.cs" />
+    <Compile Include="DataObjects\DOADM_UserPreference.cs" />
+    <Compile Include="DataObjects\DOADM_UserSession.cs" />
+    <Compile Include="DataObjects\DOCMN_ADGroupsMaster.cs" />
+    <Compile Include="DataObjects\DOCMN_AppErrorLog.cs" />
+    <Compile Include="DataObjects\DOCMN_BackgroundProcessDetails.cs" />
+    <Compile Include="DataObjects\DOCMN_BackgroundProcessMaster.cs" />
+    <Compile Include="DataObjects\DOCMN_Department.cs" />
+    <Compile Include="DataObjects\DOCMN_DiscrepancyTypeMenuCorrelation.cs" />
+    <Compile Include="DataObjects\DOCMN_LookupMaster.cs" />
+    <Compile Include="DataObjects\DOCMN_LookupMasterCorrelations.cs" />
+    <Compile Include="DataObjects\DOCMN_LookupType.cs" />
+    <Compile Include="DataObjects\DOCMN_LookupTypeCorrelations.cs" />
+    <Compile Include="DataObjects\DOCMN_MenuMaster.cs" />
+    <Compile Include="DataObjects\DOCMN_TableSequenceCounts.cs" />
+    <Compile Include="DataObjects\DOGEN_Attachments.cs" />
+    <Compile Include="DataObjects\DOGEN_Comments.cs" />
+    <Compile Include="DataObjects\DOGEN_DMSData.cs" />
+    <Compile Include="DataObjects\DOGEN_EligibilityActions.cs" />
+    <Compile Include="DataObjects\DOGEN_FDR.cs" />
+    <Compile Include="DataObjects\DOGEN_GPSData.cs" />
+    <Compile Include="DataObjects\DOGEN_GPSServiceRequestParameter.cs" />
+    <Compile Include="DataObjects\DOGEN_MacroServiceTrace.cs" />
+    <Compile Include="DataObjects\DOGEN_ManageCases.cs" />
+    <Compile Include="DataObjects\DOGEN_MIIMServiceTrace.cs" />
+    <Compile Include="DataObjects\DOGEN_OSTActions.cs" />
+    <Compile Include="DataObjects\DOGEN_Queue.cs" />
+    <Compile Include="DataObjects\DOGEN_QueueWorkFlowCorrelation.cs" />
+    <Compile Include="DataObjects\DOGEN_RPRActions.cs" />
+    <Compile Include="DataObjects\DOGEN_TRRData.cs" />
+    <Compile Include="DataObjects\DOGEN_TRRDetails.cs" />
+    <Compile Include="DataObjects\DOMacroData.cs" />
+    <Compile Include="DataObjects\DOMGR_ConfigMaster.cs" />
+    <Compile Include="DataObjects\DOMQTRRWorkQueueItems.cs" />
+    <Compile Include="DataObjects\DORPT_ReportsMaster.cs" />
+    <Compile Include="DataObjects\DOGEN_BulkImport.cs" />
+    <Compile Include="DataObjects\DOGEN_BulkImportColumnsMapping.cs" />
+    <Compile Include="DataObjects\DOGEN_BulkImportExcelTemplateMaster.cs" />
+    <Compile Include="DataObjects\DOMIIMGetQueue.cs" />
+    <Compile Include="DataObjects\DOGEN_AEGPSServiceTrace.cs" />
+    <Compile Include="DataObjects\IncludeInTodaysSubmission.cs" />
+    <Compile Include="DataObjects\MQMessagesRecieved.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ENRLReconSystem.Utility\ENRLReconSystem.Utility.csproj">
+      <Project>{96CDEE9A-901E-4C73-9397-23896F535918}</Project>
+      <Name>ENRLReconSystem.Utility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

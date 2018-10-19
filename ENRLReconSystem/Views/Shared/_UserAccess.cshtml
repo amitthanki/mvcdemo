@@ -1,0 +1,66 @@
+﻿
+<link href="~/Content/custom-style.css" rel="stylesheet" />
+<style>
+    /*.container {
+        width: auto;
+    }*/
+    .userAccessColumn {     
+        height: auto;
+        -ms-word-break: break-all;
+    }
+    .userAccessColumn1 {
+        width:200px;
+        height: auto;
+        -ms-word-break: break-all;
+    }
+</style>
+<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+@*<section class="container main-body-wrpr">*@
+    <div class="wdgt-body clearfix">
+        <div class="wdgt-wrapper">
+            <div class="wdgt-hdr">
+                <h4>User Access Details</h4>
+            </div>
+            <div class="wdgt-body clearfix">
+                <table class="table">
+                    <tr>
+                        <td class="userAccessColumn1">
+                            <label>Business Segment</label>
+                        </td>
+                        <td class="userAccessColumn">
+                            <label>@ViewBag.businessSegment</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="userAccessColumn1">
+                            <label>Work Basket</label>
+                        </td>
+                        <td class="userAccessColumn">
+                            <label>@ViewBag.workBasket</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="userAccessColumn1">
+                            <label>Role</label>
+                        </td>
+                        <td class="userAccessColumn">
+                            <label>@ViewBag.userRole </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="userAccessColumn1">
+                            <label>Access Groups</label>
+                        </td>
+                        <td class="userAccessColumn">
+                            <label>@ViewBag.strAccessGroups</label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+@*</section>*@
+
+
+
+

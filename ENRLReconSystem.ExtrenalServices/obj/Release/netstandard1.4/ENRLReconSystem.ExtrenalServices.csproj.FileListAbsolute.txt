@@ -1,0 +1,7 @@
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.ExtrenalServices\bin\Release\netstandard1.4\ENRLReconSystem.ExtrenalServices.deps.json
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.ExtrenalServices\bin\Release\netstandard1.4\ENRLReconSystem.ExtrenalServices.dll
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.ExtrenalServices\bin\Release\netstandard1.4\ENRLReconSystem.ExtrenalServices.pdb
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.ExtrenalServices\obj\Release\netstandard1.4\ENRLReconSystem.ExtrenalServices.AssemblyInfo.cs
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.ExtrenalServices\obj\Release\netstandard1.4\ENRLReconSystem.ExtrenalServices.dll
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.ExtrenalServices\obj\Release\netstandard1.4\ENRLReconSystem.ExtrenalServices.pdb
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.ExtrenalServices\obj\Release\netstandard1.4\ENRLReconSystem.ExtrenalServices.csprojResolveAssemblyReference.cache

@@ -1,0 +1,232 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@model DOGEN_Queue
+
+@using (Html.BeginForm("UpdateSuspectCase", "Common", FormMethod.Post, new { @id = "frmUpdateSuspectCase" }))
+{
+
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(false)
+    @Html.HiddenFor(m => m.GEN_QueueId)
+    @Html.HiddenFor(m => m.MemberDOB)
+    @Html.HiddenFor(m => m.DiscrepancyCategoryLkup)
+    @Html.HiddenFor(m => m.WorkBasketLkup)
+    @Html.HiddenFor(m => m.ComplianceStartDate)
+    @Html.HiddenFor(m => m.DiscrepancyReceiptDate)
+
+
+    <div class="inner-wdgt clearfix">
+        <div class="primary-hdr">
+            <h4><img src="~/Images/info-icon.png" /><span>Update Member Info</span></h4>
+        </div>
+        <div class="inner-wdgt-body">
+            <div class="form-group col-md-3">
+                <label for="txtMemberID">Member ID</label>
+                @Html.TextBoxFor(m => m.MemberID, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtMemberID").CustomAttributes("maxlength", "20").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAndSpaces, "Member ID").StringMaxLength(20, "Member  ID").validationAttributes)
+            </div>
+            <div class="form-group col-md-3">
+                <label for="inputEmail" class="required">First Name</label>
+                @Html.TextBoxFor(m => m.MemberFirstName, new CustomValidation().Required(" First Name is required.").CustomAttributes("id", "txtMemberFirstName").AddCssClass("form-control").RegularExpression(RegexType.MemberName, "First Name").CustomAttributes("maxlength", "35").StringMaxLength(35, "First Name").validationAttributes)
+            </div>
+            <div class="form-group col-md-3">
+                <label for="txtMemberMiddleName">Middle Name</label>
+                @Html.TextBoxFor(m => m.MemberMiddleName, new CustomValidation().CustomAttributes("id", "txtMemberMiddleName").AddCssClass("form-control").RegularExpression(RegexType.MemberName, "Middle Name").CustomAttributes("maxlength", "35").StringMaxLength(35, "Middle Name").validationAttributes)
+            </div>
+            <div class="form-group col-md-3">
+                <label for="txtMemberLastName" class="required">Last Name</label>
+                @Html.TextBoxFor(m => m.MemberLastName, new CustomValidation().Required("Last Name is required.").CustomAttributes("id", "txtMemberLastName").AddCssClass("form-control").RegularExpression(RegexType.MemberName, "Last Name").CustomAttributes("maxlength", "35").StringMaxLength(35, "Last Name").validationAttributes)
+            </div>
+            <div class="form-group date-group col-md-3">
+                <label class="required">DOB</label>
+                @Html.DateTimeFor(m => m.MemberDOB, false, new CustomValidation().Required("DOB is required.").AddCssClass("form-control").validationAttributes)
+            </div>
+            <div class="form-group col-md-3">
+                <label for="ddlContractId" class="required">Contract Number</label>
+                @Html.DropDownListFor(m => m.MemberContractIDLkup, new SelectList(Model.lstContractid, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please select Contract Number.").AddCssClass("form-control").CustomAttributes("id", "ddlContractId").validationAttributes)
+                @Html.HiddenFor(m => m.MemberContractIDLkup, new { @id = "hdnMemberContractIDLkup" })
+            </div>
+            <div class="form-group col-md-3">
+                <label for="ddlPbpId" class="required">PBP</label>
+                @Html.DropDownListFor(m => m.MemberPBPLkup, new SelectList(Model.lstPbpid, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please select PBP.").AddCssClass("form-control").CustomAttributes("id", "ddlPbpId").validationAttributes)
+            </div>
+            <div class="form-group col-md-3">
+                <label for="ddlLob" class="required">LOB</label>
+                @Html.DropDownListFor(m => m.MemberLOBLkup, new SelectList(Model.lstLob, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please select LOB.").AddCssClass("form-control").CustomAttributes("id", "ddlLob").validationAttributes)
+                @Html.HiddenFor(m => m.MemberLOBLkup, new { @id = "hdnMemberLOBLkup" })
+            </div>
+            <div class="form-group col-md-3">
+                @Html.LabelFor(m => m.RPRCTMMember, "CTM Member")
+                @Html.CheckBoxFor(m => m.RPRCTMMember, new { @class = "form-control", @id = "cbxCTMMember" })
+            </div>
+            <div class="form-group col-md-3">
+                @Html.LabelFor(m => m.RPRCTMNumber, "CTM Number")
+                @Html.TextBoxFor(m => m.RPRCTMNumber, new CustomValidation().Required("CTM Number is Required.").CustomAttributes("disabled", "disabled").CustomAttributes("id", "txtCTMNumber").CustomAttributes("maxlength", "20").AddCssClass("form-control").validationAttributes)
+            </div>
+
+
+
+        </div>
+    </div>
+    <div class="inner-wdgt clearfix">
+        <div class="primary-hdr">
+            <h4><img src="~/Images/info-icon.png" /><span>Add Comments</span></h4>
+        </div>
+        <div class="inner-wdgt-body">
+            <div class="form-group textarea col-md-12">
+                <label>Comments</label>
+                @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+            </div>
+        </div>
+    </div>
+    <div class="btn-group clearfix">
+        <button type="button" id="btnCaseSave" title="Save" class="btn btn-primary"><img src="~/Images/save-icon.png" /><span>Save</span></button>
+        <button type="button" id="btnCaseReset" title="Reset" class="btn btn-primary"><img src="~/Images/reset-icon.png" /><span>Reset</span></button>
+        <button type="button" id="btnCaseCancel" title="Cancel" class="btn btn-primary"><img src="~/Images/cancle-icon.png" /><span>Cancel</span></button>
+    </div>
+}
+<script type="text/javascript">
+    $(function () {
+        MainLayout.fnLoadDateTimePicker();
+        var $myOSTCaseForm, origOSTCAseForm;
+        var bussinessSegment = '@Model.BusinessSegmentLkup';
+        var PBPLkup='@Model.MemberPBP';
+
+        $("#frmUpdateSuspectCase").on("click", "#btnCaseSave", function () {
+            try {
+            fnGetDateIntoHdnFields();
+            var urlUpdateCaseInfo = '@Url.Action("UpdateCaseInfo", "Common")';
+            var $formOSTCaseInfo = $("#frmUpdateSuspectCase"),
+                frmOSTData = $formOSTCaseInfo.serialize();
+
+            if (fnValidateCreateCase($formOSTCaseInfo)) {
+                  $.ajax({
+                    data: frmOSTData,
+                    url: urlUpdateCaseInfo,
+                    type: "POST",
+                    success: function (data) {
+                        if (data.ID == 1) {
+                            window.location.reload(true);
+                        }
+                        else {
+                            alert("Update Case info Fail");
+                            window.location.reload(true);
+                        }
+
+                    }
+                });
+            }
+
+            } catch (e) {
+
+            }
+        });
+        $("#frmUpdateSuspectCase").on("click", "#btnCaseReset", function () {
+            MainLayout.fnResetValidationSummary();
+            $myOSTCaseForm.deserialize(origOSTCAseForm);
+        });
+
+
+        //$("#frmUpdateSuspectCase").on("click", "#ddlContractId", function () {
+        //    try {
+        //        var contID = $(this).val();
+        //        var contText = $("#frmUpdateSuspectCase #ddlContractId option:selected").text();
+        //        if (contID != "") {
+        //            ///Load PBP for C&S business segment
+        //            if (bussinessSegment == enums.BusinessSegmentLkup.CNS) {
+        //                MainLayout.fnGetPBP(contID, "#frmUpdateSuspectCase #ddlPbpId");
+        //            }
+        //        }
+
+        //    } catch (e) {
+
+        //    }
+        //});
+
+        $(document).on("click", "#btnCaseCancel", function () {
+            window.location.reload(true);
+        });
+
+          $("#frmUpdateSuspectCase").on("change",'#cbxCTMMember',function () {
+            var value = $(this).prop("checked")
+            if (value) {
+                $('#frmUpdateSuspectCase #txtCTMNumber').removeAttr("disabled")
+            } else {
+                $('#frmUpdateSuspectCase #txtCTMNumber').val("");
+                $('#frmUpdateSuspectCase #txtCTMNumber').removeClass("input-validation-error").addClass("valid")
+                $('#frmUpdateSuspectCase #txtCTMNumber').attr("disabled", "disabled")
+            }
+        });
+
+        //function to set model date time values from date time picker
+        fnGetDateIntoHdnFields = function () {
+            var date = $('#frmUpdateSuspectCase #MemberDOB_DPart').val();
+            if (date != null && date != '') {
+                $('#frmUpdateSuspectCase #MemberDOB').val(getDateTimeInMMDDYYYY(date));
+            }
+        };
+
+        fnValidateCreateCase = function ($form) {
+            try {
+                var errorList = []
+                    , $summary = $form.find("[data-valmsg-summary=true]")
+                    , $ul = $summary.find("ul").empty();
+
+                var isFormValid = $form.valid(), isValid = true;
+                var MemberDOB = new Date($('#frmUpdateSuspectCase #MemberDOB_DPart').val());
+                var today = new Date();
+                today.setHours(0, 0, 0, 0)
+
+                if (MemberDOB >= today) {
+                    $('#frmUpdateSuspectCase #MemberDOB_DPart').removeClass("valid").addClass("input-validation-error");
+                    $("<li />").html("DOB  must be less than  Current Date.").prependTo($ul);
+                    isValid = false;
+                }
+                if (!isFormValid) {
+                    return false;
+                }
+                ////
+                if (errorList.length == 0 && isValid) {
+                    return true;
+                }
+
+                // Add all errors to the list
+                $.each(errorList, function (index, message) {
+                    $("<li />").html(message).appendTo($ul);
+                });
+                // Add the appropriate class to the summary div
+                $summary.removeClass("validation-summary-valid").addClass("validation-summary-errors");
+
+
+                return false; // Block the submit
+
+
+            } catch (e) {
+
+            }
+        };
+
+
+
+        if ('@Model.MemberDOB' != null && '@Model.MemberDOB' != '') {
+              $('#MemberDOB_DPart').val(getDateTimeInMMDDYYYY('@Model.MemberDOB'));
+        }
+         $("#frmUpdateSuspectCase #cbxCTMMember").change();
+        $myOSTCaseForm = $("#frmUpdateSuspectCase");
+        origOSTCAseForm = $myOSTCaseForm.serialize();
+        //if (bussinessSegment == enums.BusinessSegmentLkup.CNS) {
+        //    var contID = $("#hdnMemberContractIDLkup").val();
+        //    MainLayout.fnGetPBP(contID, "#frmUpdateSuspectCase #ddlPbpId");
+        //    if ($("#frmUpdateSuspectCase #ddlPbpId option:contains(" + PBPLkup + ")").length > 0) {
+        //        $("#frmUpdateSuspectCase #ddlPbpId").val($("#frmUpdateSuspectCase #ddlPbpId option:contains(" + PBPLkup.trim() + ")").val());
+        //    }
+        //}
+
+    })
+
+
+
+</script>
+
+@Scripts.Render("~/bundles/jqueryval")
+

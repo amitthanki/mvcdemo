@@ -1,0 +1,186 @@
+﻿@using ENRLReconSystem.Utility;
+@using ENRLReconSystem.DO
+@model List<UnlockSearchResults>
+
+@{
+    long workBasketLkup = Convert.ToInt64(ViewBag.CurrentWorkBasket);
+}
+
+
+<style>
+    [class="20003"] {
+        color: green;
+    }
+
+    [class="20002"] {
+        color: orangered;
+    }
+
+    [class="20001"] {
+        color: blue;
+    }
+
+    .TotalCountText {
+        color: rgb(169, 68, 66);
+        font-size: medium;
+    }
+</style>
+
+<div class="wdgt-wrapper">
+    <div class="wdgt-hdr">
+        <img src="~/Images/list-icon.png" /><h4>Unlock Search Results</h4>
+    </div>
+    <div class="wdgt-body clearfix" style="padding-top:5px;">
+
+        @if (Model.Count > 0)
+        {
+            <div class="clearfix">
+                <button class="btn btn-primary" style="margin-left: 0px !important;margin-bottom:5px;" id="btnBlkUnlock" type="button"><img src="~/Images/Unlocked.png"><span>Bulk Unlock</span></button>
+            </div>
+        }
+
+        <div class="clearfix">
+            <div class="table-responsive">
+                @if (Model.Count > 0)
+                {
+                <table id="tblUnlockSearchResult" class="table table-bordered" width="100%">
+                    <thead>
+                        <tr>
+                            <th align="center" style="width:5%;"><input id="chkAll" type="checkbox" title="Select all for bulk Assign" />Select All</th>
+                            <th>ERS Case ID</th>
+                            <th>Locked On</th>
+                            <th>Locked By</th>
+                            <th title="Business Segment">Bus. Segmt.</th>
+                            <th title="Discrepancy Category">Disc. Cat.</th>
+                            <th title="Discrepancy Type">Disc. Type</th>
+                            <th>Most Recent Queue</th>
+                            <th>Most Recent Status</th>
+                            <th>Queue Type</th>
+                            <th>Member ID</th>
+                            <th>First Name</th>
+                            <th>Middle Name</th>
+                            <th>Last Name</th>
+                            <th>Gender</th>
+                            <th>DOB</th>
+                            <th>Medicare ID</th>
+                            <th>Contract Number</th>
+                            <th>PBP</th>
+                            <th>LOB</th>
+                            <th>Aging</th>
+                            <th>SCC Code</th>
+                            <th>GPS Household ID</th>
+                            <th>Discrepancy Start Date</th>
+                            @switch (workBasketLkup)
+                                {
+                                    case (long)WorkBasket.OST:
+                                <th>Discrepancy Source</th>
+                                <th>OOA Letter Status</th>
+                                        break;
+                                    case (long)WorkBasket.GPSvsMMR:
+                                <th>GPS Medicare ID</th>
+                                <th>MMR Medicare ID</th>
+                                        break;
+                                    case (long)WorkBasket.RPR:
+                                <th>RPC Submission Date</th>
+                                <th>FDR Received Date</th>
+                                <th>FDR Code Received</th>
+                                <th>FDR Status</th>
+                                <th>RPR Requestor</th>
+                                        break;
+                                }
+                            <th>Resolution</th>
+                            <th>Created On</th>
+                            <th>Created By</th>
+                            <th>Last Updated On</th>
+                            <th>Last Updated By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                            {
+                            <tr>
+                                <td align="center">
+                                    <input id="@item.WorkItemID" type="checkbox" />
+                                </td>
+                                <td>@item.WorkItemID</td>
+                                <td>
+                                    @if (item.UTCLockedOn.HasValue)
+                                        {@item.UTCLockedOn.Value.ToString("MM/dd/yyyy hh:mm tt")}
+                                </td>
+                                <td>@item.LockedBy</td>
+                                <td>@item.BusinessSegment</td>
+                                <td>@item.DiscrepancyCategory</td>
+                                <td>@item.DiscrepancyType</td>
+                                <td>@item.MostRecentQueue</td>
+                                <td class="@item.MostRecentStatusLkup">@item.MostRecentStatus</td>
+                                <td>@item.QueueProgressType</td>
+                                <td>@item.MemberID</td>
+                                <td>@item.MemberFirstName</td>
+                                <td>@item.MemberMiddleName</td>
+                                <td>@item.MemberLastName</td>
+                                <td>@item.MemberGender</td>
+                                <td>
+                                    @if (item.MemberDOB.HasValue)
+                                        {@item.MemberDOB.Value.ToString("MM/dd/yyyy")}
+                                </td>
+                                <td>@item.MemberCurrentHICN</td>
+                                <td>@item.MemberContractID</td>
+                                <td>@item.MemberPBP</td>
+                                <td>@item.MemberLOB</td>
+                                <td>@item.Aging</td>
+                                <td>@item.MemberSCCCode</td>
+                                <td>@item.GPSHouseholdID</td>
+                                <td>
+                                    @if (item.DiscrepancyStartDate.HasValue)
+                                        {@item.DiscrepancyStartDate.Value.ToString("MM/dd/yyyy")}
+                                </td>
+                                @switch (workBasketLkup)
+                                    {
+                                        case (long)WorkBasket.OST:
+                                    <td>@item.DiscrepancySource</td>
+                                    <td>@item.OOALetterStatus</td>
+                                            break;
+                                        case (long)WorkBasket.GPSvsMMR:
+                                    <td>@item.GPSHICN</td>
+                                    <td>@item.MMRHICN</td>
+                                            break;
+                                        case (long)WorkBasket.RPR:
+                                    <td>
+                                        @if (item.RPCSubmissionDate.HasValue)
+                                                {@item.RPCSubmissionDate.Value.ToString("MM/dd/yyyy")}
+                                    </td>
+                                    <td>
+                                        @if (item.FDRReceivedDate.HasValue)
+                                                {@item.FDRReceivedDate.Value.ToString("MM/dd/yyyy")}
+                                    </td>
+                                    <td>@item.FDRCodeReceived</td>
+                                    <td>@item.FDRStatus</td>
+                                    <td>@item.RPRRequestor</td>
+                                            break;
+                                    }
+                                <td>@item.Resolution</td>
+                                <td>
+                                    @if (item.UTCCreatedOn.HasValue)
+                                        {@item.UTCCreatedOn.Value.ToString("MM/dd/yyyy hh:mm tt")}
+                                </td>
+                                <td>@item.CreatedBy</td>
+                                <td>
+                                    @if (item.UTCLastUpdatedOn.HasValue)
+                                        {@item.UTCLastUpdatedOn.Value.ToString("MM/dd/yyyy hh:mm tt")}
+                                </td>
+                                <td>@item.LastUpdatedBy</td>
+                            </tr>
+                            }
+                    </tbody>
+                </table>
+                }
+                else
+                {
+                <div style="text-align:center;color:red;">
+                    No Records Found
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

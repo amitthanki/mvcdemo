@@ -1,0 +1,93 @@
+﻿@using ENRLReconSystem.Utility
+@model ENRLReconSystem.DO.QueueSummary
+
+@functions {
+    public IHtmlString QueueActions(long queueId, long count, bool showGetQueue = true)
+    {
+        string strTag = "";
+        if (count > 0 && Model.lstUserAccessQueueLkups.Contains(queueId))
+        {
+            var discCat = (long)DiscripancyCategory.DOB;
+            var href = Url.Action("SearchFromHome", "Common", new { @CaseCreationStartDate = Model.StartDate, @CaseCreationEndDate = Model.EndDate, @Queue = queueId, @data = discCat, @screenType = 37010 });
+            var reportHref = ViewBag.ReportUrl + "&FromDate=" + Model.StartDate.ToString("MM/dd/yyyy") + "&ToDate=" + Model.EndDate.ToString("MM/dd/yyyy") + "&WorkQueueLkup=" + queueId + "&BusinessSegmentLkup=" + Model.BusinessSegment;
+            if (showGetQueue)
+                strTag = "<a id = '" + queueId + "' class='getQueue' href='#' title='Get Queue'><img src = '/Images/get-queue-img.png' ></a>";//get queue link
+            strTag = strTag + "<a href='" + href + "'><img src = '/Images/view-img.png' title='View Queue' ></a>";//View Queue link
+            strTag = strTag + "<a href='" + reportHref + "' target ='_blank' title='View Report'><img src='/Images/report-img.png'></a>";//Report link
+        }
+        else
+        {
+            if (showGetQueue)
+                strTag = "<a  class='inAccessible' href='#'><img src = '/Images/disable-get-queue-img.png' ></ a >";//get queue link disabled
+            strTag = strTag + "<a  class='inAccessible' href='#'><img src = '/Images/disable-view-img.png' title='View Queue' ></a>";//View Queue link disabled
+            strTag = strTag + "<a class='inAccessible' href='#' title='View Report'><img src='/Images/disable-report-img.png'></a>";//Report link disabled
+        }
+        return new HtmlString(strTag);
+    }
+}
+
+<div class="queue-smry-wdgt">
+    <div class="processing-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Processing Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>New Case</td>
+                    <td>@Model.objDOBQueueSummary.DOBNewCase</td>
+                    <td>
+                        @QueueActions(DOBQueue.DOBNewCase.ToInt64(), @Model.objDOBQueueSummary.DOBNewCase)                        
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pending Audit</td>
+                    <td>@Model.objDOBQueueSummary.DOBPendingAudit</td>
+                    <td>
+                       @QueueActions(DOBQueue.DOBPendingAudit.ToInt64(), @Model.objDOBQueueSummary.DOBPendingAudit) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>Peer Audit Failed</td>
+                    <td>@Model.objDOBQueueSummary.DOBPeerAuditFailed</td>
+                    <td>
+                        @QueueActions(DOBQueue.DOBPeerAuditFailed.ToInt64(), @Model.objDOBQueueSummary.DOBPeerAuditFailed)                        
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pended</td>
+                    <td>@Model.objDOBQueueSummary.DOBPended</td>
+                    <td>
+                        @QueueActions(DOBQueue.DOBPended.ToInt64(), @Model.objDOBQueueSummary.DOBPended)                        
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="queue-smry-wdgt">
+    <div class="completed-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Completed Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Completed</td>
+                    <td>@Model.objDOBQueueSummary.DOBCompleted</td>
+                    <td>
+                        @QueueActions(DOBQueue.DOBCompleted.ToInt64(), @Model.objDOBQueueSummary.DOBCompleted, false)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

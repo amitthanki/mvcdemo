@@ -1,0 +1,114 @@
+﻿@using ENRLReconSystem.DO
+@model DOADM_AlertDetails
+
+@*<link href="~/Content/custom-style.css" rel="stylesheet" />*@
+<style>
+    .userAccessColumn {
+        height: auto;
+        -ms-word-break: break-all;
+    }
+
+    .userAccessColumn1 {
+        width: 200px;
+        height: auto;
+        -ms-word-break: break-all;
+    }
+</style>
+<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+@*<section class="container main-body-wrpr">*@
+<div class="wdgt-body clearfix">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <h4>Alert Details</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <table class="table">
+                <tr>
+                    <td class="userAccessColumn1">
+                        <label>Title</label>
+                    </td>
+                    <td class="userAccessColumn" colspan="3">
+                        <label>@Model.AlertTitle</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="userAccessColumn1">
+                        <label>Description</label>
+                    </td>
+                    <td class="userAccessColumn" colspan="3">
+                        <label>@Model.AlertDescription</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="userAccessColumn1">
+                        <label>Alert Published Date</label>
+                    </td>
+                    <td class="userAccessColumn">
+                        <label>@Model.AlertPublishedDate </label>
+                    </td>
+                    <td class="userAccessColumn1">
+                        <label>Alert Inactivation Date</label>
+                    </td>
+                    <td class="userAccessColumn">
+                        <label>@Model.AlertInactivationDate</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="userAccessColumn1">
+                        <label>Alert Effective Date </label>
+                    </td>
+                    <td class="userAccessColumn">
+                        <label>@Model.AlertEffectiveDate</label>
+                    </td>
+                    <td class="userAccessColumn1">
+                        <label>Alert Criticality </label>
+                    </td>
+                    <td class="userAccessColumn">
+                        <label>@Model.AlertCriticalityValue</label>
+                        <label class="ersAlertCriticality-@Model.AlertCriticalityValue"></label>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="userAccessColumn1">
+                        <label>Send Alert To</label>
+                    </td>
+                    <td class="userAccessColumn">
+                        <label>@Model.SendAlertToValue</label>
+                    </td>
+                    @if (!Model.IndividualUserName.IsEmpty())
+                    {
+                        <td class="userAccessColumn1">
+                            <label>Individual Name</label>
+                        </td>
+                        <td class="userAccessColumn">
+                            <label>@Model.IndividualUserName</label>
+                        </td>
+                    }
+                    else if (!Model.DepartmentName.IsEmpty())
+                    {
+                        <td class="userAccessColumn1">
+                            <label>Department Name</label>
+                        </td>
+                        <td class="userAccessColumn">
+                            <label>@Model.DepartmentName</label>
+                        </td>
+                    }
+                    else
+                    {
+                        <td class="userAccessColumn1">
+                            <label></label>
+                        </td>
+                        <td class="userAccessColumn">
+                            <label></label>
+                        </td>
+                    }
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+

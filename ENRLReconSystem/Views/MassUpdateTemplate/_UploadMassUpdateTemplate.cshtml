@@ -1,0 +1,52 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@using ENRLReconSystem.Utility
+@model UIMassUpdateUploadExtended
+
+@using (Html.BeginForm("", "", FormMethod.Post, new { @id = "frmSaveMassUpdateTemplateActions" }))
+{
+    <button class="close" aria-hidden="true" type="button" data-dismiss="modal">×</button>
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <h4><img src="~/images/action-icon.png"><span>Action</span></h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            @Html.ValidationSummary(false)
+
+            @Html.HiddenFor(m => m.GEN_BulkImportRef, new { @id = "hdnGENBulkImportRef" })
+            @Html.HiddenFor(m => m.QueueLkup, new { @id = "hdnQueueLkup" })
+            @Html.HiddenFor(m => m.DiscrepancyCategoryLkup, new { @id = "hdnddlDiscrepancycategary" })
+            <div class="clearfix">
+                    <div class="clearfix">
+                        <div class="form-group col-md-3">
+                            <label for="inputEmail">File (Max Size:5MB)</label>
+                            <input class="form-control" id="fileBrowse" type="file" accept=".xlsx">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="required">Action</label>
+                            @Html.DropDownListFor(xx => xx.ActionLkup, new SelectList(Model.lstActions, "CMN_LookupMasterChildRef", "LookupMasterChildValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "ddlActions").CustomAttributes("onMouseWheel", "return false;").Required("Please select Action.").AddCssClass("form-control").validationAttributes)
+                        </div>
+
+                      
+                    </div>
+                    <div class="sub-inner-wrapper clearfix" id="divMassUpdateActions">
+
+                    </div>
+                    <div class="btn-group clearfix">
+                        <button type="button" id="btnUpdateActions" class="btn btn-primary divActionVisibility" title="Save"><img src="~/images/save-icon.png"><span>Save</span></button>
+                        <button type="button" id="btnActionReset" class="btn btn-primary divActionVisibility" title="Reset"><img src="~/images/reset-icon.png"><span>Reset</span></button>
+                        <button type="button" id="btnActionCancel" class="btn btn-primary" title="Cancel" data-dismiss="modal"><img src="~/images/cancle-icon.png"><span>Cancel</span></button>
+                    </div>
+            </div>
+        </div>
+    
+    </div>
+    <div class="clearfix">
+        <div style="font:bold;color:red;">
+            * Maximum @ViewBag.MaxMassUpdateRecordProcessCount ERS Cases Can be process form a file at a time.<br />
+            * All the ERS Cases should have the same queue in the file.
+        </div>
+
+    </div>
+
+}

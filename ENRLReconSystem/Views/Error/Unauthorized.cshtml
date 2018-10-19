@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewBag.Title = "Unauthorized";
+    Layout = "~/Views/Error/_Layout.cshtml";
+}
+
+<h2>
+    Unauthorized
+</h2>
+    <h2>
+        You are not Authorized to access this page. Either you do not have required permission
+        or you are not part of AD group to access this page. To get the required access,
+        please contact your admin.
+        <br />
+        <br />
+        @Html.ActionLink("click here", "Login", "Login")to login.
+    </h2>
+    <div style="text-align:center"><label style="color: #f0f0f0; background-color: #f0f0f0; ">@ViewBag.ErrorMessage</label></div>
+

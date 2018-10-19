@@ -1,0 +1,111 @@
+﻿@using ENRLReconSystem.DO
+@using ENRLReconSystem.Utility
+@model List<DOADM_AccessGroupReportCorrelation>
+<div class="table-responsive">
+    <table class="table table-bordered" id="tblAccessGroupReport">
+        <thead>
+            <tr>
+                <th style="text-align:center">Actions</th>
+                <th style="text-align:center">Report</th>
+                <th style="text-align:center">Created On</th>
+                <th style="text-align:center">Created By</th>
+                <th style="text-align:center">Updated On</th>
+                <th style="text-align:center">Updated By</th>
+            </tr>
+
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr ReportId="@item.RPT_ReportsMasterRef">
+                    <td>
+                        <a id="btnEditReport" class="edit-queue"><img src="~/Images/edit-img.png" height="20" alt="Edit" /></a>
+                        <a id="btnDeleteReport" class="edit-queue"><img src="~/Images/deleteiconimg.png" width="20" alt="Delete" /></a>
+                    </td>
+                    <td>
+                        @Html.DropDownList("ddlReport", new SelectList(ViewBag.Reports, "RPT_ReportsMasterId", "ReportName", @item.RPT_ReportsMasterRef), ConstantTexts.dropdownDefaultValue, new { @id = "ddlReport-Add", @class = "form-control display-mode", @disabled = true })
+                    </td>
+                    <td>@(item.UTCCreatedOn.ToString("MM/dd/yyyy hh:mm tt"))</td>
+                    <td>@item.CreatedByName</td>
+                    <td>@(item.UTCLastUpdatedOn.HasValue ? item.UTCLastUpdatedOn.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                    <td>@item.LastUpdatedByName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*@model List<ENRLReconSystem.DO.UIDOAccessGroupReport>
+
+    <div class="table-responsive">
+        <div style="float:left;padding-bottom:5px;padding-top:2px;">
+            <a href="javascript://">
+                <button type="button" id="btnAddNewReport" class="btn btn-primary"><img src="~/Images/add-icon.png" title="Click here to add new Report" /><span>Add</span></button>
+            </a>
+        </div>
+        @*<a href="javascript://">
+                <img id="btnAddNewReport" src="~/Images/add-icon.png" alt="Add" title="Click here to add new Report" />
+            </a>
+        @{if (Model != null)
+            {
+                var grid = new WebGrid((List<ENRLReconSystem.DO.UIDOAccessGroupReport>)Model, rowsPerPage: 5, canPage: true, selectionFieldName: "selectedRow", ajaxUpdateContainerId: "gridContent"); grid.Pager(WebGridPagerModes.NextPrevious);
+
+                @grid.GetHtml(tableStyle: "table table-bordered",
+                 htmlAttributes: new { id = "grdReports" },
+                columns: grid.Columns(
+                 grid.Column("Actions",
+                        format: @<text><div style="padding-left:20px;">
+                        <img class="edit-report display-mode" src="~/Images/edit-img.png" id="imgBtnEdit" alt="Edit" />
+                        <img class="save-report edit-mode" src="~/Images/save-img.png" id="imgBtnSave" alt="Save" />
+                        <img class="display-mode delete-report" src="~/Images/deleteiconimg.png" id="imgBtnDelete" width="20" alt="Delete" />
+                        <img class="cancel-report edit-mode" src="~/Images/cancel_edit.png" id="imgBtnCancel" alt="Cancel" />
+                        <input type="hidden" name="ADM_AccessGroupReportCorrelationId" value="@item.ADM_AccessGroupReportCorrelationId" />
+                        <input type="hidden" name="ADM_AccessGroupMasterRef" value="@item.ADM_AccessGroupMasterRef" />
+                    </div>
+                        </text>),
+                                 grid.Column("Report",
+                        format: @<text>
+                                    @Html.DropDownList("Reports-Add", new SelectList(ViewBag.Reports, "RPT_ReportsMasterId", "ReportName", @item.RPT_ReportsMasterId), "<---Select--->", new { @id = "ddlReport-Add", @class = "form-control display-mode", @disabled = true })
+                                    @Html.DropDownList("Reports-Edit", new SelectList(ViewBag.Reports, "RPT_ReportsMasterId", "ReportName", @item.RPT_ReportsMasterId), "<---Select--->", new { @id = "ddlReport", @class = "form-control edit-mode" })
+                        </text>),
+                grid.Column("Report Server",
+                        format: @<text>
+                    @Html.Label((string)@item.ReportServer, new { Id = "txtReportServer-Add", @class = "form-control display-mode", @disabled = true })
+                    @Html.Label((string)@item.ReportServer, new { Id = "txtReportServer", @class = "form-control edit-mode" })
+                        </text>),
+                                     grid.Column("Report Category",
+                        format: @<text>
+                                        @Html.Label((string)@item.ReportsCategory, new { Id = "txtReportCategory-Add", @class = "form-control display-mode", @disabled = true })
+                                        @Html.Label((string)@item.ReportsCategory, new { Id = "txtReportCategory", @class = "form-control edit-mode" })
+                        </text>),
+                    grid.Column("Last Update By",
+                        format: @<text>
+                        @Html.Label("LastUpdatedBy", new { Id = "txtLastUpdatedBy-Add", @class = "form-control display-mode", @value = @item.LastUpdatedByName, @disabled = true })
+                        @Html.Label("LastUpdatedBy", new { Id = "txtLastUpdatedBy", @class = "form-control edit-mode", @value = @item.LastUpdatedByName })
+                        </text>)))
+            }
+            else
+            {
+                <div style="text-align:center;color:red;font-weight:bold;">No Reports found.</div>
+            }
+        }
+    </div>*@
+

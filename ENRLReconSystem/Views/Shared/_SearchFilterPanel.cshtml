@@ -1,0 +1,426 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.Utility
+@model ENRLReconSystem.DO.SearchCriteria
+<div id="hiddenDateFileds">
+    @Html.HiddenFor(m => m.DiscrepancyStartDate)
+    @Html.HiddenFor(m => m.DiscrepancyEndDate)
+    @Html.HiddenFor(m => m.DOB)
+    @Html.HiddenFor(m => m.FirstLetterMailStartDate)
+    @Html.HiddenFor(m => m.FirstLetterMailEndDate)
+    @Html.HiddenFor(m => m.SecondLetterMailStartDate)
+    @Html.HiddenFor(m => m.SecondLetterMailEndDate)
+    @Html.HiddenFor(m => m.ComplianceStartDate)
+    @Html.HiddenFor(m => m.ComplianceEndDate)
+    @Html.HiddenFor(m => m.CaseCreationStartDate)
+    @Html.HiddenFor(m => m.CaseCreationEndDate)
+
+    @Html.HiddenFor(m => m.LastUpdatedStartDate)
+    @Html.HiddenFor(m => m.LastUpdatedEndDate)
+
+    @Html.HiddenFor(m => m.MemberResponseVerificationStartDate)
+    @Html.HiddenFor(m => m.MemberResponseVerificationEndDate)
+    @*@Html.HiddenFor(m => m.CaseAgeFrom)
+    @Html.HiddenFor(m => m.CaseAgeTo)*@
+    @Html.HiddenFor(m => m.RequestedEffectiveStartDate)
+    @Html.HiddenFor(m => m.RequestedEffectiveEndDate)
+    @Html.HiddenFor(m => m.AdjustedCreateStartDate)
+    @Html.HiddenFor(m => m.AdjustedCreateEndDate)
+    @Html.HiddenFor(m => m.RPCSubmissionStartDate)
+    @Html.HiddenFor(m => m.RPCSubmissionEndDate)
+    @Html.HiddenFor(m => m.CMSAccountManagerApprovalStartDate)
+    @Html.HiddenFor(m => m.CMSAccountManagerApprovalEndDate)
+    @Html.HiddenFor(m => m.FDRReceivedStartDate)
+    @Html.HiddenFor(m => m.FDRReceivedEndDate)
+    @Html.HiddenFor(m => m.PeerAuditCompletionStartDate)
+    @Html.HiddenFor(m => m.PeerAuditCompletionEndDate)
+    @Html.HiddenFor(m => m.DisenrollmentFromDate)
+    @Html.HiddenFor(m => m.DisenrollmentToDate)
+</div>
+
+<div class="wdgt-wrapper">
+    <div class="wdgt-hdr">
+        <img src="~/Images/search-icon.png" /><h4>@ViewBag.SearchPage</h4>
+    </div>
+    <div class="wdgt-body clearfix">
+        @Html.ValidationSummary()
+        <div class="form-group col-md-3">
+            <label>Discrepancy Category</label>
+            @Html.DropDownListFor(m => m.DiscrepancyCategoryLkup, new SelectList(ViewBag.DiscrepancyCategory, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlDiscrepancyCat").validationAttributes)
+        </div>
+        <div class="form-group col-md-3">
+            <label>Discrepancy Type</label>
+            @Html.DropDownListFor(m => m.DiscrepancyTypeLkup, new SelectList(ViewBag.DiscrepancyType, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlDiscrepancyType").validationAttributes)
+        </div>
+        <div class="form-group col-md-3">
+            <label for="inputEmail">ERS Case ID</label>
+            @Html.TextBoxFor(model => model.WorkItemId, new CustomValidation().AddCssClass("form-control allowOnlyNumeric").CustomAttributes("id", "txtWorkItemID").RegularExpression(RegexType.Numeric, "ERS Case ID").CustomAttributes("maxlength", "10").StringMaxLength(10, "Work Item ID").validationAttributes)
+        </div>
+        <div class="form-group col-md-3">
+            <label for="inputEmail">Medicare ID</label>
+            @Html.TextBoxFor(model => model.CurrentHICN, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtCurrentHICN").RegularExpression(RegexType.AlphabetsWithNumeric, "Current HICN").StringMaxLength(100, "Current HICN").validationAttributes)
+        </div>
+        <div class="form-group date-group col-md-3">
+            <label for="inputEmail">Created Date(From)</label>
+            @Html.DateTimeFor(m => m.CaseCreationStartDate, false, new CustomValidation().CustomAttributes("id", "dtCaseCreationStartDate").validationAttributes)
+        </div>
+        <div class="form-group date-group col-md-3">
+            <label for="inputEmail">Created Date(To)</label>
+            @Html.DateTimeFor(m => m.CaseCreationEndDate, false, new CustomValidation().CustomAttributes("id", "dtCaseCreationEndDate").validationAttributes)
+        </div>  
+        <div class="form-group date-group col-md-3">
+            <label for="inputEmail">Compliance Start Date(From)</label>
+            @Html.DateTimeFor(m => m.ComplianceStartDate, false, new CustomValidation().CustomAttributes("id", "dtComplianceStartDate").validationAttributes)
+        </div>
+        <div class="form-group date-group col-md-3">
+            <label for="inputEmail">Compliance Start Date(To)</label>
+            @Html.DateTimeFor(m => m.ComplianceEndDate, false, new CustomValidation().CustomAttributes("id", "dtComplianceEndDate").validationAttributes)
+        </div>
+
+        @if (ViewBag.pageName == "Mass Update Search")
+        {
+        <div class="form-group col-md-3">
+            <label>Queue</label>
+            @Html.DropDownListFor(m => m.Queue, new SelectList(ViewBag.Queue, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").Required("Queue is required").CustomAttributes("onMouseWheel", "return false;").CustomAttributes("id", "ddlQueue").validationAttributes)
+        </div>
+        }
+        <div class="btn-group clearfix">
+            <button type="button" id="btnSearch" class="btn btn-primary"><img src="~/Images/search-icon.png" /><span>Search</span></button>
+            <button type="button" id="btnReset" class="btn btn-primary"><img src="~/Images/reset-icon.png" /><span>Reset</span></button>
+            <button type="button" id="btnSearchCancel" class="btn btn-primary" screenType="@ViewBag.screenType" discCatId="@Model.DiscrepancyCategoryLkup"><img src="~/Images/cancle-icon.png" /><span>Cancel</span></button>
+        </div>
+    </div>
+</div>
+<div class="panel-group advnc-search" id="advance-search-box">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#advance-search-box" href="#advncdSearch"><img src="~/Images/search-icon.png" /> <span>Advanced Search</span></a>
+            </h4>
+        </div>
+        <div id="advncdSearch" class="panel-collapse collapse">
+            <div class="panel-body">
+                <div class="wdgt-body clearfix">
+                    <div class="panel-group advnc-wdgt-group">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a class="primary-hdr" data-toggle="collapse" href="#collapseOne"><img src="~/Images/info-icon.png" /> <span>Case Info</span></a>
+                                </h4>
+                            </div>
+                            <div id="collapseOne" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                @if (ViewBag.pageName != "Mass Update Search")
+                                {
+                                <div class="form-group col-md-3">
+                                 <label>Queue</label>
+                                 @Html.DropDownListFor(m => m.Queue, new SelectList(ViewBag.Queue, "CMN_LookupMasterChildRef", "LookupMasterChildValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlQueue").validationAttributes)
+                                </div>
+                                }
+                                    <div class="form-group col-md-3">
+                                        <label>Status</label>
+                                        @Html.DropDownListFor(m => m.Status, new SelectList(ViewBag.Status, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlStatus").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Last Updated Operator</label>
+                                        @Html.DropDownListFor(m => m.LastUpdatedOperator, new SelectList(ViewBag.LastUpdatedOperator, "ADM_UserMasterId", "FullName"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlLastUpdatedOperator").validationAttributes)
+                                    </div>
+
+                                    <div class="form-group col-md-3">
+                                        <label>Assigned To</label>
+                                        @Html.DropDownListFor(m => m.AssignedTo, new SelectList(ViewBag.AssignedTo, "ADM_UserMasterId", "FullName"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlAssignedTo").validationAttributes)
+                                    </div>
+                                    <div class="form-group date-group col-md-3">
+                                        <label>Peer Audit Completion Date(From)</label>
+                                        @Html.DateTimeFor(m => m.PeerAuditCompletionStartDate, false, new CustomValidation().CustomAttributes("id", "dtPeerAuditCompletionStartDate").validationAttributes)
+                                    </div>
+                                    <div class="form-group date-group col-md-3">
+                                        <label>Peer Audit Completion Date(To)</label>
+                                        @Html.DateTimeFor(m => m.PeerAuditCompletionEndDate, false, new CustomValidation().CustomAttributes("id", "dtPeerAuditCompletionEndDate").validationAttributes)
+                                    </div>                                    
+                                    <div class="form-group date-group col-md-3">
+                                        <label for="inputEmail">Case Age(From)</label>
+                                        @Html.TextBoxFor(m => m.CaseAgeFrom,new CustomValidation().CustomAttributes("id", "txtCaseAgeFrom").RegularExpression(RegexType.Numeric, "Case Age From").CustomAttributes("maxlength", "10").AddCssClass("form-control allowOnlyNumeric").validationAttributes)
+                                    </div>
+                                    <div class="form-group date-group col-md-3">
+                                        <label for="inputEmail">Case Age(To)</label>
+                                        @Html.TextBoxFor(m => m.CaseAgeTo,new CustomValidation().CustomAttributes("id", "txtCaseAgeTo").RegularExpression(RegexType.Numeric, "Case Age To").CustomAttributes("maxlength", "10").AddCssClass("form-control allowOnlyNumeric").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Pend Reason</label>
+                                        @Html.DropDownListFor(m => m.PendReason, new SelectList(ViewBag.PendReason, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlPendReason").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Action Requested</label>
+                                        @Html.DropDownListFor(m => m.RPRActionRequested, new SelectList(ViewBag.RPRActionRequested, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlActionRequested").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Resolution</label>
+                                        @Html.DropDownListFor(m => m.Resolution, new SelectList(ViewBag.Resolution, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlResolution").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Verified Root Cause</label>
+                                        @Html.DropDownListFor(m => m.VerifiedRootCause, new SelectList(ViewBag.VerifiedRootCause, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlVerifiedRootCause").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Discrepancy Source</label>
+                                        @Html.DropDownListFor(m => m.DiscrepancySourceLkup, new SelectList(ViewBag.DiscrepancySource, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlDiscrepancySource").validationAttributes)
+                                    </div> 
+                                    <div class="form-group col-md-3">
+                                        <label>Transaction Reply Code</label>
+                                        @Html.DropDownListFor(m => m.TransactionReplyCode, new SelectList(ViewBag.lstTransactionReplyCode, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddltransactionCode").validationAttributes)
+                                    </div> 
+                                    <div class="form-group col-md-3">
+                                        <label>Employer Group Number</label>
+                                        @Html.TextBoxFor(m => m.EmployerGroupNumber, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "txtEmployerGroupNumber").StringMaxLength(15, "Employer Group Number").RegularExpression(RegexType.AlphabetsWithNumeric, "Employer Group Number").validationAttributes)
+                                    </div> 
+                                    @*add all controls before clearfix*@
+                                    <div class="clearfix">
+                                        <div class="form-group date-group col-md-3">
+                                            <label for="inputEmail">Last Updated On(From)</label>
+                                            @Html.DateTimeFor(m => m.LastUpdatedStartDate, false, new CustomValidation().CustomAttributes("id", "dtLastUpdatedStartDate").validationAttributes)
+                                        </div>
+                                        <div class="form-group date-group col-md-3">
+                                            <label for="inputEmail">Last Updated On(To)</label>
+                                            @Html.DateTimeFor(m => m.LastUpdatedEndDate, false, new CustomValidation().CustomAttributes("id", "dtLastUpdatedEndDate").validationAttributes)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-group advnc-wdgt-group">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a class="primary-hdr" data-toggle="collapse" href="#collapseTwo"><img src="~/Images/info-icon.png" /> <span>Member Info</span></a>
+                                </h4>
+                            </div>
+                            <div id="collapseTwo" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <div class="form-group col-md-3">
+                                        <label>First Name</label>
+                                        @Html.TextBoxFor(model => model.FirstName, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtFirstName").RegularExpression(RegexType.MemberName, "First Name").CustomAttributes("maxlength", "35").StringMaxLength(35, "First Name").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Last Name</label>
+                                        @Html.TextBoxFor(model => model.LastName, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtLastName").RegularExpression(RegexType.MemberName, "Last Name").CustomAttributes("maxlength", "35").StringMaxLength(35, "Last Name").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Gender</label>
+                                        @Html.DropDownListFor(m => m.GenderLkup, new SelectList(ViewBag.Gender, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlGender").validationAttributes)
+                                    </div>
+                                    <div class="form-group date-group col-md-3">
+                                        <label for="inputEmail">DOB</label>
+                                        @Html.DateTimeFor(m => m.DOB, false, new CustomValidation().CustomAttributes("id", "dtDOB").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>SCC Code</label>
+                                        @Html.TextBoxFor(model => model.MemberSCCCode, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtMemberSCCCode").RegularExpression(RegexType.Numeric, "Member SCC Code").CustomAttributes("maxlength", "5").StringMaxLength(5, "Member SCC Code").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Contract Number</label>
+                                        @Html.DropDownListFor(m => m.ContractIDLkup, new SelectList(ViewBag.ContractNumber, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlContractNumber").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>PBP</label>
+                                        @Html.DropDownListFor(m => m.PBPLkup, new SelectList(ViewBag.PBP, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlPBP").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>Line of Business</label>
+                                        @Html.DropDownListFor(m => m.LOBLkup, new SelectList(ViewBag.LOB, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlLOB").validationAttributes)
+                                    </div>
+                                    <div class="form-group date-group col-md-3">
+                                        <label for="inputEmail">Response Verification Date(From)</label>
+                                        @Html.DateTimeFor(m => m.MemberResponseVerificationStartDate, false, new CustomValidation().CustomAttributes("id", "dtMemberResponseVerificationStartDate").validationAttributes)
+                                    </div>
+                                    <div class="form-group date-group col-md-3">
+                                        <label for="inputEmail">Response Verification Date(To)</label>
+                                        @Html.DateTimeFor(m => m.MemberResponseVerificationEndDate, false, new CustomValidation().CustomAttributes("id", "dtMemberResponseVerificationEndDate").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="ddlMemberVerifiedState">Verified State</label>
+                                        @Html.DropDownListFor(m => m.MemberVerifiedState, new SelectList(ViewBag.VerifiedState, "LookupValue1", "LookupValue1"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label for="txtMemberVerifiedCountyCode">Verified County Code</label>
+                                        @Html.TextBoxFor(m => m.MemberVerifiedCountyCode, new CustomValidation().CustomAttributes("maxlength", "3").AddCssClass("form-control allowOnlyNumeric").StringMaxLength(3, "Member Verified County Code").RegularExpression(RegexType.Numeric, "Member Verified County Code").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>PDP Auto Enrollee Indicator</label>
+                                        @Html.DropDownListFor(m => m.PDPAutoEnrolleeInd, new SelectList(ViewBag.lstPDPAutoEnrolleeInd, "LookupValue1", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "ddlPDPAutoEnrolleeIndMarx").validationAttributes)
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label>GPS Household ID</label>
+                                        @Html.TextBoxFor(m => m.GPSHouseholdID, new CustomValidation().AddCssClass("form-control allowOnlyNumeric").CustomAttributes("id", "txtGPSHouseholdIDSearch").validationAttributes)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if (Model.WorkBasketLkup == (long)WorkBasket.OST)
+                    {
+                    <div class="panel-group advnc-wdgt-group">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a class="primary-hdr" data-toggle="collapse" href="#collapseThree"><img src="~/Images/info-icon.png" /> <span>OOA / SCC / TRR</span></a>
+                                </h4>
+                            </div>
+                            <div id="collapseThree" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <div class="form-group date-group col-md-3">
+                                        <label for="inputEmail">First Letter Mail Date(From)</label>
+                                        @Html.DateTimeFor(m => m.FirstLetterMailStartDate, false, new CustomValidation().CustomAttributes("id", "dtFirstLetterMailStartDate").validationAttributes)
+                                    </div>
+                                    <div class="form-group date-group col-md-3">
+                                        <label for="inputEmail">First Letter Mail Date(To)</label>
+                                        @Html.DateTimeFor(m => m.FirstLetterMailEndDate, false, new CustomValidation().CustomAttributes("id", "dtFirstLetterMailEndDate").validationAttributes)
+                                    </div>
+                                    <div class="form-group date-group col-md-3">
+                                        <label for="inputEmail">Second Letter Mail Date(From)</label>
+                                        @Html.DateTimeFor(m => m.SecondLetterMailStartDate, false, new CustomValidation().CustomAttributes("id", "dtSecondLetterMailStartDate").validationAttributes)
+                                    </div>
+                                    <div class="form-group date-group col-md-3">
+                                        <label for="inputEmail">Second Letter Mail Date(To)</label>
+                                        @Html.DateTimeFor(m => m.SecondLetterMailEndDate, false, new CustomValidation().CustomAttributes("id", "dtSecondLetterMailEndDate").validationAttributes)
+                                    </div> 
+                                    <div class="form-group date-group col-md-3">
+                                        <label for="inputEmail">Disenrollment Date(From)</label>
+                                        @Html.DateTimeFor(m => m.DisenrollmentFromDate, false, new CustomValidation().CustomAttributes("id", "dtDisenrollmentFromDate").validationAttributes)
+                                    </div>
+                                    <div class="form-group date-group col-md-3">
+                                        <label for="inputEmail">Disenrollment Date(To)</label>
+                                        @Html.DateTimeFor(m => m.DisenrollmentToDate, false, new CustomValidation().CustomAttributes("id", "dtDisenrollmentToDate").validationAttributes)
+                                    </div>  
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                    @if (Model.WorkBasketLkup == (long)WorkBasket.GPSvsMMR)
+                    {
+                    <div class="panel-group advnc-wdgt-group">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a class="primary-hdr" data-toggle="collapse" href="#collapseFour"><img src="~/Images/info-icon.png" /> <span>Discrepancy Info</span></a>
+                                </h4>
+                            </div>
+                            <div id="collapseFour" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <div class="form-group date-group col-md-3">
+                                        <label>Discrepancy Start Date(From)</label>
+                                        @Html.DateTimeFor(m => m.DiscrepancyStartDate, false, new CustomValidation().CustomAttributes("id", "dtDiscrepancyStartDate").validationAttributes)
+                                    </div>
+                                    <div class="form-group date-group col-md-3">
+                                        <label>Discrepancy Start Date(To)</label>
+                                        @Html.DateTimeFor(m => m.DiscrepancyEndDate, false, new CustomValidation().CustomAttributes("id", "dtDiscrepancyEndDate").validationAttributes)
+                                    </div>                                   
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                    @if (Model.WorkBasketLkup == (long)WorkBasket.RPR)
+                    {
+                        <div class="panel-group advnc-wdgt-group">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <h4 class="panel-title">
+                                        <a class="primary-hdr" data-toggle="collapse" href="#collapseFive"><img src="~/Images/info-icon.png" /> <span>RPR</span></a>
+                                    </h4>
+                                </div>
+                                <div id="collapseFive" class="panel-collapse collapse">
+                                    <div class="panel-body">
+                                        <div class="form-group col-md-3">
+                                            <label>CTM Member</label>
+                                            @Html.DropDownListFor(m => m.RPRCTMMember, new SelectList(ViewBag.RPREGHPMember, "LookupValue1", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlCTMMember").validationAttributes)
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>CTM Number</label>
+                                            @Html.TextBoxFor(model => model.RPRCTMNumber, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtCTMNumber").RegularExpression(RegexType.AlphabetsWithNumeric, "CTM Number").CustomAttributes("maxlength", "20").StringMaxLength(20, "CTM Number").validationAttributes)
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>RPR Requestor</label>
+                                            @Html.DropDownListFor(m => m.RPRRequestor, new SelectList(ViewBag.RPRRequestor, "ADM_UserMasterId", "FullName"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlRPRRequestor").validationAttributes)
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>EGHP Member</label>
+                                            @Html.DropDownListFor(m => m.RPREGHPMember, new SelectList(ViewBag.RPREGHPMember, "LookupValue1", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlEGHPMember").validationAttributes)
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Employer ID</label>
+                                            @Html.TextBoxFor(model => model.RPREmployerID, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtEmployerID").RegularExpression(RegexType.AlphabetsWithNumeric, "Employer ID").CustomAttributes("maxlength", "20").StringMaxLength(20, "Employer ID").validationAttributes)
+                                        </div>   
+                                        <div class="form-group col-md-3">
+                                            <label>Submission Type</label>
+                                            @Html.DropDownListFor(m => m.SubmissionTypeLkup, new SelectList(ViewBag.SubmissionType, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlSubmissionType").validationAttributes)
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>FDR Status</label>
+                                            @Html.DropDownListFor(m => m.FDRStatus, new SelectList(ViewBag.FDRStatus, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlFDRStatus").validationAttributes)
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>FDR Code Received</label>
+                                            @Html.TextBoxFor(model => model.FDRCodeReceived, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtFDRCodeReceived").RegularExpression(RegexType.AlphabetsWithNumeric, "FDR Code Received").CustomAttributes("maxlength", "50").StringMaxLength(50, "FDR Code Received").validationAttributes)
+                                        </div>
+                                        <div class="form-group date-group col-md-3">
+                                            <label>Adjusted Create Date(From)</label>
+                                            @Html.DateTimeFor(m => m.AdjustedCreateStartDate, false, new CustomValidation().CustomAttributes("id", "dtAdjustedCreateStartDate").validationAttributes)
+                                        </div>
+                                        <div class="form-group date-group col-md-3">
+                                            <label>Adjusted Create Date(To)</label>
+                                            @Html.DateTimeFor(m => m.AdjustedCreateEndDate, false, new CustomValidation().CustomAttributes("id", "dtAdjustedCreateEndDate").validationAttributes)
+                                        </div>
+                                        <div class="form-group date-group col-md-3">
+                                            <label>FDR Received Date(From)</label>
+                                            @Html.DateTimeFor(m => m.FDRReceivedStartDate, false, new CustomValidation().CustomAttributes("id", "dtFDRReceivedStartDate").validationAttributes)
+                                        </div>
+                                        <div class="form-group date-group col-md-3">
+                                            <label>FDR Received Date(To)</label>
+                                            @Html.DateTimeFor(m => m.FDRReceivedEndDate, false, new CustomValidation().CustomAttributes("id", "dtFDRReceivedEndDate").validationAttributes)
+                                        </div>
+                                        <div class="form-group date-group col-md-3">
+                                            <label>Requested Effective Date(From)</label>
+                                            @Html.DateTimeFor(m => m.RequestedEffectiveStartDate, false, new CustomValidation().CustomAttributes("id", "dtRequestedEffectiveStartDate").validationAttributes)
+                                        </div>
+                                        <div class="form-group date-group col-md-3">
+                                            <label>Requested Effective Date(To)</label>
+                                            @Html.DateTimeFor(m => m.RequestedEffectiveEndDate, false, new CustomValidation().CustomAttributes("id", "dtRequestedEffectiveEndDate").validationAttributes)
+                                        </div>                                      
+                                        <div class="form-group date-group col-md-3">
+                                            <label>CMS Account Manager Approval Date(From)</label>
+                                            @Html.DateTimeFor(m => m.CMSAccountManagerApprovalStartDate, false, new CustomValidation().CustomAttributes("id", "dtCMSAccountManagerApprovalStartDate").validationAttributes)
+                                        </div>
+                                        <div class="form-group date-group col-md-3">
+                                            <label>CMS Account Manager Approval Date(To)</label>
+                                            @Html.DateTimeFor(m => m.CMSAccountManagerApprovalEndDate, false, new CustomValidation().CustomAttributes("id", "dtCMSAccountManagerApprovalEndDate").validationAttributes)
+                                        </div>
+                                        <div class="form-group date-group col-md-3">
+                                            <label>RPC Submission Date(From)</label>
+                                            @Html.DateTimeFor(m => m.RPCSubmissionStartDate, false, new CustomValidation().CustomAttributes("id", "dtRPCSubmissionStartDate").validationAttributes)
+                                        </div>
+                                        <div class="form-group date-group col-md-3">
+                                            <label>RPC Submission Date(To)</label>
+                                            @Html.DateTimeFor(m => m.RPCSubmissionEndDate, false, new CustomValidation().CustomAttributes("id", "dtRPCSubmissionEndDate").validationAttributes)
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label title="Task being performed when this discrepancy was identified ?">Task being performed...</label>
+                                            @Html.DropDownListFor(m => m.TaskBeingPerformedWhenThisDiscrepancyWasIdentified, new SelectList(ViewBag.PerformcedTaskList, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlTaskBeingPerformedWhenThisDiscrepancyWasIdentified").validationAttributes)
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <label>Supervisor of the person entering the request</label>
+                                            @Html.DropDownListFor(m => m.SupervisiorofthePersonEnteringtheRequest, new SelectList(ViewBag.SupervisiorList, "ADM_UserMasterId", "FullName"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").NotRequired().CustomAttributes("id", "ddlSupervisiorofthePersonEnteringtheRequest").validationAttributes)
+                                        </div>
+                                     
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

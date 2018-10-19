@@ -1,0 +1,82 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@model ENRLReconSystem.DO.DOGEN_EligibilityActions
+                 
+       
+           
+      
+        <div class="clearfix">                
+            @Html.HiddenFor(m => m.DateofBirth,new { @id = "hdnDateOfBirth"})
+            @Html.HiddenFor(m => m.ApplicationDate)
+            @Html.HiddenFor(m => m.EffectiveDate)
+                <div class="form-group col-md-3">
+                    <label class="required" for="inputEmail">Medicare ID</label>
+                    @Html.TextBoxFor(m => m.HICN, new CustomValidation().AddCssClass("form-control").Required("HICN Number is Required").RegularExpression(RegexType.StrictAlphaNumeric, "Current HICN").StringMaxLength(11, "Current HICN").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="required" for="inputEmail">Last Name</label>                    
+                    @Html.TextBoxFor(m => m.LastName, new CustomValidation().AddCssClass("form-control").Required("Last Name is Required").RegularExpression(RegexType.AlphabetsWithSpaces, "Last Name").StringMaxLength(35, "Last Name").validationAttributes)
+                </div>
+                <div class="form-group date-group col-md-3">
+                    <label class="required" for="inputEmail">Date Of Birth</label>
+                   @Html.DateTimeFor(m => m.DateofBirth, false, new CustomValidation().Required("Date Of Birth is Required").AddCssClass("form-control").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="required" for="inputEmail">Contract Number</label>
+                    @Html.DropDownListFor(m => m.ContractIDLkup, new SelectList(Model.lstContractid, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please Select Contract Number").AddCssClass("form-control").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="required" for="inputEmail">PBP</label>
+                    @Html.DropDownListFor(m => m.PBPLkup, new SelectList(Model.lstPbpid, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please Select PBP").AddCssClass("form-control").validationAttributes)                            
+                </div>               
+                <div class="form-group date-group col-md-3">
+                    <label for="inputEmail">Application Date</label>
+                    @Html.DateTimeFor(m => m.ApplicationDate, false, new CustomValidation().AddCssClass("form-control").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="required" for="inputEmail">Root Cause</label>
+                    @Html.DropDownListFor(m => m.RootCauseLkup, new SelectList(Model.lstRootCause, "CMN_LookupMasterChildRef", "LookupMasterChildValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please Select Root Cause").AddCssClass("form-control").CustomAttributes("id", "ddlRootCause").validationAttributes)
+                </div>               
+                <div class="form-group col-md-3">
+                <label class="required" for="inputEmail">Transaction Type Code</label>
+                @Html.DropDownListFor(m => m.TransactionTypeCodeLkup, new SelectList(Model.lstTransactionTypeCode, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please Select Transaction Type Code").AddCssClass("form-control").CustomAttributes("id", "ddlTransactionType").validationAttributes)
+               </div>
+                <div class="form-group col-md-3">
+                    <label class="required" for="inputEmail">Election Type</label>
+                    @Html.DropDownListFor(m => m.ElectionTypeLkup, new SelectList(Model.lstElectionType, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please Select Election Type").AddCssClass("form-control").CustomAttributes("id", "ddlElectionType").validationAttributes)                            
+                </div>
+                <div class="form-group date-group col-md-3">
+                <label class="required" for="inputEmail">Effective Date</label>
+                @Html.DateTimeFor(m => m.EffectiveDate, false, new CustomValidation().Required("Effective Date is Required").AddCssClass("form-control").validationAttributes)
+               </div>
+                <div class="form-group col-md-3">
+                    <label class="required" for="inputEmail">Resolution</label>
+                    @Html.DropDownListFor(m => m.ResolutionLkup, new SelectList(Model.lstResolution, "CMN_LookupMasterChildRef", "LookupMasterChildValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please Select Resolution").AddCssClass("form-control").CustomAttributes("id", "ddlResolution").validationAttributes)                            
+                </div>
+                    <div class="form-group col-md-3" id="divResolution">
+                    <label class="required" for="inputEmail">Resolution Other Description</label>
+                       @Html.TextBoxFor(m => m.OtherResolution, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtOtherResolution").validationAttributes)
+                    </div>
+                <div class="form-group col-md-3">
+                    <label for="inputEmail">EGHP indicator</label>                   
+                    @Html.CheckBoxFor(m => m.EGHPIndicator, new { @id = "chkEGHP", @class = "form-control" })
+                </div>
+            <div class="form-group col-md-3">
+                <label for="inputEmail">Transaction Code</label>
+                @Html.TextBox("Transaction Code", "76",new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+            </div>
+                <div class="form-group textarea col-md-12">
+                    <label for="inputEmail">Comments</label>
+                    @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+                </div>           
+        </div>
+            <script>
+                $(document).ready(function () {
+                    $("#divResolution").hide();
+                    var DateofBirth = $('#hdnDateOfBirth').val();
+                    if (DateofBirth != "" && DateofBirth != '') {
+                        $("#DateofBirth_DPart").val(getDateTimeInMMDDYYYY(DateofBirth));
+                    }
+                });
+            </script>          
+               

@@ -1,0 +1,15 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.Utility
+@using ENRLReconSystem.DO
+@model DOGEN_RPRActions
+
+<div class="clearfix">
+    <div class="form-group col-md-3">
+        @Html.LabelFor(m => m.ContainsErrorsLkup, "Contains Errors", new { @class = "required" })
+        @Html.DropDownListFor(m => m.ContainsErrorsLkup, new SelectList(Model.lstContainsErros, "LookupValue1", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please select Contains Errors").AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group textarea col-md-12">
+        @Html.LabelFor(m => m.Comments, "Comments", new { @class = "required" })
+        @Html.TextAreaFor(m => m.Comments, new CustomValidation().Required("Comments are Required").AddCssClass("form-control").CustomAttributes("maxlength", "4000").CustomAttributes("id", "txtComments").StringMaxLength(4000, "Comments").validationAttributes)
+    </div>
+</div>

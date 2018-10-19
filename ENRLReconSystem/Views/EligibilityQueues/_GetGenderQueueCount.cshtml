@@ -1,0 +1,94 @@
+﻿@using ENRLReconSystem.Utility
+@model ENRLReconSystem.DO.QueueSummary
+
+@functions {
+    public IHtmlString QueueActions(long queueId, long count, bool showGetQueue = true)
+    {
+        string strTag = "";
+        if (count > 0 && Model.lstUserAccessQueueLkups.Contains(queueId))
+        {
+            var discCat = (long)DiscripancyCategory.Gender;
+            var href = Url.Action("SearchFromHome", "Common", new { @CaseCreationStartDate = Model.StartDate, @CaseCreationEndDate = Model.EndDate, @Queue = queueId, @data = discCat, @screenType = 37010 });
+            var reportHref = ViewBag.ReportUrl + "&FromDate=" + Model.StartDate.ToString("MM/dd/yyyy") + "&ToDate=" + Model.EndDate.ToString("MM/dd/yyyy") + "&WorkQueueLkup=" + queueId + "&BusinessSegmentLkup=" + Model.BusinessSegment;
+            if (showGetQueue)
+                strTag = "<a id = '" + queueId + "' class='getQueue' href='#' title='Get Queue'><img src = '/Images/get-queue-img.png' ></a>";//get queue link
+            strTag = strTag + "<a href='" + href + "'><img src = '/Images/view-img.png' title='View Queue' ></a>";//View Queue link
+            strTag = strTag + "<a href='" + reportHref + "' target ='_blank' title='View Report'><img src='/Images/report-img.png'></a>";//Report link
+        }
+        else
+        {
+            if (showGetQueue)
+                strTag = "<a  class='inAccessible' href='#'><img src = '/Images/disable-get-queue-img.png' ></ a >";//get queue link disabled
+            strTag = strTag + "<a  class='inAccessible' href='#'><img src = '/Images/disable-view-img.png' title='View Queue' ></a>";//View Queue link disabled
+            strTag = strTag + "<a class='inAccessible' href='#' title='View Report'><img src='/Images/disable-report-img.png'></a>";//Report link disabled
+        }
+        return new HtmlString(strTag);
+    }
+}
+
+<div class="queue-smry-wdgt">
+    <div class="processing-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Processing Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>New Case</td>
+                    <td>@Model.objGenderQueueSummary.GenderNewCase</td>
+                    <td>
+                        @QueueActions(GenderQueue.GenderNewCase.ToInt64(), @Model.objGenderQueueSummary.GenderNewCase)
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pending Audit</td>
+                    <td>@Model.objGenderQueueSummary.GenderPendingAudit</td>
+                    <td>
+                        @QueueActions(GenderQueue.GenderPendingAudit.ToInt64(), @Model.objGenderQueueSummary.GenderPendingAudit)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Peer Audit Failed</td>
+                    <td>@Model.objGenderQueueSummary.GenderPeerAuditFailed</td>
+                    <td>
+                        @QueueActions(GenderQueue.GenderPeerAuditFailed.ToInt64(), @Model.objGenderQueueSummary.GenderPeerAuditFailed)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pended</td>
+                    <td>@Model.objGenderQueueSummary.GenderPended</td>
+                    <td>
+                      @QueueActions(GenderQueue.GenderPended.ToInt64(), @Model.objGenderQueueSummary.GenderPended)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="queue-smry-wdgt">
+    <div class="completed-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Completed Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Completed</td>
+                    <td>@Model.objGenderQueueSummary.GenderCompleted</td>
+                    <td>
+                        @QueueActions(GenderQueue.GenderCompleted.ToInt64(), @Model.objGenderQueueSummary.GenderCompleted, false)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

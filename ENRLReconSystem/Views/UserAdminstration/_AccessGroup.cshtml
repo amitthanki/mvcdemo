@@ -1,0 +1,37 @@
+﻿@using ENRLReconSystem.DO
+@using ENRLReconSystem.Utility
+@model List<DOADM_AccessGroupUserCorrelation>
+
+
+<div class="table-responsive">
+    <table class="table table-bordered" id="tblAccessGroup">
+        <thead>
+            <tr>
+                <th style="text-align:center">Actions</th>
+                <th style="text-align:center">Access Group</th>
+                <th style="text-align:center">Created On</th>
+                <th style="text-align:center">Created By</th>
+                <th style="text-align:center">Updated On</th>
+                <th style="text-align:center">Updated By</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr AccessGroupId="@item.ADM_AccessGroupMasterRef">
+                    <td>
+                        <a id="btnEditAccessGroup" class="edit-queue"><img src="~/Images/edit-img.png" height="20" alt="Edit" /></a>
+                        <a id="btnDeleteAccessGroup" class="edit-queue"><img src="~/Images/deleteiconimg.png" width="20" alt="Delete" /></a>
+                    </td>
+                    <td>
+                        @Html.DropDownList("ddlAccessGroup", new SelectList(ViewBag.AccessGroups, "ADM_AccessGroupMasterId", "AccessGroupName", @item.ADM_AccessGroupMasterRef), ConstantTexts.dropdownDefaultValue, new { @id = "ddlAccessGroup-Add", @class = "form-control display-mode", @disabled = true })
+                    </td>
+                    <td>@(item.UTCCreatedOn.ToString("MM/dd/yyyy hh:mm tt"))</td>
+                    <td>@item.CreatedByName</td>
+                    <td>@(item.UTCLastUpdatedOn.HasValue ? item.UTCLastUpdatedOn.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                    <td>@item.LastUpdatedBy</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

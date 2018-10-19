@@ -1,0 +1,62 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.DO
+@using ENRLReconSystem.Helpers
+@model DOCMN_LookupMaster
+
+@using (Html.BeginForm("SaveLookupMaster", "Lookups", FormMethod.Post, new { @id = "frmAddLookupMaster" }))
+    {
+
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+<div class="wdgt-wrapper">
+    @Html.HiddenFor(xx => xx.CMN_LookupMasterId,new { @id="hdnLkupMasterID"})
+    @Html.HiddenFor(xx => xx.CMN_LookupTypeRef)
+    <div class="wdgt-hdr">
+        <img src="~/images/list-icon.png" /><h4>Add/Edit Lookup value</h4>
+    </div>
+    <div class="wdgt-body clearfix">
+        <div class="clearfix">
+            <div style="color:red;">
+                @Html.ValidationSummary(false)
+            </div>
+            <div class="form-group col-md-3">
+                <label for="inputEmail" class="required">Lookup Value</label>
+                @Html.TextBoxFor(xx => xx.LookupValue, new CustomValidation().Required("Lookup value is required.").AddCssClass("form-control").CustomAttributes("id", "txtLkupValuePopup").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAmpersandAndSpaces, "Lookup Value").StringMaxLength(200, "Lookup Value").CustomAttributes("maxlength", "200").validationAttributes)
+            </div>
+            <div class="form-group col-md-3">
+                <label for="inputEmail" class="required">Lookup Description</label>
+                @Html.TextBoxFor(xx => xx.LookupDescription, new CustomValidation().Required("Lookup description is required.").AddCssClass("form-control").CustomAttributes("id", "txtLkupdescPopup").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAmpersandAndSpaces, "Lookup Description").StringMaxLength(200, "Lookup Description").CustomAttributes("maxlength", "200").validationAttributes)
+            </div>
+            <div class="form-group col-md-3">
+                <label for="txtPriority">Sequence No.</label>
+                @Html.TextBoxFor(xx => xx.DisplayOrder, new CustomValidation().AddCssClass("form-control allowOnlyNumeric").CustomAttributes("id", "txtLkupDisplayOredrpopup").RegularExpression(RegexType.Numeric, "Sequence No.").StringMaxLength(3, "Sequence No.").CustomAttributes("maxlength", "3").validationAttributes)
+            </div>
+            @if (Model.CMN_LookupMasterId > 0)
+            {
+            <div class="form-group col-md-3">
+                <label>Is Active</label>
+                @Html.CheckBoxFor(xx => xx.IsActive, new { @id = "chkLookupMasterActive", @class = "form-control" })
+            </div>
+            }
+        </div>
+        <div class="btn-group clearfix">
+            <button type="submit" id="btnSaveLookupMaster" class="btn btn-primary"><img src="~/images/save-icon.png" /><span>Save</span></button>
+            <button type="button" id="btnLkupMasterReset" class="btn btn-primary"><img src="~/images/reset-icon.png" /><span>Reset</span></button>
+            <button type="button" id="btnCancellkupMaster" class="btn btn-primary" data-dismiss="modal"><img src="~/images/cancle-icon.png" /><span>Cancel</span></button>
+        </div>
+        
+    </div>
+</div>
+
+}
+@Scripts.Render("~/bundles/jqueryval")
+<script type="text/javascript">
+
+    fnClearLookupMasterPopup = function () {
+        try {
+            MainLayout.fnResetValidationSummary();
+            $("#frmAddLookupMaster").deserialize(orgFrmAddLookupMaster);
+        }catch (e) {
+
+        }
+    };
+</script>

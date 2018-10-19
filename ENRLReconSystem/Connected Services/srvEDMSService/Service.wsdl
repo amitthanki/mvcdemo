@@ -1,0 +1,1144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:wsap="http://schemas.xmlsoap.org/ws/2004/08/addressing/policy" xmlns:wsa10="http://www.w3.org/2005/08/addressing" xmlns:tns="http://tempuri.org/" xmlns:msc="http://schemas.microsoft.com/ws/2005/12/wsdl/contract" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsx="http://schemas.xmlsoap.org/ws/2004/09/mex" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata" xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/08/addressing" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="Service" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsp:Policy wsu:Id="BasicHttpBinding_IService_policy">
+    <wsp:ExactlyOne>
+      <wsp:All>
+        <wsoma:OptimizedMimeSerialization xmlns:wsoma="http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization" />
+      </wsp:All>
+    </wsp:ExactlyOne>
+  </wsp:Policy>
+  <wsdl:types>
+    <xs:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://schemas.datacontract.org/2004/07/CMWSService" />
+      <xs:element name="ExportSearchResults">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+            <xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="DocumentKeys" nillable="true" type="q1:ArrayOfNameVal" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="ReturnDescForCodes" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="ExportCount" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ExportSearchResultsResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="ExportSearchResultsResult" nillable="true" type="q2:Response_DocList" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocumentListwithIndex">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+            <xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="DocumentKeys" nillable="true" type="q3:ArrayOfNameVal" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="ReturnDescForCodes" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="startindex" type="xs:int" />
+            <xs:element minOccurs="0" name="maxresultcount" type="xs:int" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocumentListwithIndexResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="GetDocumentListwithIndexResult" nillable="true" type="q4:Response_DocList" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocumentInfo">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentID" type="xs:int" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="alternateDocPropertyName" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocumentInfoResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="GetDocumentInfoResult" nillable="true" type="q5:Response_DocInfo" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocument">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocumentResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="GetDocumentResult" nillable="true" type="q6:Response_Doc" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddToReprint">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+            <xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="DocumentKeys" nillable="true" type="q7:ArrayOfNameVal" />
+            <xs:element minOccurs="0" name="DocID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddToReprintResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="AddToReprintResult" type="xs:boolean" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocumentLink">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocClass" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="AppMSID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="UserDomainID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocumentLinkResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="GetDocumentLinkResult" nillable="true" type="q8:Document" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocumentByName">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentName" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocumentByNameResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="GetDocumentByNameResult" nillable="true" type="q9:Response_Doc" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocumentList">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+            <xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="DocumentKeys" nillable="true" type="q10:ArrayOfNameVal" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="ReturnDescForCodes" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocumentListResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="GetDocumentListResult" nillable="true" type="q11:Response_DocList" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetMultiDocumentList">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="DocumentsRequest" nillable="true" type="q12:ArrayOfDocRequest" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="ReturnDescForCodes" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetMultiDocumentListResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="GetMultiDocumentListResult" nillable="true" type="q13:Response_MultiDocList" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetMultiDocumentList2">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element xmlns:q14="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="DocumentsRequest" nillable="true" type="q14:DocumentsRequest" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="ReturnDescForCodes" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetMultiDocumentList2Response">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q15="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="GetMultiDocumentList2Result" nillable="true" type="q15:Response_MultiDocList" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetMultiDocuments">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element xmlns:q16="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="DocClassDocIDPairs" nillable="true" type="q16:ArrayOfClassIDPair" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetMultiDocumentsResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q17="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="GetMultiDocumentsResult" nillable="true" type="q17:Response_MultiDoc" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocumentID">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+            <xs:element xmlns:q18="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="DocumentKeys" nillable="true" type="q18:ArrayOfNameVal" />
+            <xs:element minOccurs="0" name="IncludeMetaData" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocumentIDResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q19="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="GetDocumentIDResult" nillable="true" type="q19:Response_DocID" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddDocument">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentName" nillable="true" type="xs:string" />
+            <xs:element xmlns:q20="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="DocumentKeys" nillable="true" type="q20:ArrayOfNameVal" />
+            <xs:element minOccurs="0" name="DocumentData" nillable="true" type="xs:base64Binary" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="WithContent" type="xs:boolean" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddDocumentResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q21="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="AddDocumentResult" nillable="true" type="q21:Response_Add" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetUserEmailAddress">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="DomainID" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetUserEmailAddressResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="GetUserEmailAddressResult" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetAvailableDocList">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DomainID" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetAvailableDocListResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q22="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="GetAvailableDocListResult" nillable="true" type="q22:Response_AvailableDocs" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="SetLifeCycleState">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentID" nillable="true" type="xs:string" />
+            <xs:element xmlns:q23="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="LifecycleChangeAction" type="q23:LifecycleChangeActions" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="SetLifeCycleStateResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q24="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="SetLifeCycleStateResult" nillable="true" type="q24:Response_LifeCycleState" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetLifeCycleState">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetLifeCycleStateResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q25="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="GetLifeCycleStateResult" nillable="true" type="q25:Response_LifeCycleState" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="DeleteDocument">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="DeleteDocumentResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q26="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="DeleteDocumentResult" nillable="true" type="q26:Response_DeleteDocument" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="SetDocumentProperties">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+            <xs:element xmlns:q27="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="DocumentProps" nillable="true" type="q27:ArrayOfNameVal" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="SetDocumentPropertiesResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q28="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="SetDocumentPropertiesResult" nillable="true" type="q28:Response_DocProps" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocClassInfo">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocClassInfoResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q29="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="GetDocClassInfoResult" nillable="true" type="q29:Response_DocClassInfo" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocumentListByOperator">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="cmGUID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+            <xs:element xmlns:q30="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="NameValOperatorDocumentKeys" nillable="true" type="q30:ArrayOfNameValOperator" />
+            <xs:element minOccurs="0" name="Application" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="UserID" nillable="true" type="xs:string" />
+            <xs:element minOccurs="0" name="ReturnDescForCodes" nillable="true" type="xs:string" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GetDocumentListByOperatorResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element xmlns:q31="http://schemas.datacontract.org/2004/07/CMWSService" minOccurs="0" name="GetDocumentListByOperatorResult" nillable="true" type="q31:Response_DocList" />
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="anyType" nillable="true" type="xs:anyType" />
+      <xs:element name="anyURI" nillable="true" type="xs:anyURI" />
+      <xs:element name="base64Binary" nillable="true" type="xs:base64Binary" />
+      <xs:element name="boolean" nillable="true" type="xs:boolean" />
+      <xs:element name="byte" nillable="true" type="xs:byte" />
+      <xs:element name="dateTime" nillable="true" type="xs:dateTime" />
+      <xs:element name="decimal" nillable="true" type="xs:decimal" />
+      <xs:element name="double" nillable="true" type="xs:double" />
+      <xs:element name="float" nillable="true" type="xs:float" />
+      <xs:element name="int" nillable="true" type="xs:int" />
+      <xs:element name="long" nillable="true" type="xs:long" />
+      <xs:element name="QName" nillable="true" type="xs:QName" />
+      <xs:element name="short" nillable="true" type="xs:short" />
+      <xs:element name="string" nillable="true" type="xs:string" />
+      <xs:element name="unsignedByte" nillable="true" type="xs:unsignedByte" />
+      <xs:element name="unsignedInt" nillable="true" type="xs:unsignedInt" />
+      <xs:element name="unsignedLong" nillable="true" type="xs:unsignedLong" />
+      <xs:element name="unsignedShort" nillable="true" type="xs:unsignedShort" />
+      <xs:element name="char" nillable="true" type="tns:char" />
+      <xs:simpleType name="char">
+        <xs:restriction base="xs:int" />
+      </xs:simpleType>
+      <xs:element name="duration" nillable="true" type="tns:duration" />
+      <xs:simpleType name="duration">
+        <xs:restriction base="xs:duration">
+          <xs:pattern value="\-?P(\d*D)?(T(\d*H)?(\d*M)?(\d*(\.\d*)?S)?)?" />
+          <xs:minInclusive value="-P10675199DT2H48M5.4775808S" />
+          <xs:maxInclusive value="P10675199DT2H48M5.4775807S" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="guid" nillable="true" type="tns:guid" />
+      <xs:simpleType name="guid">
+        <xs:restriction base="xs:string">
+          <xs:pattern value="[\da-fA-F]{8}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{4}-[\da-fA-F]{12}" />
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:attribute name="FactoryType" type="xs:QName" />
+      <xs:attribute name="Id" type="xs:ID" />
+      <xs:attribute name="Ref" type="xs:IDREF" />
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/CMWSService" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/CMWSService" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+      <xs:import namespace="http://schemas.microsoft.com/2003/10/Serialization/" />
+      <xs:complexType name="ArrayOfNameVal">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="NameVal" nillable="true" type="tns:NameVal" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfNameVal" nillable="true" type="tns:ArrayOfNameVal" />
+      <xs:complexType name="NameVal">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Value" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="NameVal" nillable="true" type="tns:NameVal" />
+      <xs:complexType name="Response_DocList">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="StatusCode" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DocumentList" nillable="true" type="tns:ArrayOfDocListInfo" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Response_DocList" nillable="true" type="tns:Response_DocList" />
+      <xs:complexType name="ArrayOfDocListInfo">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="DocListInfo" nillable="true" type="tns:DocListInfo" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfDocListInfo" nillable="true" type="tns:ArrayOfDocListInfo" />
+      <xs:complexType name="DocListInfo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DocID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="FileName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="FileType" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DocFields" nillable="true" type="tns:ArrayOfNameVal" />
+          <xs:element minOccurs="0" name="ExtraProps" nillable="true" type="tns:ArrayOfNameVal" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="DocListInfo" nillable="true" type="tns:DocListInfo" />
+      <xs:complexType name="Response_DocInfo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="AlternateDocumentId" type="xs:int" />
+          <xs:element minOccurs="0" name="AlternateDocumentSize" type="xs:int" />
+          <xs:element minOccurs="0" name="CreateDate" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DocumentSize" type="xs:int" />
+          <xs:element minOccurs="0" name="DocumentTitle" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Format" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Status" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="StatusCode" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Response_DocInfo" nillable="true" type="tns:Response_DocInfo" />
+      <xs:complexType name="Response_Doc">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DocumentData" nillable="true" type="xs:base64Binary" />
+          <xs:element minOccurs="0" name="StatusCode" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Response_Doc" nillable="true" type="tns:Response_Doc" />
+      <xs:complexType name="Document">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DocID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DocumentPath" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ErrorList" nillable="true" type="tns:ArrayOfError" />
+          <xs:element minOccurs="0" name="ExtraProps" nillable="true" type="tns:ArrayOfNameVal" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Document" nillable="true" type="tns:Document" />
+      <xs:complexType name="ArrayOfError">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="Error" nillable="true" type="tns:Error" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfError" nillable="true" type="tns:ArrayOfError" />
+      <xs:complexType name="Error">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ErrorCode" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="ErrorDescription" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Error" nillable="true" type="tns:Error" />
+      <xs:complexType name="ArrayOfDocRequest">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="DocRequest" nillable="true" type="tns:DocRequest" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfDocRequest" nillable="true" type="tns:ArrayOfDocRequest" />
+      <xs:complexType name="DocRequest">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DocumentKeys" nillable="true" type="tns:ArrayOfNameVal" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="DocRequest" nillable="true" type="tns:DocRequest" />
+      <xs:complexType name="Response_MultiDocList">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="StatusCode" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DocumentList" nillable="true" type="tns:ArrayOfDocListInfoMultiDocument" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Response_MultiDocList" nillable="true" type="tns:Response_MultiDocList" />
+      <xs:complexType name="ArrayOfDocListInfoMultiDocument">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="DocListInfoMultiDocument" nillable="true" type="tns:DocListInfoMultiDocument" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfDocListInfoMultiDocument" nillable="true" type="tns:ArrayOfDocListInfoMultiDocument" />
+      <xs:complexType name="DocListInfoMultiDocument">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DocID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="StatusCode" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="FileName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="FileType" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DocFields" nillable="true" type="tns:ArrayOfNameVal" />
+          <xs:element minOccurs="0" name="ExtraProps" nillable="true" type="tns:ArrayOfNameVal" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="DocListInfoMultiDocument" nillable="true" type="tns:DocListInfoMultiDocument" />
+      <xs:complexType name="DocumentsRequest">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="tns:ArrayOfNameVal" />
+          <xs:element minOccurs="0" name="DocumentKeys" nillable="true" type="tns:ArrayOfNameVal" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="DocumentsRequest" nillable="true" type="tns:DocumentsRequest" />
+      <xs:complexType name="ArrayOfClassIDPair">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="ClassIDPair" nillable="true" type="tns:ClassIDPair" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfClassIDPair" nillable="true" type="tns:ArrayOfClassIDPair" />
+      <xs:complexType name="ClassIDPair">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DocID" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ClassIDPair" nillable="true" type="tns:ClassIDPair" />
+      <xs:complexType name="Response_MultiDoc">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="ContentType" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DocumentData" nillable="true" type="xs:base64Binary" />
+          <xs:element minOccurs="0" name="MultiDocumentInfo" nillable="true" type="tns:ArrayOfDocInfoMultiDocument" />
+          <xs:element minOccurs="0" name="StatusCode" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Response_MultiDoc" nillable="true" type="tns:Response_MultiDoc" />
+      <xs:complexType name="ArrayOfDocInfoMultiDocument">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="DocInfoMultiDocument" nillable="true" type="tns:DocInfoMultiDocument" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfDocInfoMultiDocument" nillable="true" type="tns:ArrayOfDocInfoMultiDocument" />
+      <xs:complexType name="DocInfoMultiDocument">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DocID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DocumentClass" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="StatusCode" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="DocInfoMultiDocument" nillable="true" type="tns:DocInfoMultiDocument" />
+      <xs:complexType name="Response_DocID">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DocumentList" nillable="true" type="tns:ArrayOfDocListInfo" />
+          <xs:element minOccurs="0" name="StatusCode" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Response_DocID" nillable="true" type="tns:Response_DocID" />
+      <xs:complexType name="Response_Add">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DocumentID" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="StatusCode" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Response_Add" nillable="true" type="tns:Response_Add" />
+      <xs:complexType name="Response_AvailableDocs">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="AvailableUserDocs" nillable="true" type="tns:ArrayOfDocClassInfo" />
+          <xs:element minOccurs="0" name="StatusCode" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Response_AvailableDocs" nillable="true" type="tns:Response_AvailableDocs" />
+      <xs:complexType name="ArrayOfDocClassInfo">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="DocClassInfo" nillable="true" type="tns:DocClassInfo" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfDocClassInfo" nillable="true" type="tns:ArrayOfDocClassInfo" />
+      <xs:complexType name="DocClassInfo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DocClassDesc" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DocClassName" nillable="true" type="xs:string" />
+          <xs:element xmlns:q1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="DocClassOptions" nillable="true" type="q1:ArrayOfstring" />
+          <xs:element minOccurs="0" name="DocFields" nillable="true" type="tns:ArrayOfDocFieldInfo" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="DocClassInfo" nillable="true" type="tns:DocClassInfo" />
+      <xs:complexType name="ArrayOfDocFieldInfo">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="DocFieldInfo" nillable="true" type="tns:DocFieldInfo" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfDocFieldInfo" nillable="true" type="tns:ArrayOfDocFieldInfo" />
+      <xs:complexType name="DocFieldInfo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DisplayType" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DisplayYN" nillable="true" type="xs:string" />
+          <xs:element xmlns:q2="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="DropDownValues" nillable="true" type="q2:ArrayOfstring" />
+          <xs:element minOccurs="0" name="Entry_DisplayYN" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="Entry_Required" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="FieldLabel" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="FieldName" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="MaxLen" type="xs:int" />
+          <xs:element minOccurs="0" name="Required" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="DocFieldInfo" nillable="true" type="tns:DocFieldInfo" />
+      <xs:simpleType name="LifecycleChangeActions">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="P8_PROMOTE">
+            <xs:annotation>
+              <xs:appinfo>
+                <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">1048576</EnumerationValue>
+              </xs:appinfo>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="P8_DEMOTE">
+            <xs:annotation>
+              <xs:appinfo>
+                <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">2097152</EnumerationValue>
+              </xs:appinfo>
+            </xs:annotation>
+          </xs:enumeration>
+          <xs:enumeration value="P8_RESET">
+            <xs:annotation>
+              <xs:appinfo>
+                <EnumerationValue xmlns="http://schemas.microsoft.com/2003/10/Serialization/">5242880</EnumerationValue>
+              </xs:appinfo>
+            </xs:annotation>
+          </xs:enumeration>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:element name="LifecycleChangeActions" nillable="true" type="tns:LifecycleChangeActions" />
+      <xs:complexType name="Response_LifeCycleState">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="StatusCode" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Response_LifeCycleState" nillable="true" type="tns:Response_LifeCycleState" />
+      <xs:complexType name="Response_DeleteDocument">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="StatusCode" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Response_DeleteDocument" nillable="true" type="tns:Response_DeleteDocument" />
+      <xs:complexType name="Response_DocProps">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="StatusCode" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Response_DocProps" nillable="true" type="tns:Response_DocProps" />
+      <xs:complexType name="Response_DocClassInfo">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="DocClassDesc" nillable="true" type="xs:string" />
+          <xs:element minOccurs="0" name="DocClassName" nillable="true" type="xs:string" />
+          <xs:element xmlns:q3="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="DocClassOptions" nillable="true" type="q3:ArrayOfstring" />
+          <xs:element minOccurs="0" name="DocFields" nillable="true" type="tns:ArrayOfDocFieldInfo" />
+          <xs:element minOccurs="0" name="StatusCode" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="Response_DocClassInfo" nillable="true" type="tns:Response_DocClassInfo" />
+      <xs:complexType name="ArrayOfNameValOperator">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="NameValOperator" nillable="true" type="tns:NameValOperator" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfNameValOperator" nillable="true" type="tns:ArrayOfNameValOperator" />
+      <xs:complexType name="NameValOperator">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="NameVal" nillable="true" type="tns:NameVal" />
+          <xs:element minOccurs="0" name="Operator" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="NameValOperator" nillable="true" type="tns:NameValOperator" />
+    </xs:schema>
+    <xs:schema xmlns:tns="http://schemas.microsoft.com/2003/10/Serialization/Arrays" elementFormDefault="qualified" targetNamespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:complexType name="ArrayOfstring">
+        <xs:sequence>
+          <xs:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="xs:string" />
+        </xs:sequence>
+      </xs:complexType>
+      <xs:element name="ArrayOfstring" nillable="true" type="tns:ArrayOfstring" />
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="IService_ExportSearchResults_InputMessage">
+    <wsdl:part name="parameters" element="tns:ExportSearchResults" />
+  </wsdl:message>
+  <wsdl:message name="IService_ExportSearchResults_OutputMessage">
+    <wsdl:part name="parameters" element="tns:ExportSearchResultsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocumentListwithIndex_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocumentListwithIndex" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocumentListwithIndex_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocumentListwithIndexResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocumentInfo_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocumentInfo" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocumentInfo_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocumentInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocument_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocument" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocument_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocumentResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_AddToReprint_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddToReprint" />
+  </wsdl:message>
+  <wsdl:message name="IService_AddToReprint_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddToReprintResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocumentLink_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocumentLink" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocumentLink_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocumentLinkResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocumentByName_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocumentByName" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocumentByName_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocumentByNameResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocumentList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocumentList" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocumentList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocumentListResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetMultiDocumentList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMultiDocumentList" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetMultiDocumentList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMultiDocumentListResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetMultiDocumentList2_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMultiDocumentList2" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetMultiDocumentList2_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMultiDocumentList2Response" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetMultiDocuments_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetMultiDocuments" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetMultiDocuments_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetMultiDocumentsResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocumentID_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocumentID" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocumentID_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocumentIDResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_AddDocument_InputMessage">
+    <wsdl:part name="parameters" element="tns:AddDocument" />
+  </wsdl:message>
+  <wsdl:message name="IService_AddDocument_OutputMessage">
+    <wsdl:part name="parameters" element="tns:AddDocumentResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetUserEmailAddress_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetUserEmailAddress" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetUserEmailAddress_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetUserEmailAddressResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetAvailableDocList_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetAvailableDocList" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetAvailableDocList_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetAvailableDocListResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_SetLifeCycleState_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetLifeCycleState" />
+  </wsdl:message>
+  <wsdl:message name="IService_SetLifeCycleState_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetLifeCycleStateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetLifeCycleState_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetLifeCycleState" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetLifeCycleState_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetLifeCycleStateResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_DeleteDocument_InputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteDocument" />
+  </wsdl:message>
+  <wsdl:message name="IService_DeleteDocument_OutputMessage">
+    <wsdl:part name="parameters" element="tns:DeleteDocumentResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_SetDocumentProperties_InputMessage">
+    <wsdl:part name="parameters" element="tns:SetDocumentProperties" />
+  </wsdl:message>
+  <wsdl:message name="IService_SetDocumentProperties_OutputMessage">
+    <wsdl:part name="parameters" element="tns:SetDocumentPropertiesResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocClassInfo_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocClassInfo" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocClassInfo_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocClassInfoResponse" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocumentListByOperator_InputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocumentListByOperator" />
+  </wsdl:message>
+  <wsdl:message name="IService_GetDocumentListByOperator_OutputMessage">
+    <wsdl:part name="parameters" element="tns:GetDocumentListByOperatorResponse" />
+  </wsdl:message>
+  <wsdl:portType name="IService">
+    <wsdl:operation name="ExportSearchResults">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/ExportSearchResults" message="tns:IService_ExportSearchResults_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/ExportSearchResultsResponse" message="tns:IService_ExportSearchResults_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentListwithIndex">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetDocumentListwithIndex" message="tns:IService_GetDocumentListwithIndex_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetDocumentListwithIndexResponse" message="tns:IService_GetDocumentListwithIndex_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentInfo">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetDocumentInfo" message="tns:IService_GetDocumentInfo_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetDocumentInfoResponse" message="tns:IService_GetDocumentInfo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDocument">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetDocument" message="tns:IService_GetDocument_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetDocumentResponse" message="tns:IService_GetDocument_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddToReprint">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/AddToReprint" message="tns:IService_AddToReprint_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/AddToReprintResponse" message="tns:IService_AddToReprint_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentLink">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetDocumentLink" message="tns:IService_GetDocumentLink_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetDocumentLinkResponse" message="tns:IService_GetDocumentLink_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentByName">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetDocumentByName" message="tns:IService_GetDocumentByName_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetDocumentByNameResponse" message="tns:IService_GetDocumentByName_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentList">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetDocumentList" message="tns:IService_GetDocumentList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetDocumentListResponse" message="tns:IService_GetDocumentList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMultiDocumentList">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetMultiDocumentList" message="tns:IService_GetMultiDocumentList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetMultiDocumentListResponse" message="tns:IService_GetMultiDocumentList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMultiDocumentList2">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetMultiDocumentList2" message="tns:IService_GetMultiDocumentList2_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetMultiDocumentList2Response" message="tns:IService_GetMultiDocumentList2_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetMultiDocuments">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetMultiDocuments" message="tns:IService_GetMultiDocuments_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetMultiDocumentsResponse" message="tns:IService_GetMultiDocuments_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentID">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetDocumentID" message="tns:IService_GetDocumentID_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetDocumentIDResponse" message="tns:IService_GetDocumentID_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="AddDocument">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/AddDocument" message="tns:IService_AddDocument_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/AddDocumentResponse" message="tns:IService_AddDocument_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetUserEmailAddress">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetUserEmailAddress" message="tns:IService_GetUserEmailAddress_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetUserEmailAddressResponse" message="tns:IService_GetUserEmailAddress_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAvailableDocList">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetAvailableDocList" message="tns:IService_GetAvailableDocList_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetAvailableDocListResponse" message="tns:IService_GetAvailableDocList_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetLifeCycleState">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/SetLifeCycleState" message="tns:IService_SetLifeCycleState_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/SetLifeCycleStateResponse" message="tns:IService_SetLifeCycleState_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetLifeCycleState">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetLifeCycleState" message="tns:IService_GetLifeCycleState_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetLifeCycleStateResponse" message="tns:IService_GetLifeCycleState_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="DeleteDocument">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/DeleteDocument" message="tns:IService_DeleteDocument_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/DeleteDocumentResponse" message="tns:IService_DeleteDocument_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="SetDocumentProperties">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/SetDocumentProperties" message="tns:IService_SetDocumentProperties_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/SetDocumentPropertiesResponse" message="tns:IService_SetDocumentProperties_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDocClassInfo">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetDocClassInfo" message="tns:IService_GetDocClassInfo_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetDocClassInfoResponse" message="tns:IService_GetDocClassInfo_OutputMessage" />
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentListByOperator">
+      <wsdl:input wsaw:Action="http://tempuri.org/IService/GetDocumentListByOperator" message="tns:IService_GetDocumentListByOperator_InputMessage" />
+      <wsdl:output wsaw:Action="http://tempuri.org/IService/GetDocumentListByOperatorResponse" message="tns:IService_GetDocumentListByOperator_OutputMessage" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BasicHttpBinding_IService" type="tns:IService">
+    <wsp:PolicyReference URI="#BasicHttpBinding_IService_policy" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="ExportSearchResults">
+      <soap:operation soapAction="http://tempuri.org/IService/ExportSearchResults" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentListwithIndex">
+      <soap:operation soapAction="http://tempuri.org/IService/GetDocumentListwithIndex" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentInfo">
+      <soap:operation soapAction="http://tempuri.org/IService/GetDocumentInfo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDocument">
+      <soap:operation soapAction="http://tempuri.org/IService/GetDocument" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddToReprint">
+      <soap:operation soapAction="http://tempuri.org/IService/AddToReprint" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentLink">
+      <soap:operation soapAction="http://tempuri.org/IService/GetDocumentLink" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentByName">
+      <soap:operation soapAction="http://tempuri.org/IService/GetDocumentByName" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentList">
+      <soap:operation soapAction="http://tempuri.org/IService/GetDocumentList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMultiDocumentList">
+      <soap:operation soapAction="http://tempuri.org/IService/GetMultiDocumentList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMultiDocumentList2">
+      <soap:operation soapAction="http://tempuri.org/IService/GetMultiDocumentList2" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetMultiDocuments">
+      <soap:operation soapAction="http://tempuri.org/IService/GetMultiDocuments" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentID">
+      <soap:operation soapAction="http://tempuri.org/IService/GetDocumentID" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddDocument">
+      <soap:operation soapAction="http://tempuri.org/IService/AddDocument" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetUserEmailAddress">
+      <soap:operation soapAction="http://tempuri.org/IService/GetUserEmailAddress" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAvailableDocList">
+      <soap:operation soapAction="http://tempuri.org/IService/GetAvailableDocList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetLifeCycleState">
+      <soap:operation soapAction="http://tempuri.org/IService/SetLifeCycleState" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetLifeCycleState">
+      <soap:operation soapAction="http://tempuri.org/IService/GetLifeCycleState" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="DeleteDocument">
+      <soap:operation soapAction="http://tempuri.org/IService/DeleteDocument" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SetDocumentProperties">
+      <soap:operation soapAction="http://tempuri.org/IService/SetDocumentProperties" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDocClassInfo">
+      <soap:operation soapAction="http://tempuri.org/IService/GetDocClassInfo" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetDocumentListByOperator">
+      <soap:operation soapAction="http://tempuri.org/IService/GetDocumentListByOperator" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Service">
+    <wsdl:port name="BasicHttpBinding_IService" binding="tns:BasicHttpBinding_IService">
+      <soap:address location="http://docviewebppsys.uhc.com/CMWS29_01/Service.svc" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

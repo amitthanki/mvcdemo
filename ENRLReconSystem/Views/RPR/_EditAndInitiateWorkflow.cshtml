@@ -1,0 +1,12 @@
+﻿
+
+@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@model ENRLReconSystem.DO.DOGEN_RPRActions
+
+<div class="clearfix">
+    <div class="form-group col-md-3">
+        <label class="required" for="inputEmail">Most Recent Queue</label>
+        @Html.DropDownListFor(m => m.ReopenQueueLKUP, new SelectList(Model.lstQueue, "CMN_LookupMasterChildRef", "LookupMasterChildValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "ddlReopenQueue").Required("Please Select Most Recent Queue").validationAttributes)
+    </div>
+</div>

@@ -1,0 +1,38 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.DO
+@model List<DOGEN_Comments>
+@{ 
+
+    int i = 1;
+}
+<div class="table-responsive tab-paneScrollable-1 clearfix">
+    <table class="table table-bordered" id="tblPWComments" cellspacing="0" width="100%">
+        <thead>
+            <tr>
+                <th width="2%">Sl. No.</th>
+                <th width="25%">Comment</th>
+                <th>Source System</th>
+                <th>Created By</th>
+                <th>Created On</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td>@i</td>
+                <td>@item.Comments</td>
+                <td>@item.SourceSystem</td>
+                <td>@item.CreatedBy</td>
+                <td>
+                @if (item.UTCCreatedOn.HasValue)
+                {
+                        @item.UTCCreatedOn.ToDateTime().ToString("MM/dd/yyyy hh:mm tt")
+                }
+                </td>
+            </tr>
+            i++;
+            }
+        </tbody>
+    </table>
+</div>

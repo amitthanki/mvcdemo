@@ -1,0 +1,33 @@
+﻿
+@{
+    ViewBag.Title = "Logout";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div style="border-width:10px;">
+    <table>
+        <tr>
+            <td style="height: 100px"></td>
+        </tr>
+    </table>
+    <center>
+        <div id="ContentPlaceHolder1_pnlMessage" style="border:1px solid #1c3f95; width:50%; padding-bottom:10px; padding-top:10px; background-color:white;">
+
+            <span id="ContentPlaceHolder1_lblLoggedOutMsg" style="font-size:16px;font-weight:bold;">Logged Out: Close Browser To Complete Log Out </span>
+            <br /><br />
+            <span id="ContentPlaceHolder1_lblLoggedOutMsgHelp" style="font-size:14px;font-weight:bold;">You must close your browser to complete the Log out process. </span><br /><br />
+            <p style="text-align:center;"><img src="~/Images/Logout.gif" width="120"></p>
+            <b><a id="ContentPlaceHolder1_HyperLink1" href="~/" style="color:Blue;font-weight:bold;"> Go back to Login </a></b>
+
+        </div>
+    </center>
+    <div style="clear:both; height:20px;"></div>
+</div>
+@section Scripts{
+    <script type="text/javascript">
+        //<![CDATA[
+        window.close();//]]>
+    </script>
+}
+
+

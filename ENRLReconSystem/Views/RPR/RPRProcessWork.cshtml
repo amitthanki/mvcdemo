@@ -1,0 +1,1723 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.Utility
+@using ENRLReconSystem.DO
+@model DOGEN_Queue
+@{
+    ViewBag.Title = "RPRProcessWork";
+    string PageName = ViewBag.PageName;
+    if (PageName == ConstantTexts.MiimPageName)
+    {
+        ViewBag.isPopUp = true;
+    }
+    if (ViewBag.ViewName != "View")
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+    else
+    {
+        Layout = null;
+    }
+  //  TempData.Keep("objDOGEN_Queue");
+}
+@functions {
+    private string TruncateAndPaddString(string text)
+
+    {
+        return text = (text.NullToString().Length > 20) ? text.Substring(0, 20).PadRight(23, '.') : text;
+
+    }
+}
+
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/images/manage-case-icon.png" /><h4>RPR Process Work</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            @Html.HiddenFor(m => m.DiscrepancyCategoryLkup, new { @id = "hdnDisCategory" })
+            @*Work Case Section*@
+            <div class="inner-wdgt clearfix">
+                <div class="primary-hdr">
+                    <h4><img src="~/images/manage-case-icon.png" /><span>Work Case</span></h4>
+                </div>
+                <div class="inner-wdgt-body clearfix">
+                    <div class="tab-pane-section col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-6">ERS Case ID</label>
+                            @Html.TextBoxFor(xx => xx.GEN_QueueId, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Subject</label>
+                            @Html.HiddenFor(m => m.DiscrepancyCategoryLkup, new { id = "hdnDiscrepancyCategoryLkup" })
+                            @Html.TextBoxFor(m => m.DiscrepancyCategory, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Most Recent Queue</label>
+                            <div class="tool-tip-box clearfix">
+                                @Html.TextBoxFor(m => m.MostRecentWorkQueue, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.MostRecentWorkQueue), @class = "form-control" })
+                                <span class="tool-tip">@Model.MostRecentWorkQueue</span>
+                            </div>
+                            </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Updated By</label>
+                            <div class="tool-tip-box clearfix">
+                                @Html.TextBoxFor(xx => xx.LastUpdatedBy, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.LastUpdatedBy), @class = "form-control" })
+                                <span class="tool-tip">@Model.LastUpdatedBy</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-md-6">Close Date</label>
+                                @Html.TextBoxFor(m => m.UTCResolvedOn, "{0:MM/dd/yyyy hh:mm tt}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane-section col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-6">Business Segment</label>
+                            @Html.TextBoxFor(m => m.BusinessSegment, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Most Recent Status</label>
+                            @Html.TextBoxFor(xx => xx.MostRecentStatus, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Created By</label>
+                            <div class="tool-tip-box clearfix">
+                                @Html.TextBoxFor(xx => xx.CreatedBy, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.CreatedBy), @class = "form-control" })
+                                <span class="tool-tip">@Model.CreatedBy</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Updated On</label>
+                            @Html.TextBoxFor(m => m.UTCLastUpdatedOn, "{0:MM/dd/yyyy hh:mm tt}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6" title="Turn Around Time: (Current Date - Created Date) In Days">TAT(In Days)</label>
+                            @Html.TextBoxFor(m => m.TurnAroundTime, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="tab-pane-section col-md-4">
+                        <div class="form-group">
+                            <label class="col-md-6">Work Basket</label>
+                            @Html.TextBoxFor(m => m.WorkBasket, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Action</label>
+                            <div class="tool-tip-box clearfix">
+                                @Html.TextBoxFor(m => m.MostRecentAction, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.MostRecentAction), @class = "form-control" })
+                                <span class="tool-tip">@Model.MostRecentAction</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6">Created On</label>
+                            @Html.TextBoxFor(m => m.UTCCreatedOn, "{0:MM/dd/yyyy hh:mm tt}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6" title="Case Age Calculation: (Current Date - Compliance Date) In Days">Case Age (In Days)</label>
+                            @Html.TextBoxFor(m => m.Aging, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-6" >Category Type</label>
+                            @Html.TextBoxFor(m => m.RPRCategory, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                    </div>
+
+                    <div class="btn-group clearfix">
+                        <button type="button" id="btnUpdateCaseInfo" class="btn btn-primary" title="Update Case Info"><img src="~/images/save-icon.png"><span>Update Case Info</span></button>
+                    </div>
+                </div>
+            </div>
+            @*Tabs Section*@
+            <div class="tab-panel-group">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#sectionA">Case Details</a></li>
+                    <li><a data-toggle="tab" href="#sectionB" onclick="return fnAccessLinkTab('@Model.GEN_QueueId','discrepancydata');">Discrepancy Data</a></li>
+                    <li><a data-toggle="tab" href="#sectionD">CMS Transaction Details</a></li>
+                    <li><a data-toggle="tab" href="#sectionJ">Address Validation-USPS</a></li>
+                    @*<li><a data-toggle="tab" href="#sectionC">One Stop Shop</a></li>*@
+                    <li><a data-toggle="tab" href="#sectionE">Referenced Cases</a></li>
+                    <li><a data-toggle="tab" href="#sectionF">Comments</a></li>
+                    <li><a data-toggle="tab" href="#sectionG">Attachments</a></li>
+                </ul>
+                <div class="tab-content">
+                    @*Case details Tab*@
+                    <div id="sectionA" class="tab-pane fade in active">
+                        @*Member Info section*@
+                        <div class="tab-pane-wdgt">
+                            <div class="secondary-sub-hdr">
+                                <h4>Member Info</h4>
+                            </div>
+                            <div class="tab-pane-body clearfix">
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Member ID</label>
+                                        @Html.TextBoxFor(m => m.MemberID, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Contract Number</label>
+                                        @Html.TextBoxFor(m => m.MemberContractID, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">First Name</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(xx => xx.MemberFirstName, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.MemberFirstName), @class = "form-control" })
+                                            <span class="tool-tip">@Model.MemberFirstName</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-md-6">CTM Member</label>
+                                        @Html.TextBox("cbxCTMMember", Model.RPRCTMMember ? "Yes" : "No", new { @class = "form-control", @readonly = "readonly" })
+                                        @*@Html.CheckBoxFor(m => m.RPRCTMMember, new { @class = "form-control", @disabled = "disabled" })*@
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label class="col-md-6">Employer ID</label>
+                                        @Html.TextBoxFor(m => m.RPREmployerID, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Medicare ID</label>
+                                        @Html.TextBoxFor(m => m.MemberCurrentHICN, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">PBP</label>
+                                        @Html.TextBoxFor(m => m.MemberPBP, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Middle Name</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(xx => xx.MemberMiddleName, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.MemberMiddleName), @class = "form-control" })
+                                            <span class="tool-tip">@Model.MemberMiddleName</span>
+                                        </div>
+                                    </div>
+                                    
+
+                                    <div class="form-group">
+                                        <label class="col-md-6">CTM Number</label>
+                                        @Html.TextBoxFor(m => m.RPRCTMNumber, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">LOB</label>
+                                        @Html.TextBoxFor(m => m.MemberLOB, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    
+
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">GPS Household ID</label>
+                                        @Html.TextBoxFor(m => m.GPSHouseholdID, new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                 
+
+                                    <div class="form-group">
+                                        <label class="col-md-6">DOB</label>
+                                        @Html.TextBoxFor(m => m.MemberDOB, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Last Name</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(xx => xx.MemberLastName, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.MemberLastName), @class = "form-control" })
+                                            <span class="tool-tip">@Model.MemberLastName</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">EGHP Member</label>
+                                        @Html.TextBox("cbxEGHPMember", Model.RPREGHPMember ? "Yes" : "No", new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                   
+                                </div>
+                            </div>
+                        </div>
+                        @*Discrepancy Info Section*@
+                        <div class="tab-pane-wdgt">
+                            <div class="secondary-sub-hdr">
+                                <h4>Discrepancy Info</h4>
+                            </div>
+                            <div class="tab-pane-body clearfix">
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Discrepancy Category</label>
+                                        @Html.TextBoxFor(m => m.DiscrepancyCategory, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    @*<div class="form-group">
+                                        <label class="col-md-6">Discrepancy Start Date</label>
+                                        @Html.TextBoxFor(m => m.DiscrepancyStartDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>*@
+                                @*<div class="form-group">
+                                    <label class="col-md-6">Discrepancy End Date</label>
+                                    @Html.TextBoxFor(m => m.DiscrepancyEndDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>*@
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Discrepancy Type</label>
+                                        @Html.TextBoxFor(m => m.DiscrepancyType, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    @*<div class="form-group">
+                                        <label class="col-md-6">Discrepancy End Date</label>
+                                        @Html.TextBoxFor(m => m.DiscrepancyEndDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>*@
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Compliance Start Date</label>
+                                        @Html.TextBoxFor(m => m.ComplianceStartDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*RPR Section*@
+                        <div class="tab-pane-wdgt">
+                            <div class="secondary-sub-hdr">
+                                <h4>RPR Info</h4>
+                            </div>
+                            <div class="tab-pane-body clearfix">
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Requested Effective Date</label>
+                                        @Html.TextBoxFor(m => m.RPRRequestedEffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6" title="Task being performed when this discrepancy was identified ?">Task Being Performed...</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(m => m.RPRTaskPerformed, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.RPRTaskPerformed), @class = "form-control" })
+                                            <span class="tool-tip">@Model.RPRTaskPerformed</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Requested SCC</label>
+                                        @Html.TextBoxFor(m => m.SCCRPRRequested, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Action Requested</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(xx => xx.RPRActionRequested, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.RPRActionRequested), @class = "form-control" })
+                                            <span class="tool-tip">@Model.RPRActionRequested</span>
+                                        </div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model.RPROtherActionRequested))
+                                    {
+                                        <div class="form-group">
+                                            <label class="col-md-6">Other Action Requested</label>
+                                            @Html.TextBoxFor(m => m.RPROtherActionRequested, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Model.RPROtherTaskPerformed))
+                                    {
+                                        <div class="form-group">
+                                            <label class="col-md-6">Other Task Being Performed</label>
+                                            @Html.TextBoxFor(m => m.RPROtherTaskPerformed, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                        </div>
+                                    }
+                                    <div class="form-group">
+                                        <label class="col-md-6">Requested Zip</label>
+                                        @Html.TextBoxFor(m => m.SCCRPRRequestedZip, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6" title="Supervisor or Person Entering Request">Supervisor or Person...</label>
+                                        @Html.TextBoxFor(m => m.RPRSupervisorOrRequester, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Requested Submission Date</label>
+                                        @Html.TextBoxFor(m => m.RPRRequestedEffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="tab-pane col-md-12">
+                                    <div class="form-group clearfix">
+                                        <label class="col-md-2">Reason for Request</label>
+                                        <span class="reasonfor">@Model.RPRReasonforRequest</span>
+                                    </div>
+                                </div>
+                               
+                            </div>
+                        </div>
+                        @*RPR Acoions Section*@
+                        <div class="tab-pane-wdgt">
+                            <div class="secondary-sub-hdr">
+                                <h4>Action Details</h4>
+                            </div>
+                            <div class="tab-pane-body clearfix">
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Resolution</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(m => m.objDOGEN_RPRActions.Resolution, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.Resolution), @class = "form-control" })
+                                            <span class="tool-tip">@Model.objDOGEN_RPRActions.Resolution</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Potential Submission Date</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.PotentialSubmissionDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Resubmission Date</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.ResubmissionDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">FDR Code Received</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.FDRCodeReceived, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Requested SCC</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.RequestedSCC, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Requested Submission Date</label>
+                                        @Html.TextBoxFor(m => m.SCCRPRRequstedSubmissionDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Election Type</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(m => m.objDOGEN_RPRActions.ElectionType, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.ElectionType), @class = "form-control" })
+                                            <span class="tool-tip">@Model.objDOGEN_RPRActions.ElectionType</span>
+
+                                        </div>
+                                    </div>
+                                    @*<div class="form-group">
+                                        <label class="col-md-6">FDR Code Received</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.FDRCodeReceived, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>*@
+                                    <div class="form-group">
+                                        <label class="col-md-6">Verified Root Cause</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(m => m.objDOGEN_RPRActions.VerifiedRootCause, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.VerifiedRootCause), @class = "form-control" })
+                                            <span class="tool-tip">@Model.objDOGEN_RPRActions.VerifiedRootCause</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Plan Error</label>
+                                     @if (!Model.objDOGEN_RPRActions.PlanError.IsNull())
+                                     {
+                                        @Html.TextBox("txtPlanError", (!Model.objDOGEN_RPRActions.PlanError.IsNull() && !Model.objDOGEN_RPRActions.PlanError.ToBoolean()) ? "No" : "Yes", new { @class = "form-control", @readonly = "readonly" })
+                                     }
+                                   </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Contract</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.ContractID, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">PBP</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.PBP, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Root Cause</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(m => m.objDOGEN_RPRActions.RootCause, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.RootCause), @class = "form-control" })
+                                            <span class="tool-tip">@Model.objDOGEN_RPRActions.RootCause</span>
+
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">RPC Submission Date</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.RPCSubmissionDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">FDR Status</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.FDRStatus, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model.objDOGEN_RPRActions.OtherFDRStatus))
+                                    {
+                                        <div class="form-group">
+                                            <label class="col-md-6">Other FDR Status</label>
+                                            <div class="tool-tip-box clearfix">
+                                                @Html.TextBoxFor(m => m.objDOGEN_RPRActions.OtherFDRStatus, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.OtherFDRStatus), @class = "form-control" })
+                                                <span class="tool-tip">@Model.objDOGEN_RPRActions.OtherFDRStatus</span>
+                                                </div>
+                                            </div>
+                                    }
+                                    <div class="form-group">
+                                        <label class="col-md-6">CMS A/M Approval Date</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.CMSAccountManagerApprovalDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-md-6">Requested ZIP</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.RequestedZIP, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">CMS A/M Submission Date</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.CMSAccountManagerSubmissionDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">FDR Description</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(m => m.objDOGEN_RPRActions.FDRDescription, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.FDRDescription), @class = "form-control" })
+                                            <span class="tool-tip">@Model.objDOGEN_RPRActions.FDRDescription</span>
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">FDR Rejection Type</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.FDRRejectionType, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Explanation Of Root Cause</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(m => m.objDOGEN_RPRActions.ExplanationOfRootCause, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.ExplanationOfRootCause), @class = "form-control" })
+                                            <span class="tool-tip">@Model.objDOGEN_RPRActions.ExplanationOfRootCause</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">FDR Transaction Type</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.TransactionType, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                                <div class="tab-pane-section col-md-4">
+                                    <div class="form-group">
+                                        <label class="col-md-6">Pend Reason</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(m => m.objDOGEN_RPRActions.PendReason, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.PendReason), @class = "form-control" })
+                                            <span class="tool-tip">@Model.objDOGEN_RPRActions.PendReason</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-md-6">Submission Type</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.SubmissionType, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>                                   
+                                    <div class="form-group">
+                                        <label class="col-md-6">Adjust Create Date Reason</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(m => m.objDOGEN_RPRActions.AdjustedCreateDateReason, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.AdjustedCreateDateReason), @class = "form-control" })
+                                            <span class="tool-tip">@Model.objDOGEN_RPRActions.AdjustedCreateDateReason</span>
+                                        </div>
+                                        </div>
+
+                                    @if (!string.IsNullOrEmpty(Model.objDOGEN_RPRActions.OtherAdjustedCreateDateReason))
+                                    {
+
+                                        <div class="form-group">
+                                            <label class="col-md-6">Other Adjusted Create Date Reason</label>
+                                            <div class="tool-tip-box clearfix">
+                                                @Html.TextBoxFor(m => m.objDOGEN_RPRActions.OtherAdjustedCreateDateReason, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.OtherAdjustedCreateDateReason), @class = "form-control" })
+                                                <span class="tool-tip">@Model.objDOGEN_RPRActions.OtherAdjustedCreateDateReason</span>
+                                            </div>
+                                            </div>
+                                    }
+                                    <div class="form-group">
+                                        <label class="col-md-6">Adjusted Create Date</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.AdjustedCreateDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">FDR Recieved Date</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.FDRReceivedDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Application Date</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.ApplicationDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Effective Date</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.EffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                
+                                    <div class="form-group">
+                                        <label class="col-md-6">Transaction Type Code</label>
+                                        <div class="tool-tip-box clearfix">
+                                            @Html.TextBoxFor(m => m.objDOGEN_RPRActions.TransactionTypeCode, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.TransactionTypeCode), @class = "form-control" })
+                                            <span class="tool-tip">@Model.objDOGEN_RPRActions.TransactionTypeCode</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">Include In today's Submission</label>
+                                            @Html.TextBox("txtIncludeInTodaysSubmission", (Model.objDOGEN_RPRActions.IncludeInTodaysSubmission) ? "Yes" : "", new { @class = "form-control", @readonly = "readonly" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-6">End Date</label>
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.EndDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*Discrepancy Tab*@
+                    <div id="sectionB" class="tab-pane fade">
+                    </div>
+                    @*CMS Transaction Details*@
+                    <div id="sectionD" class="tab-pane fade">
+                        <div class="clearfix">
+                            <div class="tab-pane-section col-md-4">
+                                <div class="form-group">
+                                    <label class="col-md-6">Date of Birth</label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.DateofBirth, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">Application Date</label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.ApplicationDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">Election Type</label>
+                                    <div class="tool-tip-box clearfix">
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.ElectionType, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.ElectionType), @class = "form-control" })
+                                        <span class="tool-tip">@Model.objDOGEN_RPRActions.ElectionType</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">FDR Status </label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.FDRStatus, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">FDR Description</label>
+                                    <div class="tool-tip-box clearfix">
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.FDRDescription, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.FDRDescription), @class = "form-control" })
+                                        <span class="tool-tip">@Model.objDOGEN_RPRActions.FDRDescription</span>
+                                    </div>
+
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">Requested SCC</label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.RequestedSCC, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">FDR Transaction Type</label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.TransactionType, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">Submission Type</label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.SubmissionType, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">Verified Root Cause</label>
+                                    <div class="tool-tip-box clearfix">
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.VerifiedRootCause, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.VerifiedRootCause), @class = "form-control" })
+                                        <span class="tool-tip">@Model.objDOGEN_RPRActions.VerifiedRootCause</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane-section col-md-4">
+                                <div class="form-group">
+                                    <label class="col-md-6">Medicare ID</label>
+                                    @Html.TextBoxFor(m => m.MemberCurrentHICN, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">Contract ID</label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.ContractID, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">Effective Date</label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.EffectiveDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">Resolution</label>
+                                    <div class="tool-tip-box clearfix">
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.Resolution, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.Resolution), @class = "form-control" })
+                                        <span class="tool-tip">@Model.objDOGEN_RPRActions.Resolution</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">FDR Code Received</label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.FDRCodeReceived, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">FDR Rejection Type</label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.FDRRejectionType, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">Requested ZIP</label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.RequestedZIP, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">Explanation Of Root Cause</label>
+                                    <div class="tool-tip-box clearfix">
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.ExplanationOfRootCause, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.ExplanationOfRootCause), @class = "form-control" })
+                                        <span class="tool-tip">@Model.objDOGEN_RPRActions.ExplanationOfRootCause</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane-section col-md-4">
+                                <div class="form-group">
+                                    <label class="col-md-6">Last Name</label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.LastName, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">PBP</label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.PBP, new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">End Date</label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.EndDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">Root Cause</label>
+                                    <div class="tool-tip-box clearfix">
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.RootCause, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.RootCause), @class = "form-control" })
+                                        <span class="tool-tip">@Model.objDOGEN_RPRActions.RootCause</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">FDR Received Date</label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.FDRReceivedDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">CMS Process Date</label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.CMSProcessDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">Transaction Type Code</label>
+                                    <div class="tool-tip-box clearfix">
+                                        @Html.TextBoxFor(m => m.objDOGEN_RPRActions.TransactionTypeCode, new { @tabindex = "-1", @readonly = "readonly", @Value = TruncateAndPaddString(Model.objDOGEN_RPRActions.TransactionTypeCode), @class = "form-control" })
+                                        <span class="tool-tip">@Model.objDOGEN_RPRActions.TransactionTypeCode</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="col-md-6">Potential Submission Date </label>
+                                    @Html.TextBoxFor(m => m.objDOGEN_RPRActions.PotentialSubmissionDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*Address validation -USPS*@
+                    <div id="sectionJ" class="tab-pane fade clearfix">
+                        <input type="hidden" value="0" id="hdnServiceType" />
+                        <div class="gps-mmr-wdgt-ctr clearfix">
+                            <div class="inner-wdgt clearfix">
+                                <div class="primary-hdr">
+                                    <h4>Validate Address</h4>
+                                </div>
+                                <div class="inner-wdgt-body">
+                                    <form>
+                                        <div class="form-group usps-group">
+                                            <label for="txtAddress1">Address1</label>
+                                            @Html.TextBoxFor(xx => xx.Address1, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtAddress1").CustomAttributes("maxlength", "30").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAndSpaces, "Address1").StringMaxLength(30, "Address1").validationAttributes)
+                                        </div>
+                                        <div class="form-group usps-group">
+                                            <label for="txtAddress2">Address2</label>
+                                            @Html.TextBoxFor(xx => xx.Address2, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtAddress2").CustomAttributes("maxlength", "30").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAndSpaces, "Address2").StringMaxLength(30, "Address2").validationAttributes)
+                                        </div>
+                                        <div class="form-group usps-group">
+                                            <label for="txtCity">City</label>
+                                            @Html.TextBoxFor(xx => xx.City, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtCity").CustomAttributes("maxlength", "30").RegularExpression(RegexType.AlphabetsWithSpaces, "City").StringMaxLength(30, "City").validationAttributes)
+
+                                        </div>
+                                        <div class="form-group usps-group">
+                                            <label for="txtState">State</label>
+                                            @Html.TextBoxFor(xx => xx.State, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtState").CustomAttributes("maxlength", "2").RegularExpression(RegexType.Alphabets, "State").StringMaxLength(2, "State").validationAttributes)
+                                        </div>
+                                        <div class="form-group usps-group">
+                                            <label for="txtZipcode">Zipcode</label>
+                                            @Html.TextBoxFor(xx => xx.Zipcode, new CustomValidation().CustomAttributes("maxlength", "5").CustomAttributes("id", "txtZipcode").AddCssClass("form-control allowOnlyNumeric").StringMaxLength(5, "Zipcode").RegularExpression(RegexType.Numeric, "Zipcode ").validationAttributes)
+
+                                        </div>
+                                        <div class="form-group usps-btn-group">
+                                            <button type="button" id="btnCity" class="btn btn-primary" title="City/State"><img src="~/images/citi-zip-icon.png"><span>City/State</span></button>
+                                            <button type="button" id="btnZip" class="btn btn-primary" title="Zipcode"><img src="~/images/citi-zip-icon.png"><span>Zipcode</span></button>
+                                            <button type="button" id="btnValidate" class="btn btn-primary" title="Validate"><img src="~/images/validate-icon.png"><span> Validate</span></button>
+                                            <button type="button" id="btnClear" class="btn btn-primary" title="Reset"><img src="~/images/reset-icon.png"><span>Reset</span></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="inner-wdgt clearfix">
+                                <div class="primary-hdr">
+                                    <h4> Output</h4>
+                                </div>
+                                <div class="inner-wdgt-body">
+                                    <form>
+                                        <div class="form-group usps-group" id="divOutAddress1">
+                                            <label for="" class="control-label">Address1</label>
+                                            <h5 id="lblAddress1"></h5>
+                                        </div>
+                                        <div class="form-group usps-group" id="divOutAddress2">
+                                            <label for="" class="control-label">Address2</label>
+                                            <h5 id="lblAddress2"></h5>
+                                        </div>
+                                        <div class="form-group usps-group" id="divOutCity">
+                                            <label for="" class="control-label">City</label>
+                                            <h5 id="lblCity"></h5>
+                                        </div>
+                                        <div class="form-group usps-group" id="divOutState">
+                                            <label for="" class="control-label">State</label>
+                                            <h5 id="lblState"></h5>
+                                        </div>
+                                        <div class="form-group usps-group" id="divOutZip5">
+                                            <label for="" class="control-label">Zip5</label>
+                                            <h5 id="lblZip5"></h5>
+                                        </div>
+                                        <div class="form-group usps-group" id="divOutZip4">
+                                            <label for="" class="control-label">Zip4</label>
+                                            <h5 id="lblZip4"></h5>
+                                        </div>
+
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*One stop shop tab*@
+                    @*<div id="sectionC" class="tab-pane fade">
+                            <div id="sectionL" class="tab-pane fade in active clearfix">
+                                <div class="clearfix">
+                                    <iframe src="http://dp-mrssrsprd01.xlhealth.local/ReportServer/Pages/ReportViewer.aspx?%2fOOA%2fRPT_OOA_ONE_STOP_SHOP&rs:Command=Render&SEARCH_VALUE=@Model.MemberCurrentHICN" width="100%" frameborder="0" draggable="false" scrolling="auto"></iframe>
+                                </div>
+                            </div>
+                        </div>*@
+                    @*Referenced Cases*@
+                    <div id="sectionE" class="tab-pane fade">
+                        <div class="tab-pane-wdgt">
+                            <div class="secondary-sub-hdr">
+                                <h4>OOA / SCC / TRR Records</h4>
+                            </div>
+                            <div class="tab-pane-body clearfix">
+                                @Html.Partial("_RefferencedCases", Model.lstDOGEN_QueueRefferencedCases)
+                            </div>
+                        </div>
+                    </div>
+                    @*Comments*@
+                    <div id="sectionF" class="tab-pane fade">
+                        @Html.Partial("_PWComments", Model.lstDOGEN_Comments)
+                    </div>
+                    @*Attachments*@
+                    <div id="sectionG" class="tab-pane fade clearfix">
+                        <div class="table-responsive" id="divPWAttachment">
+                            @Html.Partial("_Attachment", Model.lstDOGEN_Attachments)
+                        </div>
+                        <div class="btn-group clearfix">
+                            <button type="button" id="btnAddPWAttachment" class="btn btn-primary"><img src="~/images/add-icon.png"><span>Add Attachment</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*Actions Section*@
+            <div class="inner-wdgt clearfix" id="divActionSection">
+                <div class="primary-hdr">
+                    <h4><img src="~/images/action-icon.png"><span>Action</span></h4>
+                </div>
+                <div class="inner-wdgt-body clearfix">
+                    <form id="frmActionForm">
+                        @Html.HiddenFor(m => m.CommentsSourceSystemLkup)
+                        @Html.Hidden("GEN_QueueRef", Model.GEN_QueueId, new { @id = "hdnGEN_QueueRef", @name = "GEN_QueueRef" })
+                        @if (ViewBag.ViewName != "View" && Model.MostRecentStatusLkup == (long)CurrentStatusLkup.ResolvedComplted)
+                        {
+                            <div class="clearfix" id="divOption">
+                                <div class="form-group col-md-3">
+                                    <label for="inputEmail">Option</label>
+                                    @Html.DropDownListFor(m => m.OptionLkup, new SelectList(Model.lstOptionsforReopen, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "ddloptions").validationAttributes)
+                                </div>
+                            </div>
+                        }
+                        <div class="clearfix" id="divAction">
+                            <div class="form-group col-md-3">
+                                @Html.LabelFor(m => m.ActionLkup, "Action", new { @class = "required" })
+                                @Html.DropDownListFor(m => m.ActionLkup, new SelectList(Model.lstActions, "CMN_LookupMasterChildRef", "LookupMasterChildValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "ddlActionLkup").Required("Please select Action").AddCssClass("form-control").validationAttributes)
+                            </div>
+                        </div>
+                        @Html.ValidationSummary()
+                        <div class="sub-inner-wrapper clearfix" id="divRPRProcessworkActions">
+                            @*Load partial form depending on action*@
+                        </div>
+                        <div class="btn-group clearfix">
+                            <button type="Button" id="btnSubmit" class="btn btn-primary divActionVisibility"><img src="~/images/action-icon.png"><span>Save</span></button>
+                            @if (PageName != ConstantTexts.MiimPageName)
+                            {
+                                if (PageName == ConstantTexts.QueueSummary)
+                                {
+                                <button type="button" id="btnSaveAndGetNextProcessWork" class="btn btn-primary divActionVisibility" title="Save And Get Next"><img src="~/images/save-next-icon.png"><span>Save & Get Next</span></button>
+                                }
+                                <button type="Button" id="btnReset" class="btn btn-primary divActionVisibility"><img src="~/images/reset-icon.png"><span>Reset</span></button>
+                                <button type="Button" id="btnCancel" callFrom="@PageName" class="btn btn-primary"><img src="~/images/cancle-icon.png"><span>Cancel</span></button>
+                                <button type="Button" id="btnHistory" class="btn btn-primary divActionVisibility" onclick="fnAccessReport('@Model.GEN_QueueId');"><img src="~/images/history-icon.png"><span>History</span></button>
+                            }
+                            else
+                            {
+                                <button type="Button" id="btnClose" class="btn btn-primary" onclick="MainLayout.fnUnlockRecordMIIM('@Model.GEN_QueueId','@Url.Action("UnlockRecord", "RecordsLocked")');"><img src="~/images/cancle-icon.png" /><span>Close</span></button>
+                            }
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @*workflow section*@
+            <div class="inner-wdgt clearfix">
+                <div class="primary-hdr">
+                    <h4><img src="~/images/work-flow-icon.png"><span>Workflow Log</span></h4>
+                </div>
+                <div class="inner-wdgt-body clearfix" id="divProcessWorkWorkFlowLog">
+                    @Html.Partial("_WorkFlowLog", Model.lstDOGEN_QueueWorkFlowCorrelation)
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@*Attachment Popup*@
+<div id="myPWAttachmentModal" class="modal fade">
+    <div class="modal-dialog" style="width:40% !important">
+        <div class="modal-content" id="divModalPWAttachment">
+        </div>
+    </div>
+</div>
+
+<div id="myModalViewRef" class="modal fade">
+    <div class="modal-dialog" id="divDialog">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <div class="clearfix" id="divMyModalViewRef">
+
+            </div>
+        </div>
+    </div>
+</div>
+@* End *@
+@section scripts{
+    <script type="text/javascript">
+        ////Variables/////
+        var PWScreenType = enums.ScreenType.Queue;//To identify the page from Custom script and clear the local storage
+         var GetQueueForEdit = '@Url.Action("GetQueueForEdit", "RPR")';
+        var GetActionsFormByActionID = '@Url.Action("GetActionsFormByActionID", "RPR")';
+        var submitUrl = '@Url.Action("SaveAction", "RPR")';
+        var cancelUrl = '@Url.Action("RPRGetQueue", "RPRQueues")';
+        var saveSuccessUrl = '@Url.Action("RPRGetQueue", "RPRQueues")';
+        var searchCancelUrl = '@Url.Action("Search", "Common", new { @discCat = (long)DiscripancyCategory.RPR })';
+        var unlockUrl = '@Url.Action("UnlockRecord", "RecordsLocked")';
+        var urlHomeScreen = '@Url.Action("Home", "Home")';
+        var urlVerifyUSPSAddress = '@Url.Action("VerifyUSPSAddress", "RPR")';
+        var recordId = '@Model.GEN_QueueId';
+        var rprCaseCategory = '@Model.RPRCategoryLkup';
+        var page = '@PageName';
+        var caseStatus = parseInt('@Model.MostRecentStatusLkup');
+        var ReportsUrl = '@Url.Action("GetCommonReportURL", "RPR")';
+        var winHistoryReport;
+        var actionList = ["28001"];
+        var urlCreateRPRCase='@Url.Action("Create", "RPR")';
+        var urlForLock = '@Url.Action("GetLockedRecordOrLockRecord", "RecordsLocked")';
+        var LoadDiscTRRUrl = '@Url.Action("GetDiscrepancyOrTRRDataByTab", "Common")';
+        var urlClearTempdataByGenId = '@Url.Action("ClearTempdataByGenId", "Common")';
+        var  bussinessSegment = '@Model.BusinessSegmentLkup';
+        $(".divActionVisibility").hide();
+        if (page == '@ConstantTexts.MiimPageName')
+            $('#CommentsSourceSystemLkup').val('@SourceSystemLkup.MIIM.ToInt64()');
+        else {
+            $('#CommentsSourceSystemLkup').val('@SourceSystemLkup.ERS.ToInt64()');
+        }
+        var origForm;
+        /////Events//////
+        @*if (caseStatus == @((long)CurrentStatusLkup.ResolvedComplted)) {//if staus is resolved completed
+            $("#divActionSection").remove();
+            $('#btnAddPWAttachment').attr('disabled', true);
+            $('.deletePWAttachmentIco').remove();
+        }*@
+
+         if (caseStatus == @((long)CurrentStatusLkup.ResolvedComplted)) {//if staus is resolved completed
+             $("#divAction").hide();
+             if ($("#divOption").length > 0) {
+                 $("#divOption").show();
+             }
+        }
+         else
+         {
+             $("#divAction").show();
+             if ($("#divOption").length > 0) {
+                 $("#divOption").hide();
+             }
+        }
+
+        $("#ddloptions").on("change", function () {
+            try {
+                var actionID = $(this).val();
+                var CateLookup = $('#hdnDisCategory').val();
+                $("#divRPRProcessworkActions").empty().html();
+                $("#divAction").hide();
+                $(".divActionVisibility").hide();//hide the buttons
+                $('.validation-summary-errors ul').empty();  // Clear Validation Summary Message.
+                if (actionID != "" && actionID == 48002) {
+                    $.ajax({
+                        data: { "DisCategory": CateLookup,"CaseCategory": rprCaseCategory },
+                        url: GetQueueForEdit,
+                        type: "POST",
+                        success: function (data) {
+                            if (data != "") {
+                                $("#divRPRProcessworkActions").empty().html(data);
+                                $(".divActionVisibility").show();
+                                MainLayout.fnLoadDateTimePicker();
+                            }
+                            else {
+                                MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                            }
+                        },
+                        error: function (x) {
+                            $(".divActionVisibility").hide();
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+                    });
+                }
+                else if (actionID == 48001) {
+                    $("#ddlActionLkup").val('');
+                    $("#divAction").show();
+                }
+                else {
+                    $("#ddlActionLkup").val('');
+                    $("#divAction").hide();
+                }
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+            }
+        });
+
+        $("#ddlActionLkup").on("change", function () {
+            try {
+                var actionID = $(this).val();
+                $("#divRPRProcessworkActions").empty().html();
+               // $("#divFormButtons").attr("hidden", "hidden");//hide the buttons
+                $(".divActionVisibility").hide();//hide the buttons
+                $('.validation-summary-errors ul').empty();// clear the error messages
+                if (actionID != "")
+                {
+                    $.ajax({
+                        data: { "actionID": actionID,"genQueueId":'@Model.GEN_QueueId'},
+                        url: GetActionsFormByActionID,
+                        type: "POST",
+                        success: function (data) {
+                            if (data != "" && (data.ID == null || data.ID == "undefined")) {
+                                $("#divRPRProcessworkActions").empty().html(data);
+                                //$("#divFormButtons").removeAttr("hidden");
+                                $(".divActionVisibility").show();
+                                MainLayout.fnLoadDateTimePicker();
+                                origForm = $("#frmActionForm").serialize();
+                                $("#spanAdjCreate").hide();
+                            }
+                            else if (data != "" && (data.ID != null || data.ID != "undefined")
+                                && data.ID == 1 && data.Message != "") {
+                                MainLayout.fnAlertMessege("Alert!", data.Message);
+                            }
+                            else {
+                                MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                            }
+                        },
+                        error: function (x) {
+                            $(".divActionVisibility").hide();
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+                    });
+                }
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+            }
+        });
+
+        $('#btnSubmit').on("click",function () {
+        try{
+           fnSaveRPRProcessWork(0);
+        }
+        catch(e)
+        {
+          MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+        }
+        });
+        $('#btnSaveAndGetNextProcessWork').on("click",function () {
+        try{
+           fnSaveRPRProcessWork(1);
+        }
+        catch(e)
+        {
+          MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+        }
+        });
+
+        $('#btnReset').click(function () {
+            MainLayout.fnResetValidationSummary();
+            $('#ddlAdjustedCreateDateReasonLkup').attr("disabled", "disabled");
+            $('#divOtherAdjustedCreateDateReason').attr("hidden", "hidden");
+            $("#spanAdjCreate").hide();
+            // $("#divRPRProcessworkActions").empty().html(data);
+            if ($("#ddloptions").val() == 48002) {
+                $("#ddlReopenQueue").val('');
+                $("#ddloptions").val(48002);
+            }
+            else if ($("#ddloptions").val() != 48002) {
+                $("#frmActionForm").deserialize(origForm);
+            }
+            //$("#ddlActionLkup").trigger("change");
+        });
+
+        //$(document).on("change", "#ddlContractID", function (e) {
+        //    var contID = $(this).val();
+        //    //  var BusinessSegment = $('#hdnBusinessSegment').val();
+        //    if (contID != "") {
+        //        ///Load PBP for C&S business segment
+        //        if (bussinessSegment == enums.BusinessSegmentLkup.CNS) {
+        //            MainLayout.fnGetPBP(contID, '#ddlPBPID');
+        //        }
+        //    }
+
+        //});
+
+        $('#btnCancel').click(function () {
+            var promptText = confirm("Are you sure want to leave this page?");
+            if (!promptText) {
+                event.preventDefault();
+            } else {
+                fnClearTempdataByGenId();
+                if ($(this).attr("callFrom") == "Search") {
+                    fnUnlockRecord(unlockUrl, recordId, enums.ScreenType.Queue, searchCancelUrl);
+                }
+                else if ($(this).attr("callFrom") == "RPRCreateCase") {
+                    fnUnlockRecord(unlockUrl, recordId, enums.ScreenType.Queue, urlCreateRPRCase);
+                }
+                else if ($(this).attr("callFrom") == "Home") {
+                    fnUnlockRecord(unlockUrl, recordId, enums.ScreenType.Queue, urlHomeScreen);
+                }
+                else {
+                    fnUnlockRecord(unlockUrl, recordId, enums.ScreenType.Queue, cancelUrl);
+                }
+            }
+        });
+
+        $('#frmActionForm').on('change', '#AdjustedCreateDate_DPart',function () {
+            var date = $('#AdjustedCreateDate_DPart').val();
+            if (date != null && date != '') {
+                $('#ddlAdjustedCreateDateReasonLkup').removeAttr("disabled");
+                $("#spanAdjCreate").show();
+            } else {
+                $('#ddlAdjustedCreateDateReasonLkup').val("");
+                $('#ddlAdjustedCreateDateReasonLkup').attr("disabled", "disabled");
+                $('#txtOtherAdjustedCreateDateReason').val("");
+                $('#divOtherAdjustedCreateDateReason').attr("hidden", "hidden");
+                $('#txtOtherAdjustedCreateDateReason').attr("disabled", "disabled");
+                $("#spanAdjCreate").hide();
+
+            }
+        });
+
+        $('#frmActionForm').on('change', '#ActualSubmissionDate_DPart',function () {
+            var date = $('#ActualSubmissionDate_DPart').val();
+            if (date != null && date != '') {
+                $('#txtReasonSubmissionRejected').val("");
+                $('#txtReasonSubmissionRejected').attr("disabled", "disabled");
+            } else {
+                $('#txtReasonSubmissionRejected').removeAttr("disabled");
+            }
+        });
+
+        $('#frmActionForm').on('change', '#txtReasonSubmissionRejected',function () {
+            var val = $('#txtReasonSubmissionRejected').val();
+            if (val != '') {
+                $('#ActualSubmissionDate_DPart').val("");
+                $('#ActualSubmissionDate_DPart').attr("disabled", "disabled");
+                $('#ActualSubmissionDate_CurrentDate').attr("disabled", "disabled");
+
+            } else {
+                $('#ActualSubmissionDate_DPart').removeAttr("disabled");
+                $('#ActualSubmissionDate_CurrentDate').removeAttr("disabled");
+            }
+        });
+
+        $('#frmActionForm').on('change','#ddlAdjustedCreateDateReasonLkup',function () {
+            var val = $('#ddlAdjustedCreateDateReasonLkup').val();
+            if (val == 32006) {//value for other
+                $('#divOtherAdjustedCreateDateReason').removeAttr("hidden");
+                $('#txtOtherAdjustedCreateDateReason').removeAttr("disabled");
+            } else {
+                $('#txtOtherAdjustedCreateDateReason').val("");
+                $('#divOtherAdjustedCreateDateReason').attr("hidden", "hidden");
+                $('#txtOtherAdjustedCreateDateReason').attr("disabled", "disabled");
+            }
+        });
+
+        $('#frmActionForm').on('change', '#ddlFDRStatusLkup', function () {
+            var val = $('#ddlFDRStatusLkup').val();
+            if (val == 26005) {//value for other
+                $('#divOtherFDRStatus').removeAttr("hidden");
+                $('#txtOtherFDRStatus').removeAttr("disabled");
+                $('#ddlFDRRejectionTypeLkup').val("");
+                $('#ddlFDRRejectionTypeLkup').attr("disabled", "disabled");
+            } else if (val == 26002) {//value for Rejected
+                $('#txtOtherFDRStatus').val("");
+                $('#divOtherFDRStatus').attr("hidden", "hidden");
+                $('#txtOtherFDRStatus').attr("disabled", "disabled");
+                $('#ddlFDRRejectionTypeLkup').removeAttr("disabled");
+            } else {
+                $('#txtOtherFDRStatus').val("");
+                $('#divOtherFDRStatus').attr("hidden", "hidden");
+                $('#txtOtherFDRStatus').attr("disabled", "disabled");
+                $('#ddlFDRRejectionTypeLkup').val("");
+                $('#ddlFDRRejectionTypeLkup').attr("disabled", "disabled");
+            }
+        });
+
+
+
+
+
+        //Methods
+        //function to set model date time values from date time picker
+        function fnGetDateIntoHdnFields() {
+            var date = $('#AdjustedCreateDate_DPart').val();
+            if (date != null && date != '') {
+                $('#AdjustedCreateDate').val(getDateTimeInMMDDYYYY(date));
+            }
+            date = $('#EffectiveDate_DPart').val();
+            if (date != null && date != '') {
+                $('#EffectiveDate').val(getDateTimeInMMDDYYYY(date));
+            }
+            date = $('#RPCSubmissionDate_DPart').val();
+            if (date != null && date != '') {
+                $('#RPCSubmissionDate').val(getDateTimeInMMDDYYYY(date));
+            }
+            date = $('#EndDate_DPart').val();
+            if (date != null && date != '') {
+                $('#EndDate').val(getDateTimeInMMDDYYYY(date));
+            }
+            date = $('#ApplicationDate_DPart').val();
+            if (date != null && date != '') {
+                $('#ApplicationDate').val(getDateTimeInMMDDYYYY(date));
+            }
+            date = $('#CMSAccountManagerSubmissionDate_DPart').val();
+            if (date != null && date != '') {
+                $('#CMSAccountManagerSubmissionDate').val(getDateTimeInMMDDYYYY(date));
+            }
+            date = $('#CMSAccountManagerApprovalDate_DPart').val();
+            if (date != null && date != '') {
+                $('#CMSAccountManagerApprovalDate').val(getDateTimeInMMDDYYYY(date));
+            }
+            date = $('#FDRReceivedDate_DPart').val();
+            if (date != null && date != '') {
+                $('#FDRReceivedDate').val(getDateTimeInMMDDYYYY(date));
+            }
+            date = $('#ActualSubmissionDate_DPart').val();
+            if (date != null && date != '') {
+                $('#ActualSubmissionDate').val(getDateTimeInMMDDYYYY(date));
+            }
+            date = $('#ResubmissionDate_DPart').val();
+            if (date != null && date != '') {
+                $('#ResubmissionDate').val(getDateTimeInMMDDYYYY(date));
+            }
+            date = $('#PotentialSubmissionDate_DPart').val();
+            if (date != null && date != '') {
+                $('#PotentialSubmissionDate').val(getDateTimeInMMDDYYYY(date));
+            }
+        };
+
+        //custom validations
+        function validateCustom() {
+            var today = new Date();
+            var errorList = "";
+            var isValid = true;
+            today.setHours(0, 0, 0, 0);
+            //add error if
+            if ($('#ActualSubmissionDate_DPart').val() != undefined && $('#txtReasonSubmissionRejected').val() != undefined) {//validate this since all forms doesnt have these values
+                var ActualSubmissionDate = $('#ActualSubmissionDate_DPart').val() != "" ? new Date($('#ActualSubmissionDate_DPart').val()) : $('#ActualSubmissionDate_DPart').val();
+                if (ActualSubmissionDate == "" && $('#txtReasonSubmissionRejected').val() == "") {
+                    $('#ActualSubmissionDate_DPart,#txtReasonSubmissionRejected').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>Actual Submission Date or Reason Submission Rejected is required.</li>';//html for error to be added in validation summary
+                    isValid = false;
+                }
+            }
+
+            if ($('#PotentialSubmissionDate_DPart').val() != undefined && new Date($('#PotentialSubmissionDate_DPart').val()) <= today) {
+                $('#PotentialSubmissionDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Potential Submission Date should be greater than today.</li>';//html for error to be added in validation summary
+                isValid = false;
+            }
+
+            if ($('#AdjustedCreateDate_DPart').val() != undefined && new Date($('#AdjustedCreateDate_DPart').val()) > today) {
+                $('#AdjustedCreateDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Adjusted Create Date should not be greater than today.</li>';//html for error to be added in validation summary
+                isValid = false;
+            }
+
+            if ($('#EndDate_DPart').val() != undefined && $('#EndDate_DPart').val() != "") {
+                var endDate = new Date($('#EndDate_DPart').val())
+                if (endDate.getDate() != new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0).getDate()) {
+                    $('#EndDate_DPart').removeClass("valid").addClass("input-validation-error");
+                    errorList = errorList + '<li>End Date should  be last day of month.</li>';//html for error to be added in validation summary
+                    isValid = false;
+                }
+            }
+
+            if ($('#EffectiveDate_DPart').val() != undefined && $('#EffectiveDate_DPart').val() != "" && new Date($('#EffectiveDate_DPart').val()).getDate() != 1) {
+                $('#EffectiveDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Effective Date should  be first day of month.</li>';//html for error to be added in validation summary
+                isValid = false;
+            }
+
+            if (!isValid) {
+                if ($('.validation-summary-errors').length != 0) {
+                    //if validion errors div is present add errors to list
+                    $('.validation-summary-errors ul').append(errorList);
+                } else {
+                    //if validion errors div is not present update validation-summary-valid div and add errors to list
+                    $('.validation-summary-valid').addClass('validation-summary-errors').removeClass('validation-summary-valid');
+                    $('.validation-summary-errors ul').append(errorList);
+                }
+            }
+            return isValid;
+        };
+
+        //////////////////////////////////////USPS AddressValidation/////////////////////////////
+
+        $("#btnValidate").on("click", function () {
+            try {
+                $("#hdnServiceType").val("1");
+                if (ValidateSuccess()) {
+                    VerifyUSPSAddress();
+                }
+            } catch (e) {
+                alert("error");
+            }
+        });
+        $("#btnZip").on("click", function () {
+            try {
+                $("#hdnServiceType").val("2");
+                if (ValidateSuccess()) {
+                    VerifyUSPSAddress();
+                }
+            } catch (e) {
+                alert("error");
+            }
+        });
+        $("#btnCity").on("click", function () {
+            try {
+                $("#hdnServiceType").val("3");
+                if (ValidateSuccess()) {
+                    VerifyUSPSAddress();
+                }
+            } catch (e) {
+                alert("error");
+            }
+        });
+        $("#btnClear").on("click", function () {
+            try {
+                ClearField();
+                HideAndClearOutput();
+
+            } catch (e) {
+                alert("error");
+            }
+        });
+
+
+
+        //////Methods////
+        ValidateSuccess = function () {
+            if ($("#hdnServiceType").val() == "0") {
+                return false;
+            }
+            return true;
+        };
+        ClearField = function () {
+            try {
+                $("#txtAddress1").val("");
+                $("#txtAddress2").val("");
+                $("#txtCity").val("");
+                $("#txtState").val("");
+                $("#txtZipcode").val("");
+            } catch (e) {
+                alert(e.toString());
+            }
+        };
+
+
+        VerifyUSPSAddress = function () {
+            try {
+                $.ajax({
+                    data: JSON.stringify({ "lookup": $("#hdnServiceType").val(), "address1": $("#txtAddress1").val().trim(), address2: $("#txtAddress2").val().trim(), city: $("#txtCity").val().trim(), state: $("#txtState").val().trim(), zipcode: $("#txtZipcode").val().trim() }),
+                    url: urlVerifyUSPSAddress,
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        var jsonData = JSON.parse(data);
+                        var res = "", msg = "";;
+                        switch ($("#hdnServiceType").val()) {
+                            case "1":
+                                res = typeof (jsonData.AddressValidateResponse.Address.Error);
+                            msg = (res != "undefined") ? jsonData.AddressValidateResponse.Address.Error.Description : "";
+                            break;
+                            case "2":
+                                res = typeof (jsonData.ZipCodeLookupResponse.Address.Error);
+                            msg = (res != "undefined") ? jsonData.ZipCodeLookupResponse.Address.Error.Description : "";
+                            break;
+                            case "3":
+                                res = typeof (jsonData.CityStateLookupResponse.ZipCode.Error);
+                            msg = (res != "undefined") ? jsonData.CityStateLookupResponse.ZipCode.Error.Description : "";
+                            break;
+                        }
+                        if (res == "undefined") {
+                            FillData(jsonData);
+                        }
+                        else {
+                            HideAndClearOutput();
+                            MainLayout.fnAlertMessege("Alert!", msg);
+                        }
+
+                    },
+                    error: function (x) {
+                        MainLayout.fnAlertMessege("Alert!", x.toString());
+                    }
+                });
+
+            } catch (e) {
+
+            }
+
+        };
+        HideAndClearOutput = function () {
+            $("#divOutAddress1").hide();
+            $("#divOutAddress2").hide();
+            $("#divOutCity").hide();
+            $("#divOutState").hide();
+            $("#divOutZip5").hide();
+            $("#divOutZip4").hide();
+            $("#lblAddress1").html("");
+            $("#lblAddress2").html("");
+            $("#lblCity").html("");
+            $("#lblState").html("");
+            $("#lblZip5").html("");
+            $("#lblZip4").html("");
+        };
+        OutputDivVisibility = function (lookupID) {
+            try {
+                HideAndClearOutput();
+                switch (lookupID) {
+                    case "1":
+                        $("#divOutAddress1").show();
+                        $("#divOutAddress2").show();
+                        $("#divOutCity").show();
+                        $("#divOutState").show();
+                        $("#divOutZip5").show();
+                        $("#divOutZip4").show();
+                        break;
+                    case "2":
+                        $("#divOutAddress2").show();
+                        $("#divOutCity").show();
+                        $("#divOutState").show();
+                        $("#divOutZip5").show();
+                        $("#divOutZip4").show();
+                        break;
+                    case "3":
+                        $("#divOutCity").show();
+                        $("#divOutState").show();
+                        $("#divOutZip5").show();
+                        break;
+                }
+
+            } catch (e) {
+
+            }
+        };
+
+        FillData = function (jsonData) {
+            try {
+                OutputDivVisibility($("#hdnServiceType").val());
+                switch ($("#hdnServiceType").val()) {
+                    case "1":
+                        $("#lblAddress1").html(jsonData.AddressValidateResponse.Address.Address1);
+                        $("#lblAddress2").html(jsonData.AddressValidateResponse.Address.Address2);
+                        $("#lblCity").html(jsonData.AddressValidateResponse.Address.City);
+                        $("#lblState").html(jsonData.AddressValidateResponse.Address.State);
+                        $("#lblZip5").html(jsonData.AddressValidateResponse.Address.Zip5);
+                        $("#lblZip4").html(jsonData.AddressValidateResponse.Address.Zip4);
+                        break;
+                    case "2":
+                        $("#lblAddress2").html(jsonData.ZipCodeLookupResponse.Address.Address2);
+                        $("#lblCity").html(jsonData.ZipCodeLookupResponse.Address.City);
+                        $("#lblState").html(jsonData.ZipCodeLookupResponse.Address.State);
+                        $("#lblZip5").html(jsonData.ZipCodeLookupResponse.Address.Zip5);
+                        $("#lblZip4").html(jsonData.ZipCodeLookupResponse.Address.Zip4);
+                        break;
+                    case "3":
+                        $("#lblCity").html(jsonData.CityStateLookupResponse.ZipCode.City);
+                        $("#lblState").html(jsonData.CityStateLookupResponse.ZipCode.State);
+                        $("#lblZip5").html(jsonData.CityStateLookupResponse.ZipCode.Zip5);
+                        break;
+                }
+            } catch (e) {
+
+            }
+        };
+
+
+        // function to access history report
+        fnAccessReport = function (id) {
+            // debugger
+            var urlToNavigate = ReportsUrl;
+            $.ajax({
+                url: urlToNavigate,
+                type: "POST",
+                success: function (data) {
+                    if (data != "") {
+                        var Data = data.Data;
+                        var reportUrl = Data + "&GenQueueId=" + id;
+                        var strWindowFeatures = "location=yes,height=580,width=1000,scrollbars=no,resizable=yes,toolbar=no,status=no,menu=no, directories=no,titlebar=no,location=no,addressbar=no,top=100,left=100";
+                        winHistoryReport = MainLayout.fnMyOpenWindow(reportUrl, "_blank", strWindowFeatures, winHistoryReport);
+                    }
+                },
+                error: function (x) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                }
+            });
+        }
+          fnViewReferenceCase = function (Id, catId) {
+                @*var url = '@Url.Action("CheckUserPermission", "Common")/' + enums.PermissionType.CanView + '/' + catId;*@
+                var url1 = '@Url.Action("ViewRecord", "Common")';
+                        //$.ajax({
+                        //type: 'POST',
+                        //url: url,
+                        //success: function (response) {
+                                //if(response==true)
+                                //{
+
+                                $.ajax({
+                                    type: 'POST',
+                                    url: url1,
+                                    data: { "id": Id, "data": catId},
+                                    cache:false,
+                                    success: function (response) {
+                                        var $response = $("#divMyModalViewRef").empty().html(response).find('section');
+                                        fnViewReferenceCaseInfo($response, Id);
+                                        $("#divMyModalViewRef").empty().html($response);
+                                        $('#divMyModalViewRef').find(':input').attr('disabled', true);
+                                        $('#divMyModalViewRef').find(':button').attr('disabled', true);
+                                        $("#myModalViewRef").modal('show');
+                                        $('#divMyModalViewRef').find("#tblPWAttachments .deletePWAttachmentIco").remove();
+                                        $('#divMyModalViewRef').find("#tblRefferencedCases .deleteViewIcon").remove();
+                                        $('#divMyModalViewRef').find("#tblPWAttachments .downloadAttachment").href = "";
+                                        $(".dispMsg").unbind("click");
+                                    },
+                                    error: function (result) {
+                                        MainLayout.fnAlertMessege("Error!", result.responseText);
+                                    }
+                                });
+                                //} else { MainLayout.fnAlertMessege("Alert!", "You don't have sufficient permission to perform View operation for " + MainLayout.getEnumKey(enums.DiscripancyCategory, catId));}
+                        //},
+                        //error: function (result) {
+                        //    MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        //}
+                     //});
+        };
+
+        fnSaveRPRProcessWork=function(flag){
+            var $form = $('#frmActionForm');
+            $('.validation-summary-errors ul').empty();// clear the error messages
+            $form.removeData('validator');
+            $form.removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse($form);
+            fnGetDateIntoHdnFields(); //fuction to set values for date time fields from date time picker fields
+            var formValid = $form.valid(); //validate form
+            var isCustomValid = validateCustom();// custom Validations
+            if (!formValid || !isCustomValid) {
+                return
+            }
+            else {
+                try {
+                    if ($("#ddlActionLkup").val() == enums.ActionLkup.SendSCCDeletiontoCMS) {
+                        var promptText = confirm("Do you want to Save?");
+                        if (!promptText) {
+                            event.preventDefault();
+                            return false;
+                        }
+                    }
+                    $.ajax({
+                        data: $form.serialize(),
+                        url: submitUrl,
+                        type: "POST",
+                        success: function (data) {
+                            if (data.ID > 0) {
+                                if (data.TrrCode != "") {
+                                    MainLayout.fnAlertMessege("Alert!", "<strong>TRR76:Transaction failed please try again later.</strong></ br></ br>" + data.Message, function () {
+                                        //window.location.href = saveSuccessUrl;
+                                        fnPageNavigationAfterSavePW(flag);
+                                    });
+                                }
+                                else {
+                                    MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+                                }
+                            }
+                            else {
+                                //if save successfull
+                                MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                                    if (page == '@ConstantTexts.MiimPageName')
+                                        window.close();
+                                    else
+                                         if (data.ID == '@ExceptionTypes.UnlockedRecord') {
+                                            MainLayout.fnAlertMessege("Alert!", data.Message, function () {
+                                                //window.location.href = saveSuccessUrl;
+                                                fnPageNavigationAfterSavePW(flag);
+                                            });
+                                        }
+                                        //window.location.href = saveSuccessUrl;
+                                    fnPageNavigationAfterSavePW(flag);
+                                });
+                            }
+                        },
+                        error: function (x) {
+                            //Network errror
+                            MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                        }
+                    });
+                }
+                catch (e) {
+                 throw e;
+                }
+            }
+        };
+
+          fnPageNavigationAfterSavePW = function (flag) {
+              try {
+                var mostRecentWorkQueueLkup = '@Model.MostRecentWorkQueueLkup';
+                var curGen_Queue = '@Model.GEN_QueueId';
+                var urlGMURecordCommon = '@Url.Action("GMURecordCommon", "Common")';
+                var pageName='@PageName';
+                if ($("#ddlActionLkup").length > 0 && $("#ddlActionLkup").val() != "" && $.inArray($("#ddlActionLkup").val(),actionList)>=0)
+                {
+                    var urlToNavigate='@Url.Action("RPRProcessWork", "RPR")/' + '?queueId=' + btoa(curGen_Queue)+"&PageName="+pageName;
+                    fnLockRecord(urlForLock, curGen_Queue, enums.ScreenType.Queue, urlToNavigate);
+                    return;
+                }
+           if (flag > 0) {
+               var GetQueueform = MainLayout.fnGetLocalStorage(enums.DiscripancyCategory.RPR);
+               var map = {};
+               jQuery.each(GetQueueform.split("&"), function () {
+                   var nv = this.split("="),
+                       n = decodeURIComponent(nv[0]),
+                       v = nv.length > 1 ? decodeURIComponent(nv[1]) : null;
+                   if (!(n in map)) {
+                       map[n] = [];
+                   }
+                   map[n].push(v);
+               });
+
+               ///Call the Get next and pass the Queue to Process work for Load the next record.
+               $.ajax({
+                   data: { "queueLkup": mostRecentWorkQueueLkup, "queueIdToSkip": curGen_Queue, 'StartDate': map["StartDate"], "EndDate": map["EndDate"] },
+                        url: urlGMURecordCommon,
+                        type: "POST",
+                        success: function (data) {
+                            if (data.ID == 0 && data.Gen_QueuId != "") {
+                                window.location.href = '@Url.Action("RPRProcessWork", "RPR")/' + '?queueId=' + data.Gen_QueuId+"&PageName="+pageName;
+                            }
+                            else if (data.ID == 0 && data.Gen_QueuId == "") {
+                                MainLayout.fnAlertMessege("Alert!", "No more records in this queue.", function () {
+                                    window.location.href = cancelUrl;
+                                });
+                            }
+                            else {
+                                MainLayout.fnAlertMessege("Alert!", "An error occoured.", function () {
+                                    window.location.href = cancelUrl;
+                                });
+                            }
+                        },
+                        error: function (x) {
+                            MainLayout.fnAlertMessege("Alert!", "An error occoured.", function () {
+                                window.location.href = cancelUrl;
+                            });
+                        }
+                    });
+                }
+                else {
+                  if ($("#btnCancel").length > 0) {
+                      var cancelCurObject = $("#btnCancel").attr("callFrom");
+
+                      if (cancelCurObject == "Search") {
+                          window.location.href = searchCancelUrl;
+                      }
+                      else if (cancelCurObject == "Home") {
+                          window.location.href = urlHomeScreen;
+                      }
+                      else if (cancelCurObject == "RPRCreateCase") {
+                          window.location.href = urlCreateRPRCase;
+                      }
+                      else {
+                          window.location.href = cancelUrl;
+                      }
+                  }
+                  else {
+                      window.location.href = cancelUrl;
+                  }
+        }
+              } catch (e) {
+
+              }
+
+          };
+
+        $("#txtState").keyup(function () {
+            this.value = this.value.toUpperCase();
+          });
+
+        MainLayout.fnInitialiseDataTable($('#tblOSTWorkFlowLog'));
+        MainLayout.fnInitialiseDataTable($('#tblPWComments'));
+        MainLayout.fnInitialiseDataTable($('#tblRefferencedCases'));
+        MainLayout.fnInitialiseDataTable($('#tblPWAttachments'));
+
+        ////////////////////////////////////// USPS AddressValidation END/////////////////////////////////
+
+
+        var fnAccessLinkTab = function (GEN_QueueId, TabType) {
+            //debugger
+            var TabToBeUsed = (TabType == 'discrepancydata') ? $("#sectionB") : $("#SectionTrrData");
+            try {
+                $.ajax({
+                    data: { "GEN_QueueId": GEN_QueueId, "TabType": TabType },
+                    url: LoadDiscTRRUrl,
+                    type: "POST",
+                    success: function (data) {
+                        //debugger
+                        if (data != "") {
+                            TabToBeUsed.empty().html(data);
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                        }
+
+                    },
+                    error: function (x) {
+                        //debugger
+                        $("#sectionB").empty();
+                        $("#SectionTrrData").empty();
+                        MainLayout.fnAlertMessege("Error!", "An error occoured contact administrator!");
+                    }
+                });
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured!");
+            }
+
+
+        }
+        $("#btnUpdateCaseInfo").on("click", function () {
+            try {
+
+                var urlUpdateCaseInfo = '@Url.Action("UpdateCaseInfo", "RPR")';
+                $.ajax({
+                    data: { "discripancyCategory":'@Model.DiscrepancyCategoryLkup',"genQueueId":'@Model.GEN_QueueId'},
+                    url: urlUpdateCaseInfo,
+                    type: "POST",
+                    success: function (data) {
+                       $("#divMyModalViewRef").empty().html(data);
+                       $("#myModalViewRef").modal('show');
+                    }
+                });
+            } catch (e) {
+
+            }
+        });
+        //Clear Tempdata
+        fnClearTempdataByGenId = function () {
+            try {
+                $.ajax({
+                    data: { "genQueueId": '@Model.GEN_QueueId' },
+                    url: urlClearTempdataByGenId,
+                    async: false,
+                    type: "POST",
+                    success: function (data) {
+                    }
+                });
+            } catch (e) {
+            }
+        };
+    </script>
+}
+
+

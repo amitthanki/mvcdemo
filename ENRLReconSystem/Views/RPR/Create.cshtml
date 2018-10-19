@@ -1,0 +1,818 @@
+﻿@using ENRLReconSystem.Helpers @*for custom validation*@
+@using ENRLReconSystem.Utility
+@model ENRLReconSystem.DO.DOGEN_Queue
+@{
+    ViewBag.Title = "RPR Create Case";
+    string PageName = ViewBag.PageName;
+    if (PageName == ConstantTexts.MiimPageName)
+    {
+        ViewBag.isPopUp = true;
+        ViewBag.Title = ViewBag.Title + " | Reference Id : " + Model.MIIMReferenceId.ToString();
+    }
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.IsRestrictedVisible = false;
+}
+
+
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src='@Url.Content("/images/create-icon.png")' /><h4>Create RPR Case</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <form id="frmCreateCaseRPR" enctype="multipart/form-data">
+                @Html.HiddenFor(m => m.GEN_QueueId, new { @id="hdnGenQueueId"})
+                @Html.HiddenFor(m => m.IsClosedAndCreateNew, new { @id = "hdnIsClosedAndCreateNew" })
+                @Html.HiddenFor(m => m.MemberDOB)
+                @*@Html.HiddenFor(m => m.ComplianceStartDate)*@
+                @Html.HiddenFor(m => m.DiscrepancyStartDate)
+                @Html.HiddenFor(m => m.RPRRequestedEffectiveDate)
+                @Html.HiddenFor(m => m.SCCRPRRequstedSubmissionDate)
+                @Html.HiddenFor(m => m.DiscrepancyCategoryLkup)
+                @Html.HiddenFor(m => m.CommentsSourceSystemLkup)
+                @Html.HiddenFor(m => m.MIIMReferenceId)
+                @Html.ValidationSummary()
+                @*Member Info Section*@
+                <div class="inner-wdgt clearfix">
+                    <div class="primary-hdr">
+                        <h4><img src='@Url.Content("/images/info-icon.png")' /><span>Member Info</span></h4>
+                    </div>
+                    <div class="inner-wdgt-body">
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.MemberID, "Member Id")
+                            @*<div class="input-group">*@
+                            @Html.TextBoxFor(m => m.MemberID, new CustomValidation().RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAndSpaces, "Member Id").StringMaxLength(20, "Member Id").AddCssClass("form-control").CustomAttributes("id", "txtMemberId").CustomAttributes("maxlength", "20").validationAttributes)
+                            @*<span class="input-group-btn">
+                                        <button title="Get Member Details" type="button" class="btn btn-default" id="btnGetInfoMemberID">
+                                            <img src='@Url.Content("/images/get-icon.png")' />
+                                        </button>
+                                    </span>
+                                </div>*@
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.MemberCurrentHICN, "Medicare ID", new { @class = "required" })
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.MemberCurrentHICN, new CustomValidation().RegularExpression(RegexType.StrictAlphaNumeric, "Medicare ID").StringMaxLength(11, "Medicare ID").AddCssClass("form-control").CustomAttributes("id", "txtCurrentHICN").CustomAttributes("maxlength", "11").validationAttributes)
+                                <span class="input-group-btn">
+                                    <button title="Get Member Details" type="button" class="btn btn-default" id="btnHICNID">
+                                        <img src='@Url.Content("/images/get-icon.png")' />
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                        @*<div class="form-group col-md-3">
+                                @Html.LabelFor(m => m.MemberCurrentMBI, "MBI", new { @class = "required" })
+                                <div class="input-group">
+                                    @Html.TextBoxFor(m => m.MemberCurrentMBI, new CustomValidation().StringMaxLength(11, "MBI").RegularExpression(RegexType.MBI, "MBI").AddCssClass("form-control").CustomAttributes("id", "txtMBI").CustomAttributes("maxlength", "11").validationAttributes)
+                                    <span class="input-group-btn">
+                                        <button title="Get Member Details" type="button" class="btn btn-default" id="btnGetInfoMBI">
+                                            <img src='@Url.Content("/images/get-icon.png")' />
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>*@
+
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.GPSHouseholdID, "GPS Household ID", new { @class = "required" })
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.GPSHouseholdID, new CustomValidation().Required("GPS Household Id is required").RegularExpression(RegexType.Numeric, "GPS Household ID").StringMaxLength(20, "GPS Household ID").AddCssClass("form-control").CustomAttributes("id", "txtGPSHouseHoldId").CustomAttributes("maxlength", "20").validationAttributes)
+                                <span class="input-group-btn" title="Get Member Info from web service">
+                                    <button type="button" id="btnGPSHouseholdID" class="btn btn-default">
+                                        <img src="~/Images/get-icon.png" />
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.MemberFirstName, "First Name", new { @class = "required" })
+                            @Html.TextBoxFor(m => m.MemberFirstName, new CustomValidation().Required("First Name is required").CustomAttributes("id", "txtMemberFirstName").RegularExpression(RegexType.MemberName, "First Name").StringMaxLength(35, "First Name").AddCssClass("form-control").CustomAttributes("maxlength", "35").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.MemberMiddleName, "Middle Name")
+                            @Html.TextBoxFor(m => m.MemberMiddleName, new CustomValidation().CustomAttributes("id", "txtMemberMiddleName").RegularExpression(RegexType.MemberName, "Middle Name").StringMaxLength(35, "Middle Name").AddCssClass("form-control").CustomAttributes("maxlength", "35").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.MemberLastName, "Last Name", new { @class = "required" })
+                            @Html.TextBoxFor(m => m.MemberLastName, new CustomValidation().Required("Last Name is required").CustomAttributes("id", "txtMemberLastName").RegularExpression(RegexType.MemberName, "Last Name").StringMaxLength(35, "Last Name").CustomAttributes("maxlength", "35").AddCssClass("form-control").validationAttributes)
+                        </div>
+                        <div class="form-group date-group col-md-3">
+                            @Html.LabelFor(m => m.MemberDOB, "DOB", new { @class = "required" })
+                            @Html.DateTimeFor(m => m.MemberDOB, false, new CustomValidation().Required("DOB is required").AddCssClass("form-control").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.MemberContractIDLkup, "Contract Number", new { @class = "required" })
+                            @Html.DropDownListFor(m => m.MemberContractIDLkup, new SelectList(Model.lstContractid, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please select Contract Number").CustomAttributes("id", "ddlContractNumber").AddCssClass("form-control").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.MemberPBPLkup, "PBP", new { @class = "required" })
+                            @Html.DropDownListFor(m => m.MemberPBPLkup, new SelectList(Model.lstPbpid, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please select PBP").AddCssClass("form-control").CustomAttributes("id", "ddlPBP").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.MemberLOBLkup, "LOB", new { @class = "required" })
+                            @Html.DropDownListFor(m => m.MemberLOBLkup, new SelectList(Model.lstLob, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please select LOB").AddCssClass("form-control").CustomAttributes("id", "ddlLob").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.RPRCTMMember, "CTM Member")
+                            @Html.CheckBoxFor(m => m.RPRCTMMember, new { @class = "form-control", @id = "cbxCTMMember" })
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.RPRCTMNumber, "CTM Number", new { @id = "lblCTMNumber" })
+                            @Html.TextBoxFor(m => m.RPRCTMNumber, new CustomValidation().Required("CTM Number is Required.").CustomAttributes("disabled", "disabled").CustomAttributes("id", "txtCTMNumber").CustomAttributes("maxlength", "20").AddCssClass("form-control").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.RPREGHPMember, "EGHP Member")
+                            @Html.CheckBoxFor(m => m.RPREGHPMember, new { @class = "form-control", @id = "cbxEGHPMember" })
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.RPREmployerID, "Employer ID", new { @id = "lblEmployerID" })
+                            @Html.TextBoxFor(m => m.RPREmployerID, new CustomValidation().Required("Employer ID is Required.").CustomAttributes("disabled", "disabled").CustomAttributes("id", "txtEmployerId").CustomAttributes("maxlength", "20").AddCssClass("form-control").validationAttributes)
+                        </div>
+                    </div>
+                </div>
+                @*Discrepancy Info Section*@
+                <div class="inner-wdgt clearfix">
+                    <div class="primary-hdr">
+                        <h4><img src='@Url.Content("/images/info-icon.png")' /><span>Discrepancy Info</span></h4>
+                    </div>
+                    <div class="inner-wdgt-body">
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.DiscrepancyCategoryLkup, "Discrepancy Category", new { @class = "required" })
+                            @Html.DropDownListFor(m => m.DiscrepancyCategoryLkup, new SelectList(Model.lstDiscCategary, "CMN_LookupMasterChildRef", "LookupMasterChildValue"), new CustomValidation().CustomAttributes("disabled", "disabled").AddCssClass("form-control").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.DiscrepancyTypeLkup, "Discrepancy Type", new { @class = "required" })
+                            @Html.DropDownListFor(m => m.DiscrepancyTypeLkup, new SelectList(Model.lstDiscType, "CMN_LookupMasterChildRef", "LookupMasterChildValue"), new CustomValidation().Required("Please select Discrepancy Type").AddCssClass("form-control").CustomAttributes("id", "ddlDiscrepancyTypeLkup").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.ComplianceStartDate, "Compliance Start Date")
+                            @Html.TextBoxFor(m => m.ComplianceStartDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                        </div>
+                        @*<div class="form-group col-md-3">
+                                @Html.LabelFor(m => m.DiscrepancyStartDate, "Discrepancy Start Date")
+                                @Html.TextBoxFor(m => m.DiscrepancyStartDate, "{0:MM/dd/yyyy}", new { @tabindex = "-1", @readonly = "readonly", @class = "form-control" })
+                            </div>*@
+                    </div>
+                </div>
+                @*RPR Info Section*@
+                <div class="inner-wdgt clearfix">
+                    <div class="primary-hdr">
+                        <h4><img src='@Url.Content("/images/info-icon.png")' /><span>RPR Info</span></h4>
+                    </div>
+                    <div class="inner-wdgt-body">
+                        <div class="form-group date-group col-md-3">
+                            @Html.LabelFor(m => m.RPRRequestedEffectiveDate, "Requested Effective Date", new { @class = "required" })
+                            @Html.DateTimeFor(m => m.RPRRequestedEffectiveDate, false, new CustomValidation().Required("Please select Requested Effective Date").AddCssClass("form-control").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.RPRActionRequestedLkup, "Action Requested", new { @class = "required" })
+                            @Html.DropDownListFor(m => m.RPRActionRequestedLkup, new SelectList(Model.lstActionRequested, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "ddlActionRequestedLkup").Required("Please select Action Requested").AddCssClass("form-control").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3" id="divOtherAction" hidden="hidden">
+                            @Html.LabelFor(m => m.RPROtherActionRequested, "Other Action Requested", new { @class = "required" })
+                            @Html.TextBoxFor(m => m.RPROtherActionRequested, new CustomValidation().Required("Other Action Requested is required").CustomAttributes("disabled", "disabled").RegularExpression(RegexType.AlphabetsWithNumericSpacesAndAmpersand, "Other Action Requested").StringMaxLength(50, "Other Action Requested").CustomAttributes("maxlength", "50").AddCssClass("form-control").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3">
+                            @Html.LabelFor(m => m.RPRSupervisorOrRequesterRef, "Supervisor or person entering request", new { @class = "required" })
+                            @Html.DropDownListFor(m => m.RPRSupervisorOrRequesterRef, new SelectList(Model.lstUsers, "ADM_UserMasterId", "FullName"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please select Supervisor or person entering request").AddCssClass("form-control").validationAttributes)
+                        </div>
+                        <div id="divSCCRPRFields">
+                            <div class="form-group col-md-3">
+                                @Html.LabelFor(m => m.SCCRPRRequested, "Requested SCC", new { @id = "lblRequestedSCC" })
+                                @Html.TextBoxFor(m => m.SCCRPRRequested, new CustomValidation().Required("Requested SCC is required").CustomAttributes("disabled", "disabled").RegularExpression(RegexType.Numeric, "Requested SCC").StringLength(5, "Requested SCC").CustomAttributes("maxlength", "5").AddCssClass("form-control").validationAttributes)
+                            </div>
+                            <div class="form-group col-md-3">
+                                @Html.LabelFor(m => m.SCCRPRRequestedZip, "Requested ZIP", new { @id = "lblRequestedZip" })
+                                @Html.TextBoxFor(m => m.SCCRPRRequestedZip, new CustomValidation().Required("Requested ZIP is required").CustomAttributes("disabled", "disabled").RegularExpression(RegexType.Numeric, "Requested ZIP").StringLength(5, "Requested ZIP").CustomAttributes("maxlength", "5").AddCssClass("form-control").validationAttributes)
+                            </div>
+                            <div class="form-group date-group col-md-3">
+                                @Html.LabelFor(m => m.SCCRPRRequstedSubmissionDate, "Requested Submission Date")
+                                @Html.DateTimeFor(m => m.SCCRPRRequstedSubmissionDate, false, new CustomValidation().AddCssClass("form -control").CustomAttributes("disabled", "disabled").validationAttributes)
+                            </div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label class="required" title="Task being performed when this discrepancy was identified ?">Task Being Performed...</label>
+                            @Html.DropDownListFor(m => m.RPRTaskPerformedLkup, new SelectList(Model.lstTaskBeingPerformed, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "ddlTaskPerformedLkup").Required("Please select Task being performed when this discrepancy was identified ?").AddCssClass("form-control").validationAttributes)
+                        </div>
+                        <div class="form-group col-md-3" id="divOtherTaskType" hidden="hidden">
+                            @Html.LabelFor(m => m.RPROtherTaskPerformed, "Other Task Being Performed", new { @class = "required" })
+                            @Html.TextBoxFor(m => m.RPROtherTaskPerformed, new CustomValidation().Required("Other Task Being Performed is required").CustomAttributes("disabled", "disabled").RegularExpression(RegexType.AlphabetsWithNumericSpacesAndAmpersand, "Task Type").StringMaxLength(50, "Task Type").CustomAttributes("maxlength", "50").AddCssClass("form-control").validationAttributes)
+                        </div>
+                        <div class="form-group textarea col-md-12">
+                            @Html.LabelFor(m => m.RPRReasonforRequest, "Reason for Request", new { @class = "required" })
+                            @Html.TextAreaFor(m => m.RPRReasonforRequest, new CustomValidation().CustomAttributes("id", "txtReasonForRequest").CustomAttributes("maxlength", "2000").Required("Please Enter Reason for Request").AddCssClass("form-control").validationAttributes)
+                        </div>
+                    </div>
+                </div>
+                @*Add Comments Section*@
+                <div class="inner-wdgt clearfix">
+                    <div class="primary-hdr">
+                        <h4><img src='@Url.Content("/images/info-icon.png")' /><span>Add Comments</span></h4>
+                    </div>
+                    <div class="inner-wdgt-body">
+                        <div class="form-group textarea col-md-12">
+                            @Html.LabelFor(m => m.Comments, "Comments")
+                            @Html.TextAreaFor(m => m.Comments, new CustomValidation().StringMaxLength(4000, "Comments").CustomAttributes("maxlength", "4000").AddCssClass("form-control").validationAttributes)
+                        </div>
+                    </div>
+                </div>
+                @*Is Restricted Section*@
+                @if (ViewBag.IsRestrictedVisible == true)
+                {
+                    <div class="inner-wdgt clearfix">
+                        <div class="primary-hdr">
+                            <h4><img src="~/Images/info-icon.png" /><span>Restricted</span></h4>
+                        </div>
+                        <div class="inner-wdgt-body">
+                            <div class="form-group col-md-3">
+                                @Html.LabelFor(m => m.IsRestricted, "Is Restricted")
+                                @Html.CheckBoxFor(m => m.IsRestricted, new { @class = "form-control", @id = "cbxIsRestricted" })
+                            </div>
+                        </div>
+                    </div>
+                }
+                @*Attachments Section*@
+                <div class="inner-wdgt clearfix">
+                    <div class="primary-hdr">
+                        <h4><img src='@Url.Content("/images/info-icon.png")' /><span>Attachment</span></h4>
+                    </div>
+                    <div class="inner-wdgt-body">
+                        <div class="col-md-8">
+                            <label class="text-info">
+                                Please Upload an Attachment (if any) with the Created RPR Suspect Case. Submitting on this screen will route this case to Initial RPR WB post which the RPR Requestor will not be able to attach any document.
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Attachment (Max Size:8MB):</label>
+                        <label class="btn btn-default">
+                            <input class="form-control" id="atchAttchment" type="file" accept=".pdf">
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="btn-group clearfix">
+        <button type="button" id="btnCreateCaseSave" class="btn btn-primary"><img src='@Url.Content("/images/save-icon.png")' /><span>Save</span></button>
+        @if (PageName == ConstantTexts.MiimPageName)
+        {
+            <button type="Button" id="btnCreateCaseClose" class="btn btn-primary" onclick="window.open('', '_self').close();"><img src="~/images/cancle-icon.png" /><span>Close</span></button>
+        }
+        else
+        {
+            <button type="button" id="btnCreateCaseReset" class="btn btn-primary"><img src='@Url.Content("/images/reset-icon.png")' /><span>Reset</span></button>
+            <button type="button" id="btnCreateCaseCancel" class="btn btn-primary"><img src='@Url.Content("/images/cancle-icon.png")' /><span>Cancel</span></button>
+        }
+    </div>
+</section>
+@*--------------------------Popup--------------------------*@
+
+<div id="HICNPopup" class="modal fade">
+    <div class="modal-dialog" id="divDialog" style="width:25%;">
+        <div class="modal-content" id="divHICNPopup">
+
+        </div>
+    </div>
+</div>
+
+@*--------------------------Popup--------------------------*@
+@section scripts
+    {
+    <script>
+        //disable date button for Requested submssion date on page load
+        $('#divSCCRPRFields :button').attr("disabled", "disabled")
+        var submitUrl = '@Url.Action("Create", "RPR")';
+        var cancelUrl = '@Url.Action("RPRGetQueue", "RPRQueues")';
+        var unlockUrl = '@Url.Action("UnlockRecord", "RecordsLocked")';
+        var urlPersonSearch = '@Url.Action("PersonSearch", "Common")';
+        var urlForLock = '@Url.Action("GetLockedRecordOrLockRecord", "RecordsLocked")';
+        var page = '@PageName';
+        var urlHouseHoldIdSearch = '@Url.Action("HouseHoldIdSearch", "RPR")';
+        var urlGPSHouseholD = '@Url.Action("GPSHouseholdIDSearch", "Common")';
+        var $myForm,origForm;
+        var searchCancelURL = '@Url.Action("Search", "Common")'+"?discCat="+'@Model.DiscrepancyCategoryLkup';
+         var bussinessSegment='@Model.BusinessSegmentLkup';
+        //Document load and initialise
+        $(function(){
+            $('#frmCreateCaseRPR').get(0).reset();
+            //validate and create date time picker fields
+            var genQueueId=$("#hdnGenQueueId").val();
+            if(genQueueId>0)
+            {
+                if ('@Model.MemberDOB' != null && '@Model.MemberDOB' != '') {
+                    $('#MemberDOB_DPart').val(getDateTimeInMMDDYYYY('@Model.MemberDOB'));
+                    //fnSetDateToField('','MemberDOB');
+                }
+                if ('@Model.RPRRequestedEffectiveDate' != null && '@Model.RPRRequestedEffectiveDate' != '') {
+                    $('#RPRRequestedEffectiveDate_DPart').val(getDateTimeInMMDDYYYY('@Model.RPRRequestedEffectiveDate'));
+                   // fnSetDateToField('','RPRRequestedEffectiveDate');
+                }
+                if ('@Model.SCCRPRRequstedSubmissionDate' != null && '@Model.SCCRPRRequstedSubmissionDate' != '') {
+                    $('#SCCRPRRequstedSubmissionDate_DPart').val(getDateTimeInMMDDYYYY('@Model.SCCRPRRequstedSubmissionDate'));
+                    //fnSetDateToField('','SCCRPRRequstedSubmissionDate');
+                }
+                if (page == '@ConstantTexts.MiimPageName'){
+                    $('#CommentsSourceSystemLkup').val('@SourceSystemLkup.MIIM.ToInt64()');
+                } else {
+                    $('#CommentsSourceSystemLkup').val('@SourceSystemLkup.ERS.ToInt64()');
+                }
+                $('#cbxCTMMember').change();
+                $('#MemberPBPLkup').change();
+                $('#ComplianceStartDate_DPart').change();
+                $('#cbxEGHPMember').change();
+                $('#ddlDiscrepancyTypeLkup').change();
+                $('#ddlTaskPerformedLkup').change();
+                $("#RPRRequestedEffectiveDate_DPart").change();
+                //$('#ddlContractNumber').change();
+                if ('@Model.MemberPBP' != "") {
+                    if ($("#ddlPBP option:contains(" + '@Model.MemberPBP' + ")").length > 0) {
+                        $("#ddlPBP").val($("#ddlPBP option:contains(" + '@Model.MemberPBP' + ")").val());
+                    }
+                }
+           }
+            $myForm= $("#frmCreateCaseRPR");
+            origForm = $myForm.serialize();
+            $('#txtMemberId').focus();
+        });
+
+
+
+
+
+        //function to set model date time values from date time picker
+        function fnGetDateIntoHdnFields() {
+            var date = $('#MemberDOB_DPart').val();
+            if (date != null && date != '') {
+                $('#MemberDOB').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#MemberDOB').val(null);
+            }
+            //date = $('#ComplianceStartDate_DPart').val();
+            //if (date != null && date != '') {
+            //    $('#ComplianceStartDate').val(getDateTimeInMMDDYYYY(date));
+            //} else {
+            //    $('#ComplianceStartDate').val(null);
+            //}
+            //date = $('#DiscrepancyStartDate_DPart').val();
+            //if (date != null && date != '') {
+            //    $('#DiscrepancyStartDate').val(getDateTimeInMMDDYYYY(date));
+            //} else {
+            //    $('#DiscrepancyStartDate').val(null);
+            //}
+            date = $('#RPRRequestedEffectiveDate_DPart').val();
+            if (date != null && date != '') {
+                $('#RPRRequestedEffectiveDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#RPRRequestedEffectiveDate').val(null);
+            }
+            date = $('#SCCRPRRequstedSubmissionDate_DPart').val();
+            if (date != null && date != '') {
+                $('#SCCRPRRequstedSubmissionDate').val(getDateTimeInMMDDYYYY(date));
+            } else {
+                $('#SCCRPRRequstedSubmissionDate').val(null);
+            }
+        };
+
+        //function to calculate month diff between two months
+        function monthDiff(d1, d2) {
+            var months;
+            months = (d2.getFullYear() - d1.getFullYear()) * 12;
+            months -= d1.getMonth() + 1;
+            months += d2.getMonth();
+            //return months <= 0 ? 0 : months;
+            return months;
+        }
+
+        //custom validations on effective date, inactivation date and send alert to (department and users)
+        function validateCustom() {
+            var MemberDOB = new Date($('#MemberDOB_DPart').val());
+            var Attchment = $('#atchAttchment').val();
+            var ComplianceStartDate = new Date($('#ComplianceStartDate_DPart').val());
+            var RPRRequestedEffectiveDate = $('#RPRRequestedEffectiveDate_DPart').val() != "" ? new Date($('#RPRRequestedEffectiveDate_DPart').val()) : $('#RPRRequestedEffectiveDate_DPart').val();
+
+            var today = new Date();
+            var errorList = "";
+            var isValid = true;
+            var errorRequiredFileds = "";
+            var validExts = new Array(".pdf");
+            today.setHours(0, 0, 0, 0);
+            fileExt = Attchment.substring(Attchment.lastIndexOf('.'));
+
+            //add error if Member Id, Current HICN or GPS Household ID  none is provided
+            if ($('#txtCurrentHICN').val() == "") {
+                $('#txtCurrentHICN').removeClass("valid").addClass("input-validation-error");//to highlight the field
+                errorRequiredFileds = '<li>Medicare ID is Required.</li>';//html for error to be added in validation summary
+                //$('#txtMemberId').focus();
+                isValid = false;
+            }
+
+            if ($('#atchAttchment')[0].files.length > 0) {
+                if (validExts.indexOf(fileExt) < 0) {
+                    $('#atchAttchment').removeClass("valid").addClass("input-validation-error");//to highlight the field
+                    errorList = errorList + '<li>Invalid File Select.</li>';//html for error to be added in validation summary
+                    isValid = false;
+                }
+                else if ($('#atchAttchment')[0].files[0].size > 8388608) {
+                    $('#atchAttchment').removeClass("valid").addClass("input-validation-error");//to highlight the field
+                    errorList = errorList + '<li>File size is greater than 8MB.</li>';//html for error to be added in validation summary
+                    isValid = false;
+                }
+            }
+
+            //add error if Member DOB is today or future date
+            if (MemberDOB >= today) {
+                $('#MemberDOB_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Member DOB  must be less than  Current Date.</li>';
+                isValid = false;
+            }
+
+            if (ComplianceStartDate > today) {
+                $('#ComplianceStartDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Compliance Start Date  cannot be future Date.</li>';
+                isValid = false;
+            }
+
+            //Check Request effective date to be 1st of Month.
+            if (RPRRequestedEffectiveDate != "" && RPRRequestedEffectiveDate.getDate() != 1) {
+                $('#RPRRequestedEffectiveDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Requested Effective Date can only have  value as first day of the month.</li>';
+                isValid = false;
+            }
+            //else if (RPRRequestedEffectiveDate != "" && monthDiff(today, RPRRequestedEffectiveDate) < -4) {
+            //    $('#RPRRequestedEffectiveDate_DPart').removeClass("valid").addClass("input-validation-error");
+            //    errorList = errorList + '<li>Requested Effective Date cannot be older than 3 months.</li>';
+            //    isValid = false;
+            //}
+            else if (RPRRequestedEffectiveDate != "" && monthDiff(today, RPRRequestedEffectiveDate) > 2) {
+                $('#RPRRequestedEffectiveDate_DPart').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>Requested Effective Date cannot be more than 3 months in future.</li>';
+                isValid = false;
+            }
+
+
+            if (!isValid) {
+                if ($('.validation-summary-errors').length != 0) {
+                    //if validion errors div is present add errors to list
+                    $('.validation-summary-errors ul').append(errorList);
+                    $('.validation-summary-errors ul').prepend(errorRequiredFileds);
+                } else {
+                    //if validion errors div is not present update validation-summary-valid div and add errors to list
+                    $('.validation-summary-valid').addClass('validation-summary-errors').removeClass('validation-summary-valid');
+                    $('.validation-summary-errors ul').append(errorList);
+                    $('.validation-summary-errors ul').prepend(errorRequiredFileds);
+                }
+            }
+            return isValid;
+        };
+
+        //reset function to clear all the fields in edit mode and reset to original value in Edit mode
+        $('#btnCreateCaseReset').click(function () {
+            MainLayout.fnResetValidationSummary();
+            $("#frmCreateCaseRPR").deserialize(origForm);
+            $('#cbxCTMMember').trigger("change");
+            $('#cbxEGHPMember').trigger("change");
+            $('#atchAttchment').val("");
+        });
+
+        $('#btnCreateCaseCancel').click(function () {
+            if($("#hdnIsClosedAndCreateNew").val()=="True")
+            {
+                fnUnlockRecord(unlockUrl, '@Model.GEN_QueueId', enums.ScreenType.Queue, searchCancelURL);
+            }
+            else
+            {
+              window.location.href = cancelUrl;
+            }
+        });
+
+        //enabale and Disable CTM number depending upon CTM Member check box
+         $('#cbxCTMMember').on("change",function () {
+            var value = $(this).prop("checked")
+            if (value) {
+                $('#txtCTMNumber').removeAttr("disabled")
+                $('#lblCTMNumber').addClass("required")
+            } else {
+                $('#txtCTMNumber').val("");
+                $('#txtCTMNumber').removeClass("input-validation-error").addClass("valid")
+                $('#txtCTMNumber').attr("disabled", "disabled")
+                $('#lblCTMNumber').removeClass("required")
+            }
+        });
+
+        $('#MemberPBPLkup').change(function () {
+            var text = $('#MemberPBPLkup option:selected').text();
+            var intPBP = parseInt(text);
+            if (intPBP >= 800 && intPBP < 900) {
+                $('#cbxEGHPMember').prop("checked", "checked")
+                $('#cbxEGHPMember').trigger("change");
+            }
+        });
+
+        $('#ComplianceStartDate_DPart').change(function () {
+            var ComplianceStartDate = new Date($('#ComplianceStartDate_DPart').val());
+            $('#DiscrepancyStartDate').val('');
+            if (ComplianceStartDate != "Invalid Date") {
+                ComplianceStartDate.setDate(1);
+                ComplianceStartDate.setMonth(ComplianceStartDate.getMonth() + 1);
+                $('#DiscrepancyStartDate').val(getDateTimeInMMDDYYYY(ComplianceStartDate));
+            }
+        })
+
+        //enabale and Disable Employer Id depending upon EGHP Member check box
+         $('#cbxEGHPMember').on("change",function () {
+            var value = $(this).prop("checked")
+            if (value) {
+                $('#txtEmployerId').removeAttr("disabled")
+                $('#lblEmployerID').addClass("required")
+            } else {
+                $('#txtEmployerId').val("");
+                $('#txtEmployerId').removeClass("input-validation-error").addClass("valid")
+                $('#txtEmployerId').attr("disabled", "disabled")
+                $('#lblEmployerID').removeClass("required")
+            }
+        });
+
+        //control SCC RPR fields depending on discrepancy type
+        $('#ddlDiscrepancyTypeLkup').change(function () {
+            var value = $('#ddlDiscrepancyTypeLkup').val();
+            if (value == 7011) {//7011 value for SCC RPR
+                $('#divSCCRPRFields :input,#divSCCRPRFields :button').removeAttr("disabled")
+                $('#lblRequestedSCC,#lblRequestedZip').addClass("required");
+
+            } else {
+                $('#divSCCRPRFields :input').val("")
+                $('#divSCCRPRFields :input').removeClass("input-validation-error").addClass("valid")
+                $('#divSCCRPRFields :input,#divSCCRPRFields :button').attr("disabled", "disabled")
+                $('#lblRequestedSCC,#lblRequestedZip').removeClass("required");
+            }
+        });
+
+        //Action Requested extra field control for Other option
+        //$('#ddlActionRequestedLkup').change(function () {
+        //    var value = $('#ddlActionRequestedLkup').val();
+        //    if (value == 14008) {//14013 value for Action Requested - Reinstatement - Other
+        //        $('#divOtherAction').removeAttr("hidden")
+        //        $('#divOtherAction :input').removeAttr("disabled");
+        //    } else {
+        //        $('#divOtherAction :input').val("")
+        //        $('#divOtherAction :input').removeClass("input-validation-error").addClass("valid")
+        //        $('#divOtherAction').attr("hidden", "hidden")
+        //        $('#divOtherAction :input').attr("disabled", "disabled")
+        //    }
+        //});
+
+        //Reason for Request extra field control for Other option
+        $('#ddlTaskPerformedLkup').change(function () {
+            var value = $('#ddlTaskPerformedLkup').val();
+            if (value == 15015) {//14013 value for Task Being performed - other
+                $('#divOtherTaskType').removeAttr("hidden")
+                $('#divOtherTaskType :input').removeAttr("disabled");
+            } else {
+                $('#divOtherTaskType :input').val("")
+                $('#divOtherTaskType :input').removeClass("input-validation-error").addClass("valid")
+                $('#divOtherTaskType').attr("hidden", "hidden")
+                $('#divOtherTaskType :input').attr("disabled", "disabled")
+            }
+        });
+
+        //GPS web Service
+        $("#btnHICNID").on("click", function (e) {
+            try {
+                var memberCurrentHICN = $("#txtCurrentHICN").val();
+                if (memberCurrentHICN == "") {
+                    MainLayout.fnAlertMessege("Alert!", "Please enter MedicareId.");
+                    return false;
+                }
+                fnPopulateServiceData(memberCurrentHICN, "MBI");
+            }
+            catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occurred!");
+            }
+        });
+
+        //GPS web Service
+        $("#btnGPSHouseholdID").on("click", function (e) {
+            try {
+                var GPSHouseholdID = $("#txtGPSHouseHoldId").val();
+                if (GPSHouseholdID == "") {
+                    MainLayout.fnAlertMessege("Alert!", "Please enter GPSHouseholdId.");
+                    return false;
+                }
+                fnPopulateServiceData(GPSHouseholdID, "HHID");
+            }
+            catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occurred!");
+            }
+        });
+
+        $(document).on("click", "#btnGetHouseholdID", function (event) {
+            try {
+                $("#lblValidateSummaryPopup").html("");
+                $("#lblValidateSummaryPopup").hide();
+                var Radiobutton = $('input[name=HouseholdId]');
+                var GPSHouseholdID = Radiobutton.filter(':checked').val();
+                if (GPSHouseholdID != undefined) {
+                    fnPopulateServiceData(GPSHouseholdID, "MHHID");
+                }
+                else {
+                    $("#lblValidateSummaryPopup").html("Please Check one GPS HouseHold ID.");
+                    $("#lblValidateSummaryPopup").show();
+                }
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured.");
+            }
+        });
+
+        //$("#ddlContractNumber").on("change", function () {
+        //    try {
+        //        var contID = $("#ddlContractNumber").val();
+        //        var contText = $("#ddlContractNumber option:selected").text();
+        //        if (contID != "") {
+        //            ///Load PBP for C&S business segment
+        //            if (bussinessSegment == enums.BusinessSegmentLkup.CNS) {
+        //                MainLayout.fnGetPBP(contID, '#ddlPBP');
+        //            }
+        //        }
+
+        //    } catch (e) {
+
+        //    }
+        //});
+
+        fnPopulateServiceData = function (id, flag) {
+            try {
+                $.ajax({
+                    data: { "uID": id, "flag": flag },
+                    url: urlPersonSearch,
+                    type: "POST",
+                    success: function (data) {
+                        if (typeof data.flag === 'undefined') {
+                            $('#divHICNPopup').empty().html(data);
+                            $("#HICNPopup").modal('show');
+                        }
+                        else {
+                            if (data == null || data == undefined || data.GPSData == null || data.GPSData.length < 1) {
+                                MainLayout.fnResetValidationSummary();
+                                $myForm.deserialize(origForm);
+                                if (flag == "MBI") {
+                                    MainLayout.fnAlertMessege("Alert!", "Invalid Medicare ID.");
+                                }
+                                else if (flag == "HHID") {
+                                    MainLayout.fnAlertMessege("Alert!", "Invalid GPSHousehold ID.");
+                                }
+                                else if (flag == "MHHID") {
+                                    $("#HICNPopup").modal('hide');
+                                    MainLayout.fnAlertMessege("Alert!", "Invalid Medicare ID.");
+                                }
+                                return false;
+                            }
+                            fnBindServiceData(data, flag);
+                        }
+                    }
+                });
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occurred!");
+            }
+        }
+        //Bind Data
+        fnBindServiceData = function (data, flag) {
+            try {
+                if (data.flag == "Json") {
+                    if (data != null && data != undefined && data.GPSData != null && data.GPSData.length > 0) {
+                        var data1 = data.GPSData[0];
+                        $('#txtMemberId').val((data1.MemberId != null) ? data1.MemberId : "");
+                        if (data1.DOB != null && data1.DOB != "") {
+                            var value = new Date(parseInt(data1.DOB.substr(6)));
+                            var dobDate = new Date(value.getMonth() + 1 + "/" + value.getDate() + "/" + value.getFullYear());
+                            $('#MemberDOB_DPart').val(getDateTimeInMMDDYYYY(dobDate));
+                        }
+                        $('#txtMemberFirstName').val(data1.FirstName);
+                        $('#txtMemberLastName').val(data1.LastName);
+                        $('#txtMemberMiddleName').val(data1.MiddleName);
+                        if (data1.LOB != null) {
+                            $("#ddlLob").val($("#ddlLob option:contains(" + data1.LOB.trim() + ")").val());
+                        }
+
+                        if (flag == "MBI" || flag == "MHHID") {
+                            $('#txtGPSHouseHoldId').val((data1.HouseholdId != null) ? data1.HouseholdId : "");
+                        }
+                        else if (flag == "HHID") {
+                            $('#txtCurrentHICN').val((data1.HICN != null) ? data1.HICN : "");
+                        }
+                        if (data1.ContractNumber != null) {
+                            if ($("#ddlContractNumber option:contains(" + data1.ContractNumber.trim() + ")").length > 0) {
+                                $("#ddlContractNumber").val($("#ddlContractNumber option:contains(" + data1.ContractNumber.trim() + ")").val());
+                            }
+                        }
+                        //$("#ddlContractNumber").change();
+                        if (data1.PBP != null) {
+                            if ($("#ddlPBP option:contains(" + data1.PBP.trim() + ")").length > 0) {
+                                $("#ddlPBP").val($("#ddlPBP option:contains(" + data1.PBP.trim() + ")").val());
+                            }
+                        }
+                        if ($("#HICNPopup").length > 0)
+                            $("#HICNPopup").modal('hide');
+                    }
+                }
+
+
+            } catch (e) {
+                throw e;
+            }
+        }
+
+        $("#RPRRequestedEffectiveDate_DPart").on("change", function (e) {
+            var RPRRequestedEffectiveDate = $('#RPRRequestedEffectiveDate_DPart').val() != "" ? new Date($('#RPRRequestedEffectiveDate_DPart').val()) : $('#RPRRequestedEffectiveDate_DPart').val();
+            if (RPRRequestedEffectiveDate != "" && RPRRequestedEffectiveDate.getDate() != 1) {
+                RPRRequestedEffectiveDate.setDate(1);
+                var strDate = Get2DigitText((RPRRequestedEffectiveDate.getMonth() + 1)) + "/" + Get2DigitText(RPRRequestedEffectiveDate.getDate()) + "/" + RPRRequestedEffectiveDate.getFullYear();
+                $('#RPRRequestedEffectiveDate_DPart').val(strDate);
+            }
+        });
+
+
+
+        window.onbeforeunload = function (e) {
+            if (page == '@ConstantTexts.MiimPageName')
+                 MainLayout.fnUnlockRecordMIIM(0, "");
+         };
+
+        //function for ajax form submit
+        $('#btnCreateCaseSave').click(function () {
+            var $form = $('#frmCreateCaseRPR');
+            $('.validation-summary-errors ul').empty();// clear the error messages
+            fnGetDateIntoHdnFields(); //fuction to set values for date time fields from date time picker fields
+            var formValid = $form.valid(); //validate form
+            var isCustomValid = validateCustom();// custom Validations
+            if (!formValid || !isCustomValid) {
+                return
+            } else {
+                try {
+                    var data = new FormData($('#frmCreateCaseRPR').get(0));
+                    data.append("rprAttachments", $("#atchAttchment").get(0).files[0]);
+                    $.ajax({
+                        data: data,
+                        url: submitUrl,
+                        type: "POST",
+                        contentType: false, // Not to set any content header
+                        processData: false, // Not to process data
+                        success: function (data) {
+                            if (data.ID == 77) {//duplicate record Exception
+                                //Case already Exists
+                                MainLayout.fnAlertMessege("Error!", data.Message);
+                            } else if (data.ID > 0) {
+                                //if any errors while saving from controller
+                                MainLayout.fnAlertMessege("Error!", data.Message);
+                            } else {
+                                if (page == '@ConstantTexts.MiimPageName') {
+                                    var alertMessage = $.parseHTML(data.Message);
+                                    alert(alertMessage[0].wholeText + alertMessage[1].innerText);
+                                    window.open('', '_self').close();
+                                }
+                                else {
+                                    MainLayout.fnAlertMessege("Alert!", data.Message, function() {
+                                        if (data.Gen_QueueId != 'unDefined' && data.Gen_QueueId > 0) {
+                                            window.location.reload(true);
+                                        }
+                                        else {
+                                        MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                                        }
+                                    });
+                                }
+                            }
+                        },
+                        error: function (x) {
+                            //Network errror
+                            MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                        }
+                    });
+                }
+                catch (e) {
+                    //exception forming ajax request or submitting form
+                    MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                }
+            }
+        });
+
+        fnRedirectToProcess = function (genQueueId) {
+            try {
+                if ($("#hdnIsClosedAndCreateNew").val() == "True") {
+                    window.location.href = searchCancelURL;
+                }
+                else {
+                    var urlToNavigate = '@Url.Action("RPRProcessWork", "RPR")' + '?queueId=' + btoa(genQueueId) + "&PageName=" + "RPRCreateCase";
+                    fnLockRecord(urlForLock, genQueueId, enums.ScreenType.Queue, urlToNavigate);
+                }
+
+            } catch (e) {
+
+            }
+        };
+
+
+
+    </script>
+}
+
+

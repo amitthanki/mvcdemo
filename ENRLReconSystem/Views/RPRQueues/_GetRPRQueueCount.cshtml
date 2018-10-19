@@ -1,0 +1,265 @@
+﻿@using ENRLReconSystem.Utility
+@model ENRLReconSystem.DO.QueueSummary
+
+
+@functions {
+
+    public IHtmlString QueueActions(long queueId,long count,bool showGetQueue = true)
+    {
+        string strTag = "";
+        if (count > 0 && Model.lstUserAccessQueueLkups.Contains(queueId))
+        {
+            var discCat = (long)DiscripancyCategory.RPR;
+            var href = Url.Action("SearchFromHome", "Common", new { @CaseCreationStartDate = Model.StartDate, @CaseCreationEndDate = Model.EndDate, @Queue = queueId, @data = discCat, @screenType = 37010 });
+            var reportHref = ViewBag.ReportUrl + "&FromDate=" + Model.StartDate.ToString("MM/dd/yyyy") + "&ToDate=" + Model.EndDate.ToString("MM/dd/yyyy") + "&WorkQueueLkup=" + queueId + "&BusinessSegmentLkup=" + Model.BusinessSegment;
+            if (showGetQueue)
+                strTag = "<a id = '" + queueId + "' class='getQueue' href='#' title='Get Queue'><img src = '/Images/get-queue-img.png' ></a>";//get queue link
+            strTag = strTag + "<a href='" + href + "'><img src = '/Images/view-img.png' title='View Queue' ></a>";//View Queue link
+            strTag = strTag + "<a href='" + reportHref + "' target ='_blank' title='View Report'><img src='/Images/report-img.png'></a>";//Report link
+        }
+        else
+        {
+            if (showGetQueue)
+                strTag = "<a  class='inAccessible' href='#'><img src = '/Images/disable-get-queue-img.png' ></ a >";//get queue link disabled
+            strTag = strTag + "<a  class='inAccessible' href='#'><img src = '/Images/disable-view-img.png' title='View Queue' ></a>";//View Queue link disabled
+            strTag = strTag + "<a class='inAccessible' href='#' title='View Report'><img src='/Images/disable-report-img.png'></a>";//Report link disabled
+        }
+        return new HtmlString(strTag);
+    }
+}
+
+
+
+
+<div class="queue-smry-wdgt">
+    <div class="processing-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Processing Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Request Category 2</td>
+                    <td>@Model.objRPRQueueSummary.RPRRequestCategory2</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRRequestCategory2.ToInt64(), @Model.objRPRQueueSummary.RPRRequestCategory2)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Request Category 2 CTM</td>
+                    <td>@Model.objRPRQueueSummary.RPRRequestCategory2CTM</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRRequestCategory2CTM.ToInt64(), @Model.objRPRQueueSummary.RPRRequestCategory2CTM)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Request Category 3</td>
+                    <td>@Model.objRPRQueueSummary.RPRRequestCategory3</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRRequestCategory3.ToInt64(), @Model.objRPRQueueSummary.RPRRequestCategory3)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Submission Category 2</td>
+                    <td>@Model.objRPRQueueSummary.RPRSubmissionCategory2</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRSubmissionCategory2.ToInt64(), @Model.objRPRQueueSummary.RPRSubmissionCategory2)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Submission Category 3</td>
+                    <td>@Model.objRPRQueueSummary.RPRSubmissionCategory3</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRSubmissionCategory3.ToInt64(), @Model.objRPRQueueSummary.RPRSubmissionCategory3)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Re-Submission</td>
+                    <td>@Model.objRPRQueueSummary.RPRReSubmission</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRReSubmission.ToInt64(), @Model.objRPRQueueSummary.RPRReSubmission)
+                    </td>
+                </tr>
+                <tr>
+                    <td>CMS Account Manager Sent</td>
+                    <td>@Model.objRPRQueueSummary.RPRCMSAccountManagerSent</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRCMSAccountManagerSent.ToInt64(), @Model.objRPRQueueSummary.RPRCMSAccountManagerSent)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Sent to RPC</td>
+                    <td>@Model.objRPRQueueSummary.RPRSentToRPC</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRSentToRPC.ToInt64(), @Model.objRPRQueueSummary.RPRSentToRPC)
+                    </td>
+                </tr>
+                <tr>
+                    <td>CMS Rejected Deletion Code</td>
+                    <td>@Model.objRPRQueueSummary.RPRCMSRejectedDeletionCode</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRCMSRejectedDeletionCode.ToInt64(), @Model.objRPRQueueSummary.RPRCMSRejectedDeletionCode)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Received RPC FDR</td>
+                    <td>@Model.objRPRQueueSummary.RPRReceivedRPCFDR</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRReceivedRPCFDR.ToInt64(), @Model.objRPRQueueSummary.RPRReceivedRPCFDR)
+                    </td>
+                </tr>
+                @*<tr>
+                    <td>Received TRC 282</td>
+                    <td>@Model.objRPRQueueSummary.RPRReceivedTRC282</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRReceivedTRC282.ToInt64(), @Model.objRPRQueueSummary.RPRReceivedTRC282)
+                    </td>
+                </tr>*@
+                <tr>
+                    <td>RPC Rejected</td>
+                    <td>@Model.objRPRQueueSummary.RPRRejected</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRRejected.ToInt64(), @Model.objRPRQueueSummary.RPRRejected)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Transaction Inquiry</td>
+                    <td>@Model.objRPRQueueSummary.TransactionInquire</td>
+                    <td>
+                        @QueueActions(RPRQueue.TransactionInquiry.ToInt64(), @Model.objRPRQueueSummary.TransactionInquire)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pended</td>
+                    <td>@Model.objRPRQueueSummary.RPRPended</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRPended.ToInt64(), @Model.objRPRQueueSummary.RPRPended)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Initial SCC RPR</td>
+                    <td>@Model.objRPRQueueSummary.RPRInitialSCCRPR</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRInitialSCCRPR.ToInt64(), @Model.objRPRQueueSummary.RPRInitialSCCRPR)
+                    </td>
+                </tr>
+                <tr>
+                    <td>SCC RPR FDR Received</td>
+                    <td>@Model.objRPRQueueSummary.RPRSCCRPRFDRReceived</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRSCCRPRFDRReceived.ToInt64(), @Model.objRPRQueueSummary.RPRSCCRPRFDRReceived)
+                    </td>
+                </tr>
+                <tr>
+                    <td>SCC RPR Re-Submission</td>
+                    <td>@Model.objRPRQueueSummary.RPRSCCRPRReSubmission</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRSCCRPRReSubmission.ToInt64(), @Model.objRPRQueueSummary.RPRSCCRPRReSubmission)
+                    </td>
+                </tr>
+                <tr>
+                    <td>SCC RPR Sent</td>
+                    <td>@Model.objRPRQueueSummary.RPRSCCRPRSent</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRSCCRPRSent.ToInt64(), @Model.objRPRQueueSummary.RPRSCCRPRSent)
+                    </td>
+                </tr>
+                <tr>
+                    <td>SCC RPR Submission</td>
+                    <td>@Model.objRPRQueueSummary.RPRSCCRPRSubmission</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRSCCRPRSubmission.ToInt64(), @Model.objRPRQueueSummary.RPRSCCRPRSubmission)
+                    </td>
+                </tr>
+                <tr>
+                    <td>SCC RPR Transaction Inquiry</td>
+                    <td>@Model.objRPRQueueSummary.RPRSCCRPRTransactionInquiry</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRSCCRPRTransactionInquiry.ToInt64(), @Model.objRPRQueueSummary.RPRSCCRPRTransactionInquiry)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Peer Audit</td>
+                    <td>@Model.objRPRQueueSummary.RPRPeerAudit</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRPeerAudit.ToInt64(), @Model.objRPRQueueSummary.RPRPeerAudit)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Peer Audit Failed</td>
+                    <td>@Model.objRPRQueueSummary.RPRPeerAuditFailed</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRPeerAuditFailed.ToInt64(), @Model.objRPRQueueSummary.RPRPeerAuditFailed)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Eligibility Update In MARx</td>
+                    <td>@Model.objRPRQueueSummary.RPREligibilityUpdateInMARx</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPREligibilityUpdateInMARx.ToInt64(), @Model.objRPRQueueSummary.RPREligibilityUpdateInMARx)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Trend 2</td>
+                    <td>@Model.objRPRQueueSummary.RPRTrend_2</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRTrend_2.ToInt64(), @Model.objRPRQueueSummary.RPRTrend_2)
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="queue-smry-wdgt">
+    @*<div class="holding-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Holding Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Submit to CMS Deletion Code</td>
+                    <td>@Model.objRPRQueueSummary.RPRSubmitToCMSDeletionCode</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRSubmitToCMSDeletionCode.ToInt64(), Model.objRPRQueueSummary.RPRSubmitToCMSDeletionCode, false) 
+                    </td>
+                </tr>
+                <tr>
+                    <td>Update sent to CMS Deletion Code</td>
+                    <td>@Model.objRPRQueueSummary.RPRUpdateSentToCMSDeletionCode</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRUpdateSentToCMSDeletionCode.ToInt64(), Model.objRPRQueueSummary.RPRUpdateSentToCMSDeletionCode, false) 
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>*@
+    <div class="completed-queue">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Completed Queue</th>
+                    <th>Count</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Completed</td>
+                    <td>@Model.objRPRQueueSummary.RPRCompleted</td>
+                    <td>
+                        @QueueActions(RPRQueue.RPRCompleted.ToInt64(), Model.objRPRQueueSummary.RPRCompleted, false) 
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

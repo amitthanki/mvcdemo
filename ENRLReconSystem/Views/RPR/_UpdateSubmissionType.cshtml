@@ -1,0 +1,35 @@
+﻿@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@using ENRLReconSystem.Utility
+@model DOGEN_RPRActions
+
+@Html.HiddenFor(m => m.AdjustedCreateDate)
+<div class="clearfix">
+    <div class="form-group col-md-3">
+        @Html.LabelFor(m => m.SubmissionTypeLkup, "Submission Type", new { @class = "required" })
+        @Html.DropDownListFor(m => m.SubmissionTypeLkup, new SelectList(Model.lstSubmissionType, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().AddCssClass("form-control").Required("Submission Type is Required").validationAttributes)
+    </div>
+    <div class="form-group date-group col-md-3">
+        @Html.LabelFor(m => m.AdjustedCreateDate, "Adjusted Create Date")
+        @Html.DateTimeFor(m => m.AdjustedCreateDate, false, new CustomValidation().AddCssClass("form-control").validationAttributes)
+    </div>
+    <div class="form-group col-md-3">
+            @Html.LabelFor(m => m.AdjustedCreateDateReasonLkup, "Adjusted Create Date Reason")
+            @Html.DropDownListFor(m => m.AdjustedCreateDateReasonLkup, new SelectList(Model.lstAdjustedCreateDateReason, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "ddlAdjustedCreateDateReasonLkup").CustomAttributes("disabled", "disabled").AddCssClass("form-control").validationAttributes)
+        </div>
+        <div class="form-group col-md-3" id="divOtherAdjustedCreateDateReason" hidden="hidden">
+            @Html.LabelFor(m => m.OtherAdjustedCreateDateReason, "Other Adjusted Create Date Reason", new { @class = "required" })
+            @Html.TextBoxFor(m => m.OtherAdjustedCreateDateReason, new CustomValidation().Required("Other Adjusted Create Date Reason is required").CustomAttributes("id", "txtOtherAdjustedCreateDateReason").CustomAttributes("disabled", "disabled").RegularExpression(RegexType.AlphabetsWithNumericSpacesAndAmpersand, "Other Adjusted Create Date Reason").AddCssClass("form-control").validationAttributes)
+        </div>
+    <div class="form-group textarea col-md-12">
+        @Html.LabelFor(m => m.Comments, "Comments")
+        @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+    </div>
+</div>
+<script>
+    //validate and create date time picker fields
+    if ('@Model.AdjustedCreateDate' != null && '@Model.AdjustedCreateDate' != '') {
+          $('#AdjustedCreateDate_DPart').val(getDateTimeInMMDDYYYY('@Model.AdjustedCreateDate'));
+          $('#AdjustedCreateDate_DPart').trigger('change');
+    }
+</script>

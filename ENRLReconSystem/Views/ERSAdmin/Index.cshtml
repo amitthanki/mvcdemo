@@ -1,0 +1,69 @@
+﻿@using ENRLReconSystem.Utility
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src='@Url.Content("~/images/search-icon.png")' /><h4>ERS Application Administration</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <ul id="ulCacheClear">
+                <li><a href="#" cacheKey="@ConstantTexts.LookupTypeCacheKey">Clear LookUp Type</a></li>
+
+                <li><a href="#" cacheKey="@ConstantTexts.LookupMasterCacheKey">Clear LookUp Master</a></li>
+
+                <li><a href="#" cacheKey="@ConstantTexts.LookupTypeCorrelationCacheKey">Clear LookUp Type Corelation</a></li>
+
+                <li><a href="#" cacheKey="@ConstantTexts.LookupMasterCorrelationCacheKey">Clear LookUp Master Corelation</a></li>
+
+                <li><a href="#" cacheKey="@ConstantTexts.MasterConfigurarionsCacheKey">Clear Master Configuration</a></li>
+
+                <li><a href="#" cacheKey="">Clear All</a></li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+
+
+
+  
+
+            @section scripts{
+                <script>
+    var urlClearApplicationCache='@Url.Action("ClearApplicationCache", "ERSAdmin")';
+    $(document).on("click", "#ulCacheClear li a", function () {
+        try {
+            var key = $(this).attr("cacheKey");
+            MainLayout.fnConfirmDialogbox("Confirm!", "Do you want to clear the Cache.", function (isSuccess) {
+                if (isSuccess)
+                {
+                    $.ajax({
+                        url: urlClearApplicationCache,
+                        data: { "key": key},
+                        type: "POST",
+                        success: function (data) {
+                            if (data != "") {
+                                MainLayout.fnAlertMessege("Alert", data.Message, function () {
+                                    window.location.reload(true);
+                                });
+                            }
+
+                        }
+                    });
+                }
+            });
+
+
+        } catch (e) {
+
+        }
+    });
+
+
+                </script>
+            }

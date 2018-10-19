@@ -1,0 +1,528 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@model  QueueSummary
+
+@*OST Summary*@
+@if (Model.ShowOSTQueueSummary)
+{
+<div class="recon-summary-wdgt clearfix">
+    <div class="panel-group">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="primary-hdr" data-toggle="collapse" href="#collapseThree"><img src="~/Images/list-icon.png" /> <span>OST Summary</span></a>
+                </h4>
+            </div>
+            <div id="collapseThree" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    @*OST OOA*@
+                    <div class="col-md-4 recon-wdgt-box">
+                        <div class="secondary-hdr">
+                            <h4>OOA<span>@Model.objOOAQueueSummary.OOATotal</span></h4>
+                        </div>
+                        <div class="panel-group" role="tablist" aria-multiselectable="true">
+                            <div class="panel panel-default processing-wdgt">
+                                <div class="panel-heading" role="tab" id="heading-1">
+                                    <h4 class="panel-title">
+                                        <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-1" aria-expanded="false" aria-controls="collapse-1">
+                                            Processing<span>@Model.objOOAQueueSummary.OOAProcessingTotal</span>
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse-1" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                    <div class="panel-body">
+                                        <ul>
+                                            <li>New Case<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOANewCase, (long)OOAQueue.OOANewCase, (long)DiscripancyCategory.OOA)</span></li>
+                                            @*<li>CMS Rejected<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOACMSRejected, (long)OOAQueue.OOACMSRejected, (long)DiscripancyCategory.OOA)</span></li>*@
+                                            <li>MIIM Updated<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOAMIIMUpdated, (long)OOAQueue.OOAMIIMUpdated, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>Needs EGHP Review<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOANeedEGHPReview, (long)OOAQueue.OOANeedsEGHPReview, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>Open NOT<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOAOpenNOT, (long)OOAQueue.OOAOpenNOT, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>Open Disenroll<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOAOpenDisenroll, (long)OOAQueue.OOAOpenDisenroll, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>MARx Address Letter<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOAMARxAddressLetter, (long)OOAQueue.OOAMARxAddressLetter, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>Address Scrub<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOAAddressScrub, (long)OOAQueue.OOAAddressScrub, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>Open NOT (Macro)<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOAOpenNOTMacro, (long)OOAQueue.OOAOpenNOTMacro, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>Open Disenroll (Macro)<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOAOpenDisenrollMacro, (long)OOAQueue.OOAOpenDisenrollMacro, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>Update Sent to CMS(Failed)<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOAUpdateSenttoCMSFAILED, (long)OOAQueue.OOAUpdateSentoCMSFAILED, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>OOA Letter Sent(Failed)<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOALetterSentFAILED, (long)OOAQueue.OOALetterSentFAILED, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>Pending Audit<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOAPendingAudit, (long)OOAQueue.OOAPendingAudit, (long)DiscripancyCategory.OOA)</span></li>                                            
+                                            <li>Peer Audit Failed<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOAPeerAuditFailed, (long)OOAQueue.OOAPeerAuditFailed, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>Pended<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOAPended, (long)OOAQueue.OOAPended, (long)DiscripancyCategory.OOA)</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default holding-wdgt">
+                                <div class="panel-heading" role="tab" id="heading-1">
+                                    <h4 class="panel-title">
+                                        <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-2" aria-expanded="false" aria-controls="collapse-1">
+                                            Holding<span> @Model.objOOAQueueSummary.OOAHoldingTotal</span>
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse-2" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                    <div class="panel-body">
+                                        <ul>
+                                            <li>Pending FTT<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOAPendingFTT, (long)OOAQueue.OOAPendingFTT, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>Pending NOT<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOAPendingNOT, (long)OOAQueue.OOAPendingNOT, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>Submit to CMS<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOASubmitToCMS, (long)OOAQueue.OOASubmitToCMS, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>Pending SCC RPR<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOAPendingSCCRPR, (long)OOAQueue.OOAPendingSCCRPR, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>Update Sent to CMS<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOAUpdateSentToCMS, (long)OOAQueue.OOAUpdateSentToCMS, (long)DiscripancyCategory.OOA)</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default completed-wdgt">
+                                <div class="panel-heading" role="tab" id="heading-1">
+                                    <h4 class="panel-title">
+                                        <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-3" aria-expanded="false" aria-controls="collapse-1">
+                                            Completed<span>@Model.objOOAQueueSummary.OOACompletedTotal</span>
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse-3" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                    <div class="panel-body">
+                                        <ul>
+                                            <li>Completed<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOACompleted, (long)OOAQueue.OOACompleted, (long)DiscripancyCategory.OOA)</span></li>
+                                            <li>CMS Accepted<span>@Html.ActionLinkForQueueCount(m => m.objOOAQueueSummary.OOACMSAccepted, (long)OOAQueue.OOACMSAccepted, (long)DiscripancyCategory.OOA)</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*OST TRR*@
+                    <div class="col-md-4 recon-wdgt-box">
+                        <div class="secondary-hdr">
+                            <h4>TRR<span>@Model.objTRRQueueSummary.TRRTotal</span></h4>
+                        </div>
+                        <div class="panel-group" role="tablist" aria-multiselectable="true">
+                            <div class="panel panel-default processing-wdgt">
+                                <div class="panel-heading" role="tab" id="heading-1">
+                                    <h4 class="panel-title">
+                                        <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-4" aria-expanded="false" aria-controls="collapse-1">
+                                            Processing<span>@Model.objTRRQueueSummary.TRRProcessingTotal</span>
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse-4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                    <div class="panel-body">
+                                        <ul>
+                                            <li>CMS Rejected<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRCMSRejected, (long)TRRQueue.TRRCMSRejected, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>CMS Rejected Deletion Code<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRCMSRejectedDeletionCode, (long)TRRQueue.TRRCMSRejectedDeletionCode, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>Needs EGHP Review<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRNeedEGHPReview, (long)TRRQueue.TRRNeedsEGHPReview, (long)DiscripancyCategory.TRR)</span></li>
+                                            @*<li>TRC 085<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRFalloutTRC085, (long)TRRQueue.TRRFalloutTRC085, (long)DiscripancyCategory.TRR)</span></li>*@
+                                            <li>TRC 154:76<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRTRC15476, (long)TRRQueue.TRRTRC15476, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>TRC 154:01<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRTRC15401, (long)TRRQueue.TRRTRC15401, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>TRC 155<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRTRC155, (long)TRRQueue.TRRTRC155, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>TRC 282<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRTRC282, (long)TRRQueue.TRRTRC282, (long)DiscripancyCategory.TRR)</span></li>
+                                            @*<li>Fallout TRC 085<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRFalloutTRC085, (long)TRRQueue.TRRFalloutTRC085, (long)DiscripancyCategory.TRR)</span></li>*@
+                                            <li>Fallout TRC 155<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRFalloutTRC155, (long)TRRQueue.TRRFalloutTRC155, (long)DiscripancyCategory.TRR)</span></li>
+                                            @*<li>Open NOT<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRROpenNOT, (long)TRRQueue.TRROpenNOT, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>Open Disenroll<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRROpenDisenroll, (long)TRRQueue.TRROpenDisenroll, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>MARx Address Letter<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRMARxAddressLetter, (long)TRRQueue.TRRMARxAddressLetter, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>Address Scrub<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRAddressScrub, (long)TRRQueue.TRRAddressScrub, (long)DiscripancyCategory.TRR)</span></li>*@                                            
+                                            <li>Escalated<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRREscalated, (long)TRRQueue.TRREscalated, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>Update Sent to CMS(Failed)<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRUpdateSenttoCMSFAILED, (long)TRRQueue.TRRUpdateSenttoCMSFAILED, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>Pending Audit<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRPendingAudit, (long)TRRQueue.TRRPendingAudit, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>Peer Audit Failed<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRPeerAuditFailed, (long)TRRQueue.TRRPeerAuditFailed, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>Pended<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRPended, (long)TRRQueue.TRRPended, (long)DiscripancyCategory.TRR)</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default holding-wdgt">
+                                <div class="panel-heading" role="tab" id="heading-1">
+                                    <h4 class="panel-title">
+                                        <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-5" aria-expanded="false" aria-controls="collapse-1">
+                                            Holding<span>@Model.objTRRQueueSummary.TRRHoldingTotal</span>
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse-5" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                    <div class="panel-body">
+                                        <ul>
+                                            @*<li>Pending FTT<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRPendingFTT, (long)TRRQueue.TRRPendingFTT, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>Pending NOT<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRPendingNOT, (long)TRRQueue.TRRPendingNOT, (long)DiscripancyCategory.TRR)</span></li>*@
+                                            <li>Submit to CMS<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRSubmitToCMS, (long)TRRQueue.TRRSubmitToCMS, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>Submit to CMS Deletion Code<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRSubmitToCMSDeletionCode, (long)TRRQueue.TRRSubmitToCMSDeletionCode, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>Pending SCC RPR<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRPendingSCCRPR, (long)TRRQueue.TRRPendingSCCRPR, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>Update Sent to CMS<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRUpdateSentToCMS, (long)TRRQueue.TRRUpdateSentToCMS, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>Update Sent to CMS Deletion Code<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRUpdateSentToCMSDeletionCode, (long)TRRQueue.TRRUpdateSentToCMSDeletionCode, (long)DiscripancyCategory.TRR)</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default completed-wdgt">
+                                <div class="panel-heading" role="tab" id="heading-1">
+                                    <h4 class="panel-title">
+                                        <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-6" aria-expanded="false" aria-controls="collapse-1">
+                                            Completed<span>@Model.objTRRQueueSummary.TRRCompletedTotal</span>
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse-6" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                    <div class="panel-body">
+                                        <ul>
+                                            <li>Completed<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRCompleted, (long)TRRQueue.TRRCompleted, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>CMS Accepted<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRCMSAccepted, (long)TRRQueue.TRRCMSAccepted, (long)DiscripancyCategory.TRR)</span></li>
+                                            <li>CMS Accepted Deletion Code<span>@Html.ActionLinkForQueueCount(m => m.objTRRQueueSummary.TRRCMSAcceptedDeletionCode, (long)TRRQueue.TRRCMSAcceptedDeletionCode, (long)DiscripancyCategory.TRR)</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*OST SCC*@
+                    <div class="col-md-4 recon-wdgt-box">
+                        <div class="secondary-hdr">
+                            <h4>SCC Discrepancy<span>@Model.objSCCQueueSummary.SCCTotal</span></h4>
+                        </div>
+                        <div class="panel-group" role="tablist" aria-multiselectable="true">
+                            <div class="panel panel-default processing-wdgt">
+                                <div class="panel-heading" role="tab" id="heading-1">
+                                    <h4 class="panel-title">
+                                        <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-7" aria-expanded="false" aria-controls="collapse-1">
+                                            Processing<span>@Model.objSCCQueueSummary.SCCProcessingTotal</span>
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse-7" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                    <div class="panel-body">
+                                        <ul>
+                                            <li>New Case<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCNewCase, (long)SCCQueue.SCCNewCase, (long)DiscripancyCategory.SCC)</span></li>
+                                            @*<li>CMS Rejected<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCCMSRejected, (long)SCCQueue.SCCCMSRejected, (long)DiscripancyCategory.SCC)</span></li>*@
+                                            <li>MIIM Updated<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCMIIMUpdated, (long)SCCQueue.SCCMIIMUpdated, (long)DiscripancyCategory.SCC)</span></li>
+                                            <li>Potential SCC RPR Day 1<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCPotentialSCCRPRDay1, (long)SCCQueue.SCCPotentialSCCRPRDay1, (long)DiscripancyCategory.SCC)</span></li>
+                                            <li>Potential SCC RPR Day 2<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCPotentialSCCRPRDay2, (long)SCCQueue.SCCPotentialSCCRPRDay2, (long)DiscripancyCategory.SCC)</span></li>
+                                            <li>Needs EGHP Review<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCNeedEGHPReview, (long)SCCQueue.SCCNeedsEGHPReview, (long)DiscripancyCategory.SCC)</span></li>
+                                            <li>Update Sent to CMS(Failed)<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCUpdateSenttoCMSFAILED, (long)SCCQueue.SCCUpdateSenttoCMSFAILED, (long)DiscripancyCategory.SCC)</span></li>
+                                            @*<li>Open NOT<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCOpenNOT, (long)SCCQueue.SCCOpenNOT, (long)DiscripancyCategory.SCC)</span></li>
+                                            <li>Open Disenroll<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCOpenDisenroll, (long)SCCQueue.SCCOpenDisenroll, (long)DiscripancyCategory.SCC)</span></li>                                            
+                                            <li>MARx Address Letter<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCMARxAddressLetter, (long)SCCQueue.SCCMARxAddressLetter, (long)DiscripancyCategory.SCC)</span></li>
+                                            <li>Address Scrub<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCAddressScrub, (long)SCCQueue.SCCAddressScrub, (long)DiscripancyCategory.SCC)</span></li>*@
+                                            <li>Pending Audit<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCPendingAudit, (long)SCCQueue.SCCPendingAudit, (long)DiscripancyCategory.SCC)</span></li>
+                                            <li>Peer Audit Failed<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCPeerAuditFailed, (long)SCCQueue.SCCPeerAuditFailed, (long)DiscripancyCategory.SCC)</span></li>
+                                            <li>Pended<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCPended, (long)SCCQueue.SCCPended, (long)DiscripancyCategory.SCC)</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default holding-wdgt">
+                                <div class="panel-heading" role="tab" id="heading-1">
+                                    <h4 class="panel-title">
+                                        <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-8" aria-expanded="false" aria-controls="collapse-1">
+                                            Holding<span>@Model.objSCCQueueSummary.SCCHoldingTotal</span>
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse-8" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                    <div class="panel-body">
+                                        <ul>
+                                            @*<li>Pending FTT<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCPendingFTT, (long)SCCQueue.SCCPendingFTT, (long)DiscripancyCategory.SCC)</span></li>
+                                            <li>Pending NOT<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCPendingNOT, (long)SCCQueue.SCCPendingNOT, (long)DiscripancyCategory.SCC)</span></li>*@
+                                            <li>Pending SCC RPR<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCPendingSCCRPR, (long)SCCQueue.SCCPendingSCCRPR, (long)DiscripancyCategory.SCC)</span></li>                                            
+                                            <li>Submit to CMS<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCSubmitToCMS, (long)SCCQueue.SCCSubmitToCMS, (long)DiscripancyCategory.SCC)</span></li>
+                                            <li>Update Sent to CMS<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCUpdateSentToCMS, (long)SCCQueue.SCCUpdateSentToCMS, (long)DiscripancyCategory.SCC)</span></li>                                            
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default completed-wdgt">
+                                <div class="panel-heading" role="tab" id="heading-1">
+                                    <h4 class="panel-title">
+                                        <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-9" aria-expanded="false" aria-controls="collapse-1">
+                                            Completed<span>@Model.objSCCQueueSummary.SCCCompletedTotal</span>
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapse-9" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                    <div class="panel-body">
+                                        <ul>
+                                            <li>Completed<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCCompleted, (long)SCCQueue.SCCCompleted, (long)DiscripancyCategory.SCC)</span></li>
+                                            <li>CMS Accepted<span>@Html.ActionLinkForQueueCount(m => m.objSCCQueueSummary.SCCCMSAccepted, (long)SCCQueue.SCCCMSAccepted, (long)DiscripancyCategory.SCC)</span></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@*GPS RPR Summary*@
+@{string active = (!Model.ShowEligQueueSummary || !Model.ShowRPRQueueSummary) ? "active" : ""; }
+<div class="gpsmmr-rpr-summary clearfix @active">
+    @*GPS VS MMR*@
+@if (Model.ShowEligQueueSummary)
+{
+    <div class="recon-summary-wdgt col-md-8 clearfix">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="primary-hdr" data-toggle="collapse" href="#gps-mmr"><img src="~/Images/list-icon.png" /> <span>GPS vs MMR Discrepancy Summary</span></a>
+                    </h4>
+                </div>
+                <div id="gps-mmr" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        @*Eligibility*@
+                        <div class="col-md-6 recon-wdgt-box">
+                            <div class="secondary-hdr">
+                                <h4>Eligibility Discrepancy<span>@Model.objEligibilityQueueSummary.EligTotal</span></h4>
+                            </div>
+                            <div class="panel-group" role="tablist" aria-multiselectable="true">
+                                <div class="panel panel-default processing-wdgt">
+                                    <div class="panel-heading" role="tab" id="heading-1">
+                                        <h4 class="panel-title">
+                                            <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-10" aria-expanded="false" aria-controls="collapse-1">
+                                                Processing<span>@Model.objEligibilityQueueSummary.EligProcessingTotal</span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse-10" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                        <div class="panel-body">
+                                            <ul>
+                                                <li>New Case<span>@Html.ActionLinkForQueueCount(m => m.objEligibilityQueueSummary.EligNewCase, (long)EligibilityQueue.EligNewCase, (long)DiscripancyCategory.Eligibility)</span></li>
+                                                @*<li>CMS Rejected<span>@Html.ActionLinkForQueueCount(m => m.objEligibilityQueueSummary.EligCMSRejected, (long)EligibilityQueue.EligCMSRejected, (long)DiscripancyCategory.Eligibility)</span></li>*@
+                                                <li>Pended<span>@Html.ActionLinkForQueueCount(m => m.objEligibilityQueueSummary.EligPended, (long)EligibilityQueue.EligPended, (long)DiscripancyCategory.Eligibility)</span></li>
+                                                <li>Pending Audit<span>@Html.ActionLinkForQueueCount(m => m.objEligibilityQueueSummary.EligPendingAudit, (long)EligibilityQueue.EligPendingAudit, (long)DiscripancyCategory.Eligibility)</span></li>
+                                                <li>Peer Audit Failed<span>@Html.ActionLinkForQueueCount(m => m.objEligibilityQueueSummary.EligPeerAuditFailed, (long)EligibilityQueue.EligPeerAuditFailed, (long)DiscripancyCategory.Eligibility)</span></li>
+                                                @*<li>CMS Rejected<span>@Html.ActionLinkForQueueCount(m => m.objEligibilityQueueSummary.EligCMSRejected, (long)EligibilityQueue.EligCMSRejected, (long)DiscripancyCategory.Eligibility)</span></li>*@
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                @*<div class="panel panel-default holding-wdgt">
+                                    <div class="panel-heading" role="tab" id="heading-1">
+                                        <h4 class="panel-title">
+                                            <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-11" aria-expanded="false" aria-controls="collapse-1">
+                                                Holding<span>@Model.objEligibilityQueueSummary.EligHoldingTotal</span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse-11" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                        <div class="panel-body">
+                                            <ul>
+                                                <li>Submit to CMS<span>@Html.ActionLinkForQueueCount(m => m.objEligibilityQueueSummary.EligSubmitToCMS, (long)EligibilityQueue.EligSubmitToCMS, (long)DiscripancyCategory.Eligibility)</span></li>
+                                                <li>Update Sent to CMS<span>@Html.ActionLinkForQueueCount(m => m.objEligibilityQueueSummary.EligUpdateSentToCMS, (long)EligibilityQueue.EligUpdateSentToCMS, (long)DiscripancyCategory.Eligibility)</span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>*@
+                                <div class="panel panel-default completed-wdgt">
+                                    <div class="panel-heading" role="tab" id="heading-1">
+                                        <h4 class="panel-title">
+                                            <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-12" aria-expanded="false" aria-controls="collapse-1">
+                                                Completed<span>@Model.objEligibilityQueueSummary.EligCompletedTotal</span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse-12" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                        <div class="panel-body">
+                                            <ul>
+                                                <li>Completed<span>@Html.ActionLinkForQueueCount(m => m.objEligibilityQueueSummary.EligCompleted, (long)EligibilityQueue.EligCompleted, (long)DiscripancyCategory.Eligibility)</span></li>
+                                                @*<li>CMS Accepted<span>@Html.ActionLinkForQueueCount(m => m.objEligibilityQueueSummary.EligCMSAccepted, (long)EligibilityQueue.EligCMSAccepted, (long)DiscripancyCategory.Eligibility)</span></li>*@
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*Gender & DOB*@
+                        <div class="col-md-6 recon-wdgt-box">
+                            @*gender*@
+                            <div class="secondary-hdr">
+                                <h4>Gender Discrepancy<span>@Model.objGenderQueueSummary.GenderTotal</span></h4>
+                            </div>
+                            <div class="panel-group" role="tablist" aria-multiselectable="true">
+                                <div class="panel panel-default processing-wdgt">
+                                    <div class="panel-heading" role="tab" id="heading-1">
+                                        <h4 class="panel-title">
+                                            <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-13" aria-expanded="false" aria-controls="collapse-1">
+                                                Processing<span>@Model.objGenderQueueSummary.GenderProcessingTotal</span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse-13" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                        <div class="panel-body">
+                                            <ul>
+                                                <li>New Case<span>@Html.ActionLinkForQueueCount(m => m.objGenderQueueSummary.GenderNewCase, (long)GenderQueue.GenderNewCase, (long)DiscripancyCategory.Gender)</span></li>
+                                                <li>Pended<span>@Html.ActionLinkForQueueCount(m => m.objGenderQueueSummary.GenderPended, (long)GenderQueue.GenderPended, (long)DiscripancyCategory.Gender)</span></li>
+                                                <li>Pending Audit<span>@Html.ActionLinkForQueueCount(m => m.objGenderQueueSummary.GenderPendingAudit, (long)GenderQueue.GenderPendingAudit, (long)DiscripancyCategory.Gender)</span></li>
+                                                <li>Peer Audit Failed<span>@Html.ActionLinkForQueueCount(m => m.objGenderQueueSummary.GenderPeerAuditFailed, (long)GenderQueue.GenderPeerAuditFailed, (long)DiscripancyCategory.Gender)</span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default completed-wdgt">
+                                    <div class="panel-heading" role="tab" id="heading-1">
+                                        <h4 class="panel-title">
+                                            <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-15" aria-expanded="false" aria-controls="collapse-1">
+                                                Completed<span>@Model.objGenderQueueSummary.GenderCompletedTotal</span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse-15" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                        <div class="panel-body">
+                                            <ul>
+                                                <li>Completed<span>@Html.ActionLinkForQueueCount(m => m.objGenderQueueSummary.GenderCompleted, (long)GenderQueue.GenderCompleted, (long)DiscripancyCategory.Gender)</span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*DOB*@
+                            <div class="secondary-hdr">
+                                <h4>DOB Discrepancy<span>@Model.objDOBQueueSummary.DOBTotal</span></h4>
+                            </div>
+                            <div class="panel-group" role="tablist" aria-multiselectable="true">
+                                <div class="panel panel-default processing-wdgt">
+                                    <div class="panel-heading" role="tab" id="heading-1">
+                                        <h4 class="panel-title">
+                                            <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-25" aria-expanded="false" aria-controls="collapse-1">
+                                                Processing<span>@Model.objDOBQueueSummary.DOBProcessingTotal</span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse-25" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                        <div class="panel-body">
+                                            <ul>
+                                                <li>New Case<span>@Html.ActionLinkForQueueCount(m => m.objDOBQueueSummary.DOBNewCase, (long)DOBQueue.DOBNewCase, (long)DiscripancyCategory.DOB)</span></li>
+                                                <li>Pended<span>@Html.ActionLinkForQueueCount(m => m.objDOBQueueSummary.DOBPended, (long)DOBQueue.DOBPended, (long)DiscripancyCategory.DOB)</span></li>
+                                                <li>Pending Audit<span>@Html.ActionLinkForQueueCount(m => m.objDOBQueueSummary.DOBPendingAudit, (long)DOBQueue.DOBPendingAudit, (long)DiscripancyCategory.DOB)</span></li>
+                                                <li>Peer Audit Failed<span>@Html.ActionLinkForQueueCount(m => m.objDOBQueueSummary.DOBPeerAuditFailed, (long)DOBQueue.DOBPeerAuditFailed, (long)DiscripancyCategory.DOB)</span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default completed-wdgt">
+                                    <div class="panel-heading" role="tab" id="heading-1">
+                                        <h4 class="panel-title">
+                                            <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-26" aria-expanded="false" aria-controls="collapse-1">
+                                                Completed<span>@Model.objDOBQueueSummary.DOBCompletedTotal</span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse-26" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                        <div class="panel-body">
+                                            <ul>
+                                                <li>Completed<span>@Html.ActionLinkForQueueCount(m => m.objDOBQueueSummary.DOBCompleted, (long)DOBQueue.DOBCompleted, (long)DiscripancyCategory.DOB)</span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@if (Model.ShowRPRQueueSummary)
+{
+    @*RPR*@
+    <div class="recon-summary-wdgt rpr-summary-wdgt col-md-4 clearfix">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a class="primary-hdr" data-toggle="collapse" href="#rpr-summary"><img src="~/Images/list-icon.png" /> <span>RPR Summary</span></a>
+                    </h4>
+                </div>
+                <div id="rpr-summary" class="panel-collapse collapse in">
+                    <div class="panel-body">
+                        <div class="col-md-4 recon-wdgt-box">
+                            <div class="secondary-hdr">
+                                <h4>RPRs<span>@Model.objRPRQueueSummary.RPRTotal</span></h4>
+                            </div>
+                            <div class="panel-group" role="tablist" aria-multiselectable="true">
+                                <div class="panel panel-default processing-wdgt">
+                                    <div class="panel-heading" role="tab" id="heading-1">
+                                        <h4 class="panel-title">
+                                            <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-22" aria-expanded="false" aria-controls="collapse-1">
+                                                Processing<span>@Model.objRPRQueueSummary.RPRProcessingTotal</span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    @*processing*@
+                                    <div id="collapse-22" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                        <div class="panel-body">
+                                            <ul>
+                                                <li>Request Category 2<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRRequestCategory2, (long)RPRQueue.RPRRequestCategory2, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>Request Category 3<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRRequestCategory3, (long)RPRQueue.RPRRequestCategory3, (long)DiscripancyCategory.RPR)</span></li>                                                
+                                                <li>Request Category 2 CTM<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRRequestCategory2CTM, (long)RPRQueue.RPRRequestCategory2CTM, (long)DiscripancyCategory.RPR)</span></li>                                                
+                                                <li>Submission Category 2<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRSubmissionCategory2, (long)RPRQueue.RPRSubmissionCategory2, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>Submission Category 3<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRSubmissionCategory3, (long)RPRQueue.RPRSubmissionCategory3, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>Re-Submission<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRReSubmission, (long)RPRQueue.RPRReSubmission, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>CMS Account Manager Sent<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRCMSAccountManagerSent, (long)RPRQueue.RPRCMSAccountManagerSent, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>Sent to RPC<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRSentToRPC, (long)RPRQueue.RPRSentToRPC, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>CMS Rejected Deletion Code<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRCMSRejectedDeletionCode, (long)RPRQueue.RPRCMSRejectedDeletionCode, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>Received RPC FDR<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRReceivedRPCFDR, (long)RPRQueue.RPRReceivedRPCFDR, (long)DiscripancyCategory.RPR)</span></li>
+                                                @*<li>Received TRC 282<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRReceivedTRC282, (long)RPRQueue.RPRReceivedTRC282, (long)DiscripancyCategory.RPR)</span></li>*@
+                                                <li>Rejected<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRRejected, (long)RPRQueue.RPRRejected, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>Transaction Inquiry<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.TransactionInquire, (long)RPRQueue.TransactionInquiry, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>Pended<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRPended, (long)RPRQueue.RPRPended, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>Initial SCC RPR<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRInitialSCCRPR, (long)RPRQueue.RPRInitialSCCRPR, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>SCC RPR FDR Received<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRSCCRPRFDRReceived, (long)RPRQueue.RPRSCCRPRFDRReceived, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>SCC RPR Re-Submission<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRSCCRPRReSubmission, (long)RPRQueue.RPRSCCRPRReSubmission, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>SCC RPR Sent<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRSCCRPRSent, (long)RPRQueue.RPRSCCRPRSent, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>SCC RPR Submission<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRSCCRPRSubmission, (long)RPRQueue.RPRSCCRPRSubmission, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>SCC RPR Transaction Inquiry<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRSCCRPRTransactionInquiry, (long)RPRQueue.RPRSCCRPRTransactionInquiry, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>Pending Audit<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRPeerAudit, (long)RPRQueue.RPRPeerAudit, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>Peer Audit failed<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRPeerAuditFailed, (long)RPRQueue.RPRPeerAuditFailed, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>Eligibility Update In MARx<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPREligibilityUpdateInMARx, (long)RPRQueue.RPREligibilityUpdateInMARx, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>Trend 2<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRTrend_2, (long)RPRQueue.RPRTrend_2, (long)DiscripancyCategory.RPR)</span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                @*Holding*@
+                                @*<div class="panel panel-default holding-wdgt">
+                                    <div class="panel-heading" role="tab" id="heading-1">
+                                        <h4 class="panel-title">
+                                            <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-27" aria-expanded="false" aria-controls="collapse-1">
+                                                Holding<span>@Model.objRPRQueueSummary.RPRHoldingTotal</span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse-27" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                        <div class="panel-body">
+                                            <ul>
+                                                <li>Submit to CMS Deletion Code<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRSubmitToCMSDeletionCode, (long)RPRQueue.RPRSubmitToCMSDeletionCode, (long)DiscripancyCategory.RPR)</span></li>
+                                                <li>Update sent to CMS Deletion Code<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRUpdateSentToCMSDeletionCode, (long)RPRQueue.RPRUpdateSentToCMSDeletionCode, (long)DiscripancyCategory.RPR)</span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>*@
+                                @*Completed*@
+                                <div class="panel panel-default completed-wdgt">
+                                    <div class="panel-heading" role="tab" id="heading-1">
+                                        <h4 class="panel-title">
+                                            <a class="secondary-sub-hdr" role="button" data-toggle="collapse" href="#collapse-24" aria-expanded="false" aria-controls="collapse-1">
+                                                Completed<span>@Model.objRPRQueueSummary.RPRCompletedTotal</span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapse-24" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-1">
+                                        <div class="panel-body">
+                                            <ul>
+                                                <li>Completed<span>@Html.ActionLinkForQueueCount(m => m.objRPRQueueSummary.RPRCompleted, (long)RPRQueue.RPRCompleted, (long)DiscripancyCategory.RPR)</span></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+</div>

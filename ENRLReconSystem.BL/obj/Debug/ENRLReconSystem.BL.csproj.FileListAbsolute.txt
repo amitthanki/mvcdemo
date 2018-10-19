@@ -1,0 +1,13 @@
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.BL\bin\Debug\ENRLReconSystem.BL.dll
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.BL\bin\Debug\ENRLReconSystem.BL.pdb
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.BL\bin\Debug\ENRLReconSystem.DAL.dll
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.BL\bin\Debug\ENRLReconSystem.DO.dll
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.BL\bin\Debug\ENRLReconSystem.Utility.dll
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.BL\bin\Debug\Newtonsoft.Json.dll
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.BL\bin\Debug\ENRLReconSystem.DAL.pdb
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.BL\bin\Debug\ENRLReconSystem.DO.pdb
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.BL\bin\Debug\ENRLReconSystem.Utility.pdb
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.BL\bin\Debug\Newtonsoft.Json.xml
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.BL\obj\Debug\ENRLReconSystem.BL.csprojResolveAssemblyReference.cache
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.BL\obj\Debug\ENRLReconSystem.BL.dll
+C:\WorkSpace\ENRL_Recon\Application\ENRLReconSystem\ENRLReconSystem.BL\obj\Debug\ENRLReconSystem.BL.pdb

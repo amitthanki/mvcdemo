@@ -1,0 +1,76 @@
+﻿@using ENRLReconSystem.DO
+@using ENRLReconSystem.Utility
+@model List<DOADM_AccessGroupSkillsCorrelation>
+
+<div class="table-responsive">
+    <table class="table table-bordered" id="tblAccessGroupSkill">
+        <thead>
+            <tr>
+                <th style="text-align:center" class="actions">Actions</th>
+                <th style="text-align:center;width:30%">Skill</th>
+                <th style="text-align:center">Create</th>
+                <th style="text-align:center">Search</th>
+                <th style="text-align:center">History</th>
+                <th style="text-align:center">Reassign</th>
+                <th style="text-align:center">Unlock</th>
+                <th style="text-align:center">Modify</th>
+                <th style="text-align:center">View</th>
+                <th style="text-align:center">Mass Update</th>
+                <th style="text-align:center">Upload</th>
+                <th style="text-align:center">Clone</th>
+                <th style="text-align:center">Reopen</th>
+                <th style="text-align:center">Updated On</th>
+                <th style="text-align:center">Updated By</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr SkillId="@item.ADM_SkillsMasterRef">
+                    <td>
+                            <a id="btnEditSkill" class="edit-queue"><img src="~/Images/edit-img.png" height="20" alt="Edit" /></a>
+                            <a id="btnDeleteSkill" class="edit-queue"><img src="~/Images/deleteiconimg.png" width="20" alt="Delete" /></a>
+                    </td>
+                    <td>
+                        @Html.DropDownList("ddlSkill", new SelectList(ViewBag.Skills, "ADM_SkillsMasterId", "SkillsName", @item.ADM_SkillsMasterRef), ConstantTexts.dropdownDefaultValue, new { @class = "form-control display-mode", @disabled = true })
+                    </td>
+                    <td>
+                        @Html.CheckBox("chkCanCreate", (bool)@item.CanCreate, new { Id = "chkCanCreate", @class = "form-control display-mode", @disabled = true })
+                    </td>
+                    <td>
+                        @Html.CheckBox("chkCanSearch", (bool)@item.CanSearch, new { Id = "chkCanSearch", @class = "form-control display-mode", @disabled = true })
+                    </td>
+                    <td>
+                        @Html.CheckBox("chkCanHistory", (bool)@item.CanHistory, new { Id = "chkCanHistory", @class = "form-control display-mode", @disabled = true })
+                    </td>
+                    <td>
+                        @Html.CheckBox("chkCanReassign", (bool)@item.CanReassign, new { Id = "chkCanReassign", @class = "form-control display-mode", @disabled = true })
+                    </td>
+                    <td>
+                        @Html.CheckBox("chkCanUnlock", (bool)@item.CanUnlock, new { Id = "chkCanUnlock", @class = "form-control display-mode", @disabled = true })
+                    </td>
+                    <td>
+                        @Html.CheckBox("chkCanModify", (bool)@item.CanModify, new { Id = "chkCanModify", @class = "form-control display-mode", @disabled = true })
+                    </td>
+                    <td>
+                        @Html.CheckBox("chkCanView", (bool)@item.CanView, new { Id = "chkCanView", @class = "form-control display-mode", @disabled = true })
+                    </td>
+                    <td>
+                        @Html.CheckBox("chkCanMassUpdate", (bool)@item.CanMassUpdate, new { Id = "chkCanMassUpdate", @class = "form-control display-mode", @disabled = true })
+                    </td>
+                    <td>
+                        @Html.CheckBox("chkCanUpload", (bool)@item.CanUpload, new { Id = "chkCanUpload", @class = "form-control display-mode", @disabled = true })
+                    </td>
+                    <td>
+                        @Html.CheckBox("chkCanClone", (bool)@item.CanClone, new { Id = "chkCanClone", @class = "form-control display-mode", @disabled = true })
+                    </td>
+                    <td>
+                        @Html.CheckBox("chkCanReopen", (bool)@item.CanReopen, new { Id = "chkCanReopen", @class = "form-control display-mode", @disabled = true })
+                    </td>
+                    <td>@(item.UTCLastUpdatedOn.HasValue ? item.UTCLastUpdatedOn.Value.ToString("MM/dd/yyyy hh:mm tt") : "")</td>
+                    <td>@item.LastUpdatedByName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

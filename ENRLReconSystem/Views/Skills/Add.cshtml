@@ -1,0 +1,573 @@
+﻿@using ENRLReconSystem.DO
+@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.Utility
+@model DOADM_SkillsMaster
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var Header = Model.ADM_SkillsMasterId == 0 ? "Add Skill" : "Manage Skill";
+}
+<style>
+    .emptyRow {
+        border: 1px solid red;
+    }
+
+    .mandatory {
+        color: red;
+        font-weight: bold;
+    }
+
+    .text-danger {
+        padding-left: 10px;
+        padding-top: 5px;
+        color: red;
+        list-style-type: symbols('*');
+    }
+
+    .gridCol {
+        padding-left: 20px;
+    }
+
+    td {
+        text-align: center;
+    }
+</style>
+
+<section class="container main-body-wrpr">
+    <div class="wdgt-wrapper">
+        <div class="wdgt-hdr">
+            <img src="~/Images/skills-icon.png" /><h4>@Header</h4>
+        </div>
+        <div class="wdgt-body clearfix">
+            <form id="frmAddSkills">
+                @Html.HiddenFor(m => m.CreatedByRef)
+                @Html.HiddenFor(m => m.UTCCreatedOn)
+                @Html.HiddenFor(m => m.ADM_SkillsMasterId, new { @id = "hdnADM_SkillsMasterId" })
+                @Html.ValidationSummary()
+                <div class="form-group col-md-3">
+                    @Html.Label("Skill Name", new { @class = "required" })
+                    @Html.TextBoxFor(m => m.SkillsName, new CustomValidation().Required("Skill Name is required").AddCssClass("form-control").CustomAttributes("id", "txtSkillName").CustomAttributes((Model.ADM_SkillsMasterId > 0) ? "readonly" : "", (Model.ADM_SkillsMasterId > 0) ? "true" : "").RegularExpression(RegexType.AlphabetsWithNumericUnderscoreHyphenAmpersandAndSpaces, "Skill Name").StringMaxLength(75, "Skill Name").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.Label("Business Segment", new { @class = "required" })
+                    @Html.DropDownListFor(m => m.BusinessSegmentLkup, new SelectList(ViewBag.BusinessSegment, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "ddlBusinessSegment").Required("Business Segment is required").AddCssClass("form-control").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="required">ERS Department</label>
+                    @Html.DropDownListFor(m => m.CMN_DepartmentRef, Enumerable.Empty<SelectListItem>(), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "ddlERSDepartment").Required("ERS Department is required").AddCssClass("form-control").CustomAttributes("readonly", "readonly").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.Label("Role", new { @class = "required" })
+                    @Html.DropDownListFor(m => m.RoleLkup, new SelectList(ViewBag.Roles, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "ddlRoles").Required("Role is required").AddCssClass("form-control").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.Label("Work Basket", new { @class = "required" })
+                    @Html.DropDownListFor(m => m.WorkBasketLkup, new SelectList(ViewBag.WorkBasket, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue,
+                   new CustomValidation().CustomAttributes("OldValue", "").CustomAttributes("onfocus", "this.setAttribute('OldValue', this.value);").CustomAttributes("id", "ddlWorkBasket").Required("Work Basket is required").AddCssClass("form-control work-basket").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    @Html.Label("Discrepancy Category", new { @class = "required" })
+                    @Html.DropDownListFor(m => m.DiscrepancyCategoryLkup, Enumerable.Empty<SelectListItem>(), ConstantTexts.dropdownDefaultValue,
+                   new CustomValidation().CustomAttributes("OldValue", "").CustomAttributes("onfocus", "this.setAttribute('OldValue', this.value);").CustomAttributes("readonly", "readonly").CustomAttributes("id", "ddlDiscrepancyCat").Required("Discrepancy Category is required").AddCssClass("form-control Discrepancy-cat").validationAttributes)
+                </div>
+                <div class="form-group col-md-3">
+                    <label>Is Active</label>
+                    @Html.CheckBoxFor(m => m.IsActive, (Model.ADM_SkillsMasterId > 0) ? new { @class = "form-control" } : new { @checked = "checked", @class = "form-control" } as object)
+                </div>
+                <div style="clear: both;"></div>
+                <div class="wdgt-wrapper">
+                    <div class="wdgt-hdr">
+                        <img src="~/Images/list-icon.png" /><h4>Work Queues</h4>
+                    </div>
+                    <div class="wdgt-add-btn clearfix">
+                        <button type="button" id="btnAddNew" class="btn btn-primary" disabled><img src="~/Images/add-icon.png" title="Click here to add new skill" /></button>
+                        <label class="validation-summary-errors" id="txtNoQueueErrorMsg" hidden="hidden">No more Work Queues for selected Discrepancy Category.</label>
+                    </div>
+                    <div class="wdgt-body clearfix" id="divWorkQueue">
+                        @Html.Partial("_WorkQueue", Model.lstDOADM_SkillWorkQueuesCorrelation)
+                    </div>
+                </div>
+                <div class="btn-group clearfix">
+                    <button type="button" id="btnSubmit" class="btn btn-primary"><img src='@Url.Content("~/images/save-icon.png")' /><span>Save</span></button>
+                    <button type="button" id="btnReset" class="btn btn-primary"><img src='@Url.Content("/images/reset-icon.png")' /><span>Reset</span></button>
+                    <button type="button" id="btnCancel" class="btn btn-primary" onclick="fnCancel();"><img src="~/Images/cancle-icon.png" /><span>Cancel</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</section>
+@section Scripts
+{
+    <script type="text/javascript">
+
+        var submitUrl = '@Url.Action("Add", "Skills")';
+        var recordId = '@Model.ADM_SkillsMasterId';
+        var DiscrepancyCat = '@Model.DiscrepancyCategoryLkup';
+        var ERSDepartment = '@Model.CMN_DepartmentRef';
+        var urlForUnlock = '@Url.Action("UnlockRecord", "RecordsLocked")';
+        var cancelUrl = '@Url.Action("Search", "Skills")';
+        var dropdownDefaultValue = '@ConstantTexts.dropdownDefaultValue';
+        var lstDepartments = @Html.Raw(Json.Encode(ViewBag.lstDepartments));
+        var lstDiscrepancyCategories = @Html.Raw(Json.Encode(ViewBag.lstDiscrepancyCategories));
+        var GetQueuesUrl = '@Url.Action("GetQueues", "Skills")';
+        var AddWorkQueuesToSessionUrl = '@Url.Action("AddWorkQueuesToSession", "Skills")';
+        var urlCheckSkills = '@Url.Action("CheckSkillExistsUsingSkillName", "Skills")';
+        var WorkQueues = [];//fix array of all the work queues in this category
+        var AddedSkillWorkQueues = [];//temp added work queues
+        var ToBeAddedSkillWorkQueues = [];//work queues that can be added from this category
+        var oldWorkQueue = 0;//to save old work queue value while editing
+
+
+        //---parameters in edit mode----//
+        var PrevoiuslyAddedSkillWorkQueues = @Html.Raw(Json.Encode(Model.lstDOADM_SkillWorkQueuesCorrelation));
+        var ViewBagWorkQueues = @Html.Raw(Json.Encode(ViewBag.WorkQueues));
+
+
+        $myForm = $('#frmAddSkills');
+        var origForm = $myForm.serialize();
+
+        $(document).ready(function () {
+            $("#ddlWorkBasket,#ddlBusinessSegment").trigger('change');
+            if (recordId != 0) {
+                $('#ddlDiscrepancyCat').val(DiscrepancyCat);
+                $('#ddlERSDepartment').val(ERSDepartment);
+
+                if (PrevoiuslyAddedSkillWorkQueues.length > 0) {
+                    $.each(ViewBagWorkQueues, function (index, item) {
+                        if (item != undefined) {
+                            if ($.grep(PrevoiuslyAddedSkillWorkQueues, function (x) { return x.WorkQueuesLkup == item.CMN_LookupMasterChildRef }).length > 0)
+                                AddedSkillWorkQueues.push(item);
+                            else
+                                ToBeAddedSkillWorkQueues.push(item);
+                        }
+                    });
+                    WorkQueues = ViewBagWorkQueues;
+                } else {
+                    $('#ddlDiscrepancyCat').trigger('change');
+                }
+            }
+            fnDisableControls(false);
+        });
+
+        function fnDisableControls(disable) {
+            if (disable) {
+                $('#ddlWorkBasket, #ddlDiscrepancyCat,#btnAddNew ,#btnSubmit, #btnReset, #btnCancel,.input-sm').attr('disabled', 'disabled');
+                $('.paginate_button').addClass('disabled');
+                $('.edit-queue').hide();
+            } else {
+                $('#ddlWorkBasket, #ddlDiscrepancyCat,#btnAddNew ,#btnSubmit, #btnReset, #btnCancel, .edit-queue,.input-sm').removeAttr('disabled');
+                $('.paginate_button').removeClass('disabled');
+                $('.edit-queue').show();
+
+                if (ToBeAddedSkillWorkQueues.length <= 0) {
+                    $('#btnAddNew').attr('disabled', 'disabled');
+                    $('#txtNoQueueErrorMsg').show();
+                } else {
+                    $('#btnAddNew').removeAttr('disabled');
+                    $('#txtNoQueueErrorMsg').hide();
+                }
+
+                if ($('#ddlDiscrepancyCat').val() == "") {
+                    $('#txtNoQueueErrorMsg').hide();
+                }
+            }
+        }
+
+        function fnCheckSkillExistsUsingSkillName() {
+            var skill = $("#txtSkillName").val();
+            var SkillExistResult = { isValid: true };
+            if (recordId == '0') {
+                if (skill != '') {
+                    SkillExistResult.isValid = false;
+                    $.ajax({
+                        url: urlCheckSkills,
+                        type: 'POST',
+                        cache: false,
+                        async: false,
+                        data: { skillsName: skill },
+                        dataType: "json",
+                        success: function (result) {
+                            SkillExistResult.isValid = !result.skillExists;
+                        },
+                        error: function (data) {
+                            MainLayout.fnAlertMessege("Alert", data);
+                        }
+                    })
+                }
+                return SkillExistResult;
+            }
+            return SkillExistResult;
+        };
+
+        function fnGetWorkQueuesFromDiscrepancyCat(ddlDiscCatID) {
+            AddedSkillWorkQueues = [];
+            WorkQueues = [];
+            ToBeAddedSkillWorkQueues = [];
+            if (ddlDiscCatID == "") {
+                fnDisableControls(false);
+                return;
+            }
+            try {
+                $.ajax({
+                    url: GetQueuesUrl,
+                    data: JSON.stringify({ 'lDiscrepancyCatLkup': ddlDiscCatID }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    type: "POST",
+                    success: function (data) {
+                        if (data != null) {
+                            WorkQueues = data;
+                            ToBeAddedSkillWorkQueues = data;
+                            fnDisableControls(false);
+                        }
+                        else {
+                            $("#btnAddNew").attr("disabled", "disabled")
+                            MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                        }
+                    },
+                    error: function (x) {
+                        $("#btnAddNew").attr("disabled", "disabled")
+                        MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                    }
+                });
+            }
+            catch (e) {
+                MainLayout.fnAlertMessege("Error!", "An error occoured.");
+            }
+        };
+
+        function fnGetDiscrepancyCatForWorBasket(ddlWorBasket) {
+            var options = [];
+            if (ddlWorBasket != "" || ddlWorBasket != 0) {
+                for (var filter in lstDiscrepancyCategories) {
+                    if (lstDiscrepancyCategories[filter].CMN_LookupMasterParentRef == ddlWorBasket) {
+                        options.push(lstDiscrepancyCategories[filter]);
+                    }
+                }
+            }
+            if (options.length > 0) {
+                MainLayout.getDropDownList('#ddlDiscrepancyCat', options, dropdownDefaultValue, 'LookupMasterChildValue', 'CMN_LookupMasterChildRef')
+                $('#ddlDiscrepancyCat').removeAttr('readonly');
+            } else {
+                MainLayout.getDropDownList('#ddlDiscrepancyCat', [], 'Please Select Work Basket')
+                $('#ddlDiscrepancyCat').attr('readonly', 'readonly');
+                $("#btnAddNew").attr("disabled", "disabled");
+                WorkQueues = [];//empty the work queue array
+                AddedSkillWorkQueues = [];
+                ToBeAddedSkillWorkQueues = [];
+            }
+            $('#btnAddNew').attr('disabled', 'disabled');
+        };
+
+        //custom validations
+        function validateCustom() {
+
+            var errorList = "";
+            var isValid = true;
+            var result = fnCheckSkillExistsUsingSkillName();
+
+            if ($("#txtSkillName").val() != "" && !result.isValid) {
+                $('#txtSkillName').removeClass("valid").addClass("input-validation-error");
+                errorList = errorList + '<li>' + "Skill Name already exists." + '</li>';
+                isValid = false;
+            }
+
+            if (AddedSkillWorkQueues.length == 0) {
+                errorList = errorList + '<li>' + "Minimum One Work Queue is required" + '</li>';
+                isValid = false;
+            }
+
+            if (!isValid) {
+                if ($('.validation-summary-errors').length != 0) {
+                    //if validion errors div is present add errors to list
+                    $('.validation-summary-errors ul').append(errorList);
+                } else {
+                    //if validion errors div is not present update validation-summary-valid div and add errors to list
+                    $('.validation-summary-valid').addClass('validation-summary-errors').removeClass('validation-summary-valid');
+                    $('.validation-summary-errors ul').append(errorList);
+                }
+            }
+            return isValid;
+        };
+
+        function fnPerformWorkQueueOperation(mode, ddlWorkQueues) {
+            try {
+                var ddlDescCatID = $('#ddlDiscrepancyCat').val();
+                var ddlWorkBasket = $('#ddlWorkBasket').val();
+                var ADM_SkillMasterRef = recordId;
+
+                var objDOADM_SkillWorkQueuesCorrelation = {
+                    ADM_SkillsMasterRef: ADM_SkillMasterRef,
+                    WorkQueuesLkup: ddlWorkQueues,
+                }
+
+                $.ajax({
+                    data: { objDOADM_SkillWorkQueuesCorrelation: objDOADM_SkillWorkQueuesCorrelation, lDiscrepancyCatLkup: ddlDescCatID, lPreviousWorkQueue: oldWorkQueue, mode: mode },
+                    url: AddWorkQueuesToSessionUrl,
+                    type: "POST",
+                    success: function (data) {
+                        if (data != "") {
+                            $('#divWorkQueue').empty().html(data);
+                            if (mode == 3){//remove all the queues
+                                fnGetWorkQueuesFromDiscrepancyCat(ddlDescCatID);
+                            } else if (mode == 2) {//update work queue
+                                //select 1st object with mathced condition and add it to selecetd Queues array
+                                AddedSkillWorkQueues.push($.grep(ToBeAddedSkillWorkQueues, function (e) { return e.CMN_LookupMasterChildRef == ddlWorkQueues; })[0]);
+                                //remove same object from pending queues list array
+                                ToBeAddedSkillWorkQueues = $.grep(ToBeAddedSkillWorkQueues, function (e) { return e.CMN_LookupMasterChildRef != ddlWorkQueues; });
+                            }
+                            else if (mode == 1) {//delete work queue
+                                //select 1st object with mathced condition and add it to pending queues array
+                                ToBeAddedSkillWorkQueues.push($.grep(AddedSkillWorkQueues, function (e) { return e.CMN_LookupMasterChildRef == ddlWorkQueues; })[0]);
+                                //remove same object from selecetd queues list array
+                                AddedSkillWorkQueues = $.grep(AddedSkillWorkQueues, function (e) { return e.CMN_LookupMasterChildRef != ddlWorkQueues; });
+                            } else {//add new work queue
+                                //select 1st object with mathced condition and add it to selecetd Queues array
+                                AddedSkillWorkQueues.push($.grep(ToBeAddedSkillWorkQueues, function (e) { return e.CMN_LookupMasterChildRef == ddlWorkQueues; })[0]);
+                                //remove same object from pending queues list array
+                                ToBeAddedSkillWorkQueues = $.grep(ToBeAddedSkillWorkQueues, function (e) { return e.CMN_LookupMasterChildRef != ddlWorkQueues; });
+                            }
+                            fnDisableControls(false);
+                            MainLayout.fnInitialiseDataTable($('#tblWorkQueue'));
+                        }
+                        else {
+                            MainLayout.fnAlertMessege("Alert!", "An error occoured contact administrator!");
+                        }
+                    },
+                    error: function (x) {
+                        MainLayout.fnAlertMessege("Alert!", "An error occoured contact administrator!");
+                    }
+                });
+
+            } catch (e) {
+                MainLayout.fnAlertMessege("Alert!", "An error occoured contact administrator!");
+            }
+        }
+
+        $("#btnSubmit").on("click", function () {
+            MainLayout.fnResetValidationSummary();
+
+            var $form = $('#frmAddSkills'),
+                frmData = $form.serialize();
+            var formValid = $form.valid(); //validate form
+            var isCustomValid = validateCustom();// custom validations
+            if (!formValid || !isCustomValid)
+                return;
+            if (origForm != $form.serialize()) {
+                try {
+                    $.ajax({
+                        data: $form.serialize(),
+                        url: submitUrl,
+                        type: "POST",
+                        success: function (data) {
+                            if (data.ID > 0) {
+                                MainLayout.fnAlertMessege("Error!", data.Message);
+                            }
+                            else {
+                                MainLayout.fnAlertMessege("Alert!", 'Record saved successfully.', function () {
+                                    window.location.href = cancelUrl;
+                                });
+                            }
+                        },
+                        error: function (x) {
+                            MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                        }
+                    });
+                }
+                catch (e) {
+                    MainLayout.fnAlertMessege("Error!", "An error occoured.");
+                }
+            } else {
+                MainLayout.fnAlertMessege("Alert!", "There is no change in the form to update.");
+            }
+        });
+
+        $('#btnReset').click(function () {
+            window.location.reload();
+        });
+
+        $("#ddlWorkBasket,#ddlDiscrepancyCat").keydown(function (e) {
+            if (AddedSkillWorkQueues.length > 0)
+                e.preventDefault();
+        });
+
+        $("#ddlWorkBasket").change(function () {
+            var selected = $('#ddlWorkBasket').val();
+            if (AddedSkillWorkQueues.length > 0)
+            {
+                MainLayout.fnConfirmDialogbox("Confirmation", "All the currently added work queues will be removed. Do you wish to continue ?",
+                    function (isTrue) {
+                        if (isTrue) {
+                            fnGetDiscrepancyCatForWorBasket(selected);
+                            fnPerformWorkQueueOperation(3, 0);//remove all the added queues from session
+                        }
+                        else {
+                            $("#ddlWorkBasket").val($('#ddlWorkBasket').attr('OldValue'));
+                            return;
+                        }
+                    });
+            }
+            else
+            {
+                fnGetDiscrepancyCatForWorBasket(selected);
+            }
+        });
+
+        $("#ddlBusinessSegment").change(function () {
+            var selected = $('#ddlBusinessSegment').val();
+            var options = [];
+            if (selected != "" || selected != 0) {
+                for (var filter in lstDepartments) {
+                    if (lstDepartments[filter].BusinessSegmentLkup == selected) {
+                        options.push(lstDepartments[filter]);
+                    }
+                }
+            }
+            if (options.length > 0) {
+                MainLayout.getDropDownList('#ddlERSDepartment', options, dropdownDefaultValue, 'ERSDepartmentName', 'CMN_DepartmentId')
+                $('#ddlERSDepartment').removeAttr('readonly');
+            } else {
+                MainLayout.getDropDownList('#ddlERSDepartment', [], 'Please Select Business Segment')
+                $('#ddlERSDepartment').attr('readonly', 'readonly');
+            }
+        });
+
+        $("#ddlDiscrepancyCat").change(function () {
+            var ddlDiscCatID = $("#ddlDiscrepancyCat").val();
+            if (AddedSkillWorkQueues.length > 0) {
+                MainLayout.fnConfirmDialogbox("Confirmation", "All the currently added work queues will be removed. Do you wish to continue ?",
+                    function (isTrue) {
+                        if (isTrue) {
+                            fnPerformWorkQueueOperation(3, 0);//remove all the added queues from session
+                        }
+                        else {
+                            $("#ddlDiscrepancyCat").val($('#ddlDiscrepancyCat').attr('OldValue'));
+                            return;
+                        }
+                    });
+            }
+            else
+            {
+                fnGetWorkQueuesFromDiscrepancyCat(ddlDiscCatID);
+            }
+        });
+
+        //add new queue in table
+        $(document).on("click", '#btnAddNew', function () {
+            if (AddedSkillWorkQueues.length == 0) {
+                $('#tblWorkQueue tbody').empty();
+            }
+
+            var newRow = "<tr role='row'><td style='padding-left:20px'><a id='btnSaveNewWQ' ><img src='/Images/save-img.png' alt= 'Save' /></a>";
+            newRow = newRow + "&nbsp;<a id='btnCancelNewWQ' ><img src='/Images/cancle-icon.png' alt='Cancel'/></a></td>";
+            newRow = newRow + "<td><select class='form-control' id='ddlWorkQueues'></select>"
+            newRow = newRow + "</td><td></td><td></td><td></td><td></td></tr>";
+            $('#tblWorkQueue tbody:last').append(newRow);
+            $('#tblWorkQueue th').unbind('click.DT');//to stop the sorting buttons in header
+
+            MainLayout.getDropDownList('#ddlWorkQueues', ToBeAddedSkillWorkQueues, dropdownDefaultValue, 'LookupMasterChildValue', 'CMN_LookupMasterChildRef');
+            fnDisableControls(true);
+        });
+
+        //save currently editing queue
+        $(document).on("click", "#btnSaveNewWQ", function () {
+            var ddlWorkQueues = $('#ddlWorkQueues').val();
+            if (ddlWorkQueues != "")
+                fnPerformWorkQueueOperation(0, ddlWorkQueues);//0 for save WQ action
+            else
+                MainLayout.fnAlertMessege("Alert!", "Please Select Work Queue !");
+        });
+
+        //Cancel current editing new queue
+        $(document).on("click", "#btnCancelNewWQ", function () {
+            try {
+                var tr = $(this).parents('tr');
+                MainLayout.fnConfirmDialogbox("Confirmation", "Do you wish to remove the Work Queue ?", function (isTrue) {
+                    if (isTrue) {
+                        if (AddedSkillWorkQueues.length == 0)
+                            tr.empty().html('<td class="dataTables_empty" valign="top" colspan="6">No data available</td>');
+                        else
+                            tr.remove();
+                        fnDisableControls(false);
+                    }
+                    else {
+                        return;
+                    }
+                });
+            }
+            catch (e) {
+            }
+        });
+
+        //delete prevoiusly added queue
+        $(document).on("click", "#btnDeleteWQ", function () {
+            var ddlWorkQueues = $(this).parents('tr').attr('workqueueslkup');
+            var ADM_SkillWorkQueuesCorrelationId = $(this).parents('tr').attr('SkillWorkQueuesCorrelationId');
+            MainLayout.fnConfirmDialogbox("Confirmation", "Do you wish to delete selected Work Queue?", function (isTrue) {
+                if (isTrue) {
+                    fnPerformWorkQueueOperation(1, ddlWorkQueues);//1 for delete WQ action
+                } else {
+                    return;
+                }
+            });
+        });
+
+        //edit prevoiusly added queue
+        $(document).on("click", "#btnEditWQ", function () {
+            var row = $(this).parents('tr');
+            oldWorkQueue = row.attr('workqueueslkup');
+            //select 1st object with mathced condition and add it to pending queues array
+            ToBeAddedSkillWorkQueues.push($.grep(AddedSkillWorkQueues, function (e) { return e.CMN_LookupMasterChildRef == oldWorkQueue; })[0]);
+            //remove same object from selecetd queues list array
+            AddedSkillWorkQueues = $.grep(AddedSkillWorkQueues, function (e) { return e.CMN_LookupMasterChildRef != oldWorkQueue; });
+
+            var newRow = "<td style='padding-left:20px'><a id='btnUpdateWQ' ><img src='/Images/save-img.png' alt='Update' /></a>";
+            newRow = newRow + "&nbsp;<a id='btnCancelOldWQ' ><img src='/Images/cancle-icon.png' alt='Cancel'/></a></td>";
+            newRow = newRow + "<td><select class='form-control' id='ddlWorkQueues'></select></td>";
+            newRow = newRow + "<td>" + row.children('td')[2].innerHTML + "</td><td>" + row.children('td')[3].innerHTML + "</td>";
+            newRow = newRow + "<td></td><td></td>";
+            row.empty().html(newRow);
+
+            MainLayout.getDropDownList('#ddlWorkQueues', ToBeAddedSkillWorkQueues, dropdownDefaultValue, 'LookupMasterChildValue', 'CMN_LookupMasterChildRef')
+            $('#ddlWorkQueues').val(oldWorkQueue);
+            fnDisableControls(true);
+        });
+
+        //update currently editing queue
+        $(document).on("click", "#btnUpdateWQ", function () {
+            var ddlWorkQueues = $('#ddlWorkQueues').val();
+            if (ddlWorkQueues != "")
+                fnPerformWorkQueueOperation(2, ddlWorkQueues);//0 for save WQ action
+            else
+                MainLayout.fnAlertMessege("Alert!", "Please Select Work Queue !");
+        });
+
+        //Cancel current editing already added queue
+        $(document).on("click", "#btnCancelOldWQ", function () {
+            try {
+                var tr = $(this).parents('tr');
+                MainLayout.fnConfirmDialogbox("Confirmation", "Do you wish to discard the changes ?", function (isTrue) {
+                    if (isTrue) {
+                        fnPerformWorkQueueOperation(0, oldWorkQueue);// reset the queue value to old value by performing save on previous value
+                        oldWorkQueue = 0;//reset old work queue
+                        fnDisableControls(false);
+                    }
+                    else {
+                        return;
+                    }
+                });
+            }
+            catch (e) {
+            }
+        });
+
+        ///Unlock Logic///
+        function fnCancel() {
+            fnUnlockRecord(urlForUnlock, recordId, enums.ScreenType.Skills, cancelUrl);
+        }
+
+        MainLayout.fnInitialiseDataTable($('#tblWorkQueue'));
+
+    </script>
+}

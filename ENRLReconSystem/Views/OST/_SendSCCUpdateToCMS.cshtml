@@ -1,0 +1,76 @@
+﻿@using ENRLReconSystem.Utility
+@using ENRLReconSystem.Helpers
+@using ENRLReconSystem.DO
+@model DOGEN_OSTActions
+
+
+
+    <div class="clearfix">
+        @Html.HiddenFor(m => m.EffectiveDate) 
+        @Html.HiddenFor(m => m.EndDate)
+        @Html.HiddenFor(m => m.DateofBirth )
+        @Html.HiddenFor(m => m.ApplicationDate)
+            <div class="form-group col-md-3">
+                <label for="txtLastName" class="required">Last Name</label>
+                @Html.TextBoxFor(m => m.LastName, new CustomValidation().AddCssClass("form-control").Required("Last Name is required.").RegularExpression(RegexType.MemberName, "Last Name").CustomAttributes("id", "txtLastName").validationAttributes)
+            </div>
+        <div class="form-group date-group col-md-3">
+            <label for="txApplicationDate" class="required">Date of Birth</label>
+            @Html.DateTimeFor(m => m.DateofBirth, false, new CustomValidation().CustomAttributes("id", "txtDOB").Required("Date of Birth is required.").validationAttributes)
+        </div>
+        <div class="form-group col-md-3">
+            <label for="txtContractNumber" class="required">Contract Number</label>
+            @Html.DropDownListFor(m => m.ContractIDLkup, new SelectList(Model.lstContractid, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().CustomAttributes("id", "ddlContractID").Required("Please enter Contract Number.").AddCssClass("form-control").validationAttributes)
+        </div>
+            <div class="form-group col-md-3">
+                <label for="ddlPBPValue" class="required">PBP</label>
+                @Html.DropDownListFor(m => m.PBPLkup, new SelectList(Model.lstPbpid, "CMN_LookupMasterId", "LookupValue"), ConstantTexts.dropdownDefaultValue, new CustomValidation().Required("Please enter PBP.").CustomAttributes("id", "ddlPBPID").AddCssClass("form-control").validationAttributes)
+            </div>           
+            <div class="form-group date-group col-md-3">
+                <label for="txApplicationDate">Application Date</label>
+                @Html.DateTimeFor(m => m.ApplicationDate, false, new CustomValidation().CustomAttributes("id", "txApplicationDate").validationAttributes)
+            </div>
+            <div class="form-group date-group col-md-3">
+                <label for="txtEffectiveDate" class="required">Effective Date</label>
+                @Html.DateTimeFor(m => m.EffectiveDate, false, new CustomValidation().CustomAttributes("id", "txtEffectiveDate").Required("Effective Date is required.").validationAttributes)
+            </div>
+            <div class="form-group date-group col-md-3">
+                <label for="txtEndDate">End Date</label>
+                @Html.DateTimeFor(m => m.EndDate, false, new CustomValidation().CustomAttributes("id", "txtEndDate").validationAttributes)       
+            </div>
+        <div class="form-group col-md-3">
+            <label for="inputEmail">Transaction Code</label>
+            @Html.TextBox("Transaction Code", "76", new { @class = "form-control", @readonly = "readonly" })
+        </div>
+            <div class="form-group textarea col-md-12">
+                <label class="required">Comments</label>
+                @Html.TextAreaFor(m => m.Comments, new CustomValidation().AddCssClass("form-control").Required("Please enter Comments.").CustomAttributes("id", "txtComments").CustomAttributes("maxlength", "4000").StringMaxLength(4000, "Comments").validationAttributes)
+            </div>
+       
+    </div>
+
+<script>
+    var bussinessSegment = '@Model.BusinessSegmentLkup';
+    var PBP = '@Model.PBP';
+    if ('@Model.DateofBirth' != null && '@Model.DateofBirth' != '') {
+        //fnSetDateToField('@Model.DateofBirth','DateofBirth');
+        $('#DateofBirth_DPart').val(getDateTimeInMMDDYYYY('@Model.DateofBirth'));
+    }
+    if ('@Model.EffectiveDate' != null && '@Model.EffectiveDate' != '') {
+        //fnSetDateToField('@Model.EffectiveDate', 'EffectiveDate');
+        $('#EffectiveDate_DPart').val(getDateTimeInMMDDYYYY('@Model.EffectiveDate'));
+    }
+    if ('@Model.EndDate' != null && '@Model.EndDate' != '') {
+       // fnSetDateToField('@Model.EffectiveDate','EffectiveDate');
+        $('#EndDate_DPart').val(getDateTimeInMMDDYYYY('@Model.EndDate'));
+    }
+
+    //if (bussinessSegment == enums.BusinessSegmentLkup.CNS) {
+    //    var contID = $("#ddlContractID").val();      
+    //    MainLayout.fnGetPBP(contID, "#ddlPBPID");
+    //    if ($("#ddlPBPID option:contains(" + PBP + ")").length > 0) {
+    //        $("#ddlPBPID").val($("#ddlPBPID option:contains(" + PBP + ")").val());
+    //    }
+    //}
+</script>
+
